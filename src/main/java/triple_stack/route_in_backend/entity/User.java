@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class User {
     private Integer userId;
+    private String username;
     private String provider;
     private String providerUserId;
     private String profileImg;
@@ -23,7 +24,7 @@ public class User {
     private Integer height;
     private Integer weight;
     private List<Integer> currentRun;
-    private List<String> weeklyRun;
+    private List<Integer> weeklyRun;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
     private String status;
