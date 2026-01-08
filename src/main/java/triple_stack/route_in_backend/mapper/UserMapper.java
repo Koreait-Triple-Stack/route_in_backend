@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface UserMapper {
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserByUserId(Integer userId);
+    Optional<User> getUserByProviderAndProviderUserId(String provider, String providerUserId);
     int addUser(User user);
     int changeProfileImg(User user);
     int withdraw(Integer userId);
