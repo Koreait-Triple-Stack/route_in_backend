@@ -40,4 +40,13 @@
         where
             user_id = #{userId};
     </select>
+
+    <select id="getUserByProviderAndProviderUserId" resultMap="UserResultMap">
+        select
+            *
+        from
+            user_tb
+        where
+            provider = #{provider} and provider_user_id = #{providerUserId};
+    </select>
 </mapper>

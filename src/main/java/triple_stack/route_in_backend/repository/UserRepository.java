@@ -19,4 +19,8 @@ public class UserRepository {
     public Optional<User> getUserByUserId(Integer userId) {
         return userMapper.getUserByUserId(userId);
     }
+
+    public Optional<User> getUserByProviderAndProviderUserId(String provider, String providerUserId) {
+        return userMapper.getUserByProviderAndProviderUserId(provider, providerUserId);
+    }
 }
