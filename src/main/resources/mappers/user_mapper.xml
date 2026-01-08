@@ -21,7 +21,7 @@
         <result property="status" column="status"/>
         <result property="withdrawDt" column="withdraw_dt"/>
         <result property="deleteDt" column="delete_dt"/>
-        <result property="roleId" column="role_id"/>
+        <result property="role" column="role"/>
     </resultMap>
 
     <select id="getUserByUsername" resultMap="UserResultMap">
@@ -32,7 +32,7 @@
         where
             username = #{username};
     </select>
-    <select id="getUserByUserID" resultMap="UserResultMap">
+    <select id="getUserByUserId" resultMap="UserResultMap">
         select
             *
         from
@@ -49,4 +49,38 @@
         where
             provider = #{provider} and provider_user_id = #{providerUserId};
     </select>
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into
+            user_tb
+        values
+            (0, #{username}, #{provider}, #{providerUserId}, #{profileImg}, #{gender},
+            #{address}, #{birthYear}, #{height}, #{weight}, #{currentRun}, #{weeklyRun}, now(), null,
+            "ACTIVE", null, null, "ROLE_ADMIN");
+    </insert>
+    <update id="changeProfileImg">
+        update
+            user_tb
+        set
+            profile_img = #{profileImg},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+    <update id="withdraw">
+        update
+            user_tb
+        set
+            status = "INACTIVE",
+            withdraw_dt = now(),
+            delete_dt = DATE_ADD(now(), INTERVAL 30 DAY)
+        where
+            user_id = #{userId};
+    </update>
+    <delete id="deleteUser">
+        delete from
+            user_tb
+        where
+            status = "INACTIVE"
+            and delete_dt <![CDATA[<=]]> now();
+    </delete>
 </mapper>
