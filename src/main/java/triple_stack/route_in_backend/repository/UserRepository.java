@@ -23,4 +23,8 @@ public class UserRepository {
     public Optional<User> getUserByProviderAndProviderUserId(String provider, String providerUserId) {
         return userMapper.getUserByProviderAndProviderUserId(provider, providerUserId);
     }
+
+    public int addUser(User user) {
+        return userMapper.addUser(user);
+    }
 }

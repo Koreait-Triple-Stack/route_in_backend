@@ -14,8 +14,8 @@
         <result property="birthYear" column="birth_year"/>
         <result property="height" column="height"/>
         <result property="weight" column="weight"/>
-        <result property="currentRun" column="current_run"/>
-        <result property="weeklyRun" column="weekly_run"/>
+        <result property="currentRun" column="current_run" typeHandler="triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="weeklyRun" column="weekly_run" typeHandler="triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
         <result property="status" column="status"/>
@@ -54,8 +54,10 @@
             user_tb
         values
             (0, #{username}, #{provider}, #{providerUserId}, #{profileImg}, #{gender},
-            #{address}, #{birthYear}, #{height}, #{weight}, #{currentRun}, #{weeklyRun}, now(), null,
-            "ACTIVE", null, null, "ROLE_ADMIN");
+            #{address}, #{birthYear}, #{height}, #{weight},
+        #{currentRun, typeHandler=triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+        #{weeklyRun, typeHandler=triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+        now(), null, "ACTIVE", null, null, "ROLE_ADMIN");
     </insert>
     <update id="changeProfileImg">
         update

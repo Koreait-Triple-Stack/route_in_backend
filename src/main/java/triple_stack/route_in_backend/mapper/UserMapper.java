@@ -3,7 +3,6 @@ package triple_stack.route_in_backend.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import triple_stack.route_in_backend.entity.User;
 
-import java.util.List;
 import java.util.Optional;
 
 @Mapper
