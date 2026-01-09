@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.InBodyMapper">
+    <resultMap id="FollowResultMap" type="com.triple_stack.route_in_backend.entity.Follow">
+        <id property="followId" column="follow_id"/>
+        <result property="followerUserId" column="follower_user_id"/>
+        <result property="followingUserId" column="following_user_id"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <resultMap id="FollowUserResultMap" type="com.triple_stack.route_in_backend.entity.FollowUser">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="profileImg" column="profile_img"/>
+        <result property="birthYear" column="birth_year"/>
+    </resultMap>
+
+    <insert id="addFollow">
+        insert into
+            follow_tb
+        values
+            (0, #{followerUserId}, #{followingUserId}, now());
+    </insert>
+
+    <delete id="deleteFollow">
+        delete from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId} and following_user_id = #{followingUserId};
+    </delete>
+
+    <select id="getFollowUserByFollowerUserId" resultMap="FollowUserResultMap">
+        select
+            user_id,
+            username,
+            profile_img,
+            birth_year
+        from
+            user_tb
+        where
+            user_id = #{followerUserId};
+    </select>
+
+    <select id="getFollowUserByFollowingUserId" resultMap="FollowUserResultMap">
+        select
+            user_id,
+            username,
+            profile_img,
+            birth_year
+        from
+            user_tb
+        where
+            user_id = #{followingUserId};
+    </select>
+
+    <select id="getFollowByFollowerUserIdAndFollowingUserId" resultMap="FollowResultMap">
+        select
+            *
+        from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId} and
+            following_user_id = #{followingUserId};
+    </select>
+</mapper>
