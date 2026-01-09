@@ -54,4 +54,14 @@
         where
             user_id = #{followingUserId};
     </select>
+
+    <select id="getFollowByFollowerUserIdAndFollowingUserId" resultMap="FollowResultMap">
+        select
+            *
+        from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId} and
+            following_user_id = #{followingUserId};
+    </select>
 </mapper>

@@ -5,6 +5,7 @@ import com.triple_stack.route_in_backend.entity.FollowUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface FollowMapper {
@@ -12,4 +13,5 @@ public interface FollowMapper {
     int deleteFollow(Follow follow);
     List<FollowUser> getFollowUserByFollowerUserId(Integer followerUserId);
     List<FollowUser> getFollowUserByFollowingUserId(Integer followingUserId);
+    Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId);
 }

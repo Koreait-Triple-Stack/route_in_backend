@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class FollowRepository {
@@ -28,4 +29,9 @@ public class FollowRepository {
     public List<FollowUser> getFollowUserByFollowingUserId(Integer followingUserId) {
         return followMapper.getFollowUserByFollowingUserId(followingUserId);
     }
+
+    public Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId){
+        return followMapper.getFollowByFollowerUserIdAndFollowingUserId(followerUserId, followingUserId);
+    }
+
 }
