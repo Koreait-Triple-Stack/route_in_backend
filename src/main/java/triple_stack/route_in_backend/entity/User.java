@@ -23,8 +23,8 @@ public class User {
     private Integer birthYear;
     private Integer height;
     private Integer weight;
-    private List<Integer> currentRun;
-    private List<Integer> weeklyRun;
+    private List<String> currentRun;
+    private List<String> weeklyRun;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
     private String status;
