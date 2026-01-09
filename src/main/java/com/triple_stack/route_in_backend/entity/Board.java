@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 public class Board {
     private Integer boardId;
     private Integer userId;
+
     private String type;
     private String title;
     private String content;
     private String tag;
+
     private Integer recommendCnt;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;

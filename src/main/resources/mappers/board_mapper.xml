@@ -9,29 +9,48 @@
         <result property="type" column="type"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
-        <result property="tag" column="tag"/>
-        <result property="recommentInt" column="recomment_int"/>
+        <result property="tag" column="tag" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="recommentCnt" column="recomment_cnt"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
     </resultMap>
 
-<!--*-->
+    <resultMap id="BoardRespResultMap" type="com.triple_stack.route_in_backend.dto.board.BoardRespDto">
+        <id property="boardId" column="board_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="type" column="type"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="tag" column="tag" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="username" column="username"/>
+        <result property="profileImg" column="profile_img"/>
+        <result property="recommendCnt" column="recommend_cnt"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
+    </resultMap>
+
+<!--    추가      -->
     <insert id="addBoard">
         insert into
         board_tb
+
         values
-        (0, #{userId}, #{type}, #{title}, #{content}, #{tag}, #{recommend_cnt}, now(), now());
+        (0, #{userId}, #{type}, #{title}, #{content},
+        #{tag, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+        #{recommend_cnt}, now(), now());
     </insert>
 
+
+<!--    수정      -->
     <update id="updateboard">
         update
         board_tb
+
         set
         type = #{type},
         title = #{title},
         content = #{content},
-        tag = #{tag},
-        create_dt = now(),
+        tag = #{tag, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
         update_dt = now()
 
         where
@@ -39,46 +58,142 @@
 
     </update>
 
-<!--    <select id="getBoardList" resultMap="BoardRespResultMap"/>-->
-<!--    select-->
-<!--        bt.board_id,-->
-<!--    bt.user_id,-->
-<!--    bt.type,-->
-<!--    bt.title,-->
-<!--    bt.content,-->
-<!--    bt.tag,-->
-<!--    bt.recommendInt,-->
-<!--    bt.create_dt,-->
-<!--    bt.update-dt-->
 
-<!--    from-->
-<!--    board_tb-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!--    제거      -->
     <delete id="removeBoard">
         delete from
         board_tb
+
         where
-            board_id = #{boardId};
+        board_id = #{boardId};
     </delete>
+
+
+<!--    게시글 목록  -->
+    <select id="getBoardList" resultMap="BoardRespResultMap">
+        select
+        bt.board_id,
+        bt.user_id,
+        bt.type,
+        bt.title,
+        bt.content,
+        bt.tag,
+        bt.recommendInt,
+        bt.create_dt,
+        bt.update-dt
+
+        from
+        board_tb
+
+    </select>
+
+<!--   키워드 검색   -->
+    <select id="getBoardListByKeyword" resultMap="BoardRespResultMap">
+        select
+        bt.board_id,
+        bt.user_id,
+        bt.type,
+        bt.title,
+        bt.content,
+        bt.tag,
+        bt.recommend_cnt,
+        ut.username,
+        ut.profile_img,
+        bt.create_dt,
+        bt.update_dt
+
+        from
+        board_tb bt
+        join user_tb ut on bt.user_id = ut.user_id
+
+
+        where
+        bt.title like concat("%", #{keyword}, "%")
+        or bt.content like concat("%", #{keyword}, "%")
+        or JSON_SEARCH(bt.tag, 'one', #{keyword}) is not null
+
+        order by
+        bt.create_dt desc,
+        bt.board_id desc;
+    </select>
+
+
+<!--    boardId로 단건 조회  -->
+    <select id="getBoardByBoardId" resultMap="BoardRespResultMap">
+        select
+        bt.board_id,
+        bt.user_id,
+        bt.type,
+        bt.title,
+        bt.content,
+        bt.tag,
+        bt.recommend_cnt,
+        ut.username,
+        ut.profile_img,
+        bt.create_dt,
+        bt.update_dt
+
+        from
+        board_tb bt
+        join user_tb
+
+
+    </select>
+
+<!--    무한 스크롤  -->
+    <select id="getBoardInfinite" resultMap="BoardRespResultMap">
+        select
+        bt.board_id,
+        bt.title,
+        bt.content,
+        bt.user_id,
+        ut.username,
+        ut.profile_img,
+        bt.create_dt,
+        bt.update_dt
+
+        from
+        board_tb bt
+
+
+    </select>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

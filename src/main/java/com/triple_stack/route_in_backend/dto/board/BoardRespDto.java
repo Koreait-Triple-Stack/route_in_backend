@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class BoardRespDto {
     private Integer boardId;
     private Integer userId;
+
     private String type;
     private String title;
     private String content;
@@ -18,6 +19,7 @@ public class BoardRespDto {
     private String username;
     private String profileImg;
     private Integer recommendCnt;
+
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
 
