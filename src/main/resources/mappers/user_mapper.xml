@@ -53,15 +53,61 @@
         insert into
             user_tb
         values
-            (0, #{username}, #{provider}, #{providerUserId}, #{profileImg}, #{gender},
+            (0, #{username}, #{provider}, #{providerUserId}, null, #{gender},
             #{address}, #{birthYear}, #{height}, #{weight}, #{currentRun}, #{weeklyRun}, now(), null,
-            "ACTIVE", null, null, "ROLE_ADMIN");
+            "ACTIVE", null, null, "ROLE_USER");
     </insert>
+    <update id="changeUsername">
+        update
+            user_tb
+        set
+            username = #{username},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
     <update id="changeProfileImg">
         update
             user_tb
         set
             profile_img = #{profileImg},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+    <update id="changeAddress">
+        update
+            user_tb
+        set
+            address = #{address},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+    <update id="changeHeightAndWeight">
+        update
+            user_tb
+        set
+            height = #{height},
+            weight = #{weight},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+    <update id="changeCurrentRun">
+        update
+            user_tb
+        set
+            current_run = #{currentRun},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+    <update id="changeWeeklyRun">
+        update
+            user_tb
+        set
+            weekly_run = #{weeklyRun},
             update_dt = now()
         where
             user_id = #{userId};
