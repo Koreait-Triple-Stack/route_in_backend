@@ -5,6 +5,80 @@
 <mapper namespace="com.korit.backend_mini.mapper.BoardMapper">
     <resultMap id="BoardResultMap" type="triple_stack.route_in_backend.Board">
         <id property="boardId" column="board_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="type" column="type"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="tag" column="tag"/>
+        <result property="recommentInt" column="recomment_int"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
     </resultMap>
+
+<!--*-->
+    <insert id="addBoard">
+        insert into
+        board_tb
+        values
+        (0, #{userId}, #{type}, #{title}, #{content}, #{tag}, #{recommend_cnt}, now(), now());
+    </insert>
+
+    <update id="updateboard">
+        update
+        board_tb
+        set
+        type = #{type},
+        title = #{title},
+        content = #{content},
+        tag = #{tag},
+        create_dt = now(),
+        update_dt = now()
+
+        where
+        board_id = #{boardId};
+
+    </update>
+
+<!--    <select id="getBoardList" resultMap="BoardRespResultMap"/>-->
+<!--    select-->
+<!--        bt.board_id,-->
+<!--    bt.user_id,-->
+<!--    bt.type,-->
+<!--    bt.title,-->
+<!--    bt.content,-->
+<!--    bt.tag,-->
+<!--    bt.recommendInt,-->
+<!--    bt.create_dt,-->
+<!--    bt.update-dt-->
+
+<!--    from-->
+<!--    board_tb-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <delete id="removeBoard">
+        delete from
+        board_tb
+        where
+            board_id = #{boardId};
+    </delete>
+
+
+
 
 </mapper>
