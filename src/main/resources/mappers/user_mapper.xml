@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="triple_stack.route_in_backend.mapper.UserMapper">
-    <resultMap id="UserResultMap" type="triple_stack.route_in_backend.entity.User">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.UserMapper">
+    <resultMap id="UserResultMap" type="com.triple_stack.route_in_backend.entity.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
         <result property="provider" column="provider"/>
@@ -14,8 +14,8 @@
         <result property="birthYear" column="birth_year"/>
         <result property="height" column="height"/>
         <result property="weight" column="weight"/>
-        <result property="currentRun" column="current_run" typeHandler="triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
-        <result property="weeklyRun" column="weekly_run" typeHandler="triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="currentRun" column="current_run" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="weeklyRun" column="weekly_run" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
         <result property="status" column="status"/>
@@ -57,8 +57,8 @@
         values
             (0, #{username}, #{provider}, #{providerUserId}, null, #{gender},
             #{address}, #{birthYear}, #{height}, #{weight},
-        #{currentRun, typeHandler=triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-        #{weeklyRun, typeHandler=triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+        #{currentRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+        #{weeklyRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
         now(), null, "ACTIVE", null, null, "ROLE_USER");
     </insert>
   
