@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.repository;
 
+import com.triple_stack.route_in_backend.entity.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.triple_stack.route_in_backend.entity.User;
@@ -36,9 +37,9 @@ public class UserRepository {
         return userMapper.changeProfileImg(user);
     }
 
-    public int changeAddress(User user) {
-        return userMapper.changeAddress(user);
-    }
+//    public int changeAddress(Address address) {
+//        return userMapper.changeAddress(address);
+//    }
 
     public int changeHeightAndWeight(User user) {
         return userMapper.changeHeightAndWeight(user);

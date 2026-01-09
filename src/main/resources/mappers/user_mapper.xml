@@ -10,7 +10,6 @@
         <result property="providerUserId" column="provider_user_id"/>
         <result property="profileImg" column="profile_img"/>
         <result property="gender" column="gender"/>
-        <result property="address" column="address"/>
         <result property="birthYear" column="birth_year"/>
         <result property="height" column="height"/>
         <result property="weight" column="weight"/>
@@ -22,33 +21,61 @@
         <result property="withdrawDt" column="withdraw_dt"/>
         <result property="deleteDt" column="delete_dt"/>
         <result property="role" column="role"/>
+        <result property="followerCnt" column="follower_cnt"/>
+        <result property="followingCnt" column="following_cnt"/>
+        <association property="Address" resultMap="AddressResultMap"/>
+    </resultMap>
+
+    <resultMap id="AddressResultMap" type="com.triple_stack.route_in_backend.entity.Address">
+        <id property="userId" column="at_user_id"/>
+        <result property="zipCode" column="zip_code"/>
+        <result property="baseAddress" column="base_address"/>
+        <result property="detailAddress" column="detail_address"/>
     </resultMap>
 
     <select id="getUserByUsername" resultMap="UserResultMap">
         select
-            *
+            ut.*,
+
+            at.user_id as at_user_id,
+            at.zip_code as at_zip_code,
+            at.base_address as at_base_address,
+            at.detail_address as at_detail_address,
         from
-            user_tb
+            user_tb ut
+            join address_tb at on (ut.user_id = at.user_id)
         where
-            username = #{username};
+            ut.username = #{username};
     </select>
   
     <select id="getUserByUserId" resultMap="UserResultMap">
         select
-            *
+            ut.*,
+
+            at.user_id as at_user_id,
+            at.zip_code as at_zip_code,
+            at.base_address as at_base_address,
+            at.detail_address as at_detail_address,
         from
-            user_tb
+            user_tb ut
+            join address_tb at on (ut.user_id = at.user_id)
         where
-            user_id = #{userId};
+            ut.user_id = #{userId};
     </select>
 
     <select id="getUserByProviderAndProviderUserId" resultMap="UserResultMap">
         select
-            *
+            ut.*,
+
+            at.user_id as at_user_id,
+            at.zip_code as at_zip_code,
+            at.base_address as at_base_address,
+            at.detail_address as at_detail_address,
         from
-            user_tb
+            user_tb ut
+            join address_tb at on (ut.user_id = at.user_id)
         where
-            provider = #{provider} and provider_user_id = #{providerUserId};
+            ut.provider = #{provider} and ut.provider_user_id = #{providerUserId};
     </select>
   
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
@@ -56,10 +83,10 @@
             user_tb
         values
             (0, #{username}, #{provider}, #{providerUserId}, null, #{gender},
-            #{address}, #{birthYear}, #{height}, #{weight},
-        #{currentRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-        #{weeklyRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-        now(), null, "ACTIVE", null, null, "ROLE_USER");
+            #{birthYear}, #{height}, #{weight},
+            #{currentRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{weeklyRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            now(), null, "ACTIVE", null, null, "ROLE_USER", #{followerCnt}, #{followingCnt});
     </insert>
   
     <update id="changeUsername">
@@ -82,16 +109,6 @@
             user_id = #{userId};
     </update>
   
-    <update id="changeAddress">
-        update
-            user_tb
-        set
-            address = #{address},
-            update_dt = now()
-        where
-            user_id = #{userId};
-    </update>
-  
     <update id="changeHeightAndWeight">
         update
             user_tb
@@ -107,7 +124,7 @@
         update
             user_tb
         set
-            current_run = #{currentRun},
+            current_run = #{currentRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             update_dt = now()
         where
             user_id = #{userId};
@@ -117,7 +134,7 @@
         update
             user_tb
         set
-            weekly_run = #{weeklyRun},
+            weekly_run = #{weeklyRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             update_dt = now()
         where
             user_id = #{userId};

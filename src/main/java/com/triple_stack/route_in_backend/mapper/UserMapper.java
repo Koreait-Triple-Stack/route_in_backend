@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.mapper;
 
+import com.triple_stack.route_in_backend.entity.Address;
 import org.apache.ibatis.annotations.Mapper;
 import com.triple_stack.route_in_backend.entity.User;
 
@@ -13,7 +14,7 @@ public interface UserMapper {
     int addUser(User user);
     int changeUsername(User user);
     int changeProfileImg(User user);
-    int changeAddress(User user);
+//    int changeAddress(Address address);
     int changeHeightAndWeight(User user);
     int changeCurrentRun(User user);
     int changeWeeklyRun(User user);
