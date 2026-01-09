@@ -32,6 +32,7 @@
         where
             username = #{username};
     </select>
+  
     <select id="getUserByUserId" resultMap="UserResultMap">
         select
             *
@@ -49,16 +50,28 @@
         where
             provider = #{provider} and provider_user_id = #{providerUserId};
     </select>
+  
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
         insert into
             user_tb
         values
-            (0, #{username}, #{provider}, #{providerUserId}, #{profileImg}, #{gender},
+            (0, #{username}, #{provider}, #{providerUserId}, null, #{gender},
             #{address}, #{birthYear}, #{height}, #{weight},
         #{currentRun, typeHandler=triple_stack.route_in_backend.security.handler.JsonTypeHandler},
         #{weeklyRun, typeHandler=triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-        now(), null, "ACTIVE", null, null, "ROLE_ADMIN");
+        now(), null, "ACTIVE", null, null, "ROLE_USER");
     </insert>
+  
+    <update id="changeUsername">
+        update
+            user_tb
+        set
+            username = #{username},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+  
     <update id="changeProfileImg">
         update
             user_tb
@@ -68,6 +81,48 @@
         where
             user_id = #{userId};
     </update>
+  
+    <update id="changeAddress">
+        update
+            user_tb
+        set
+            address = #{address},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+  
+    <update id="changeHeightAndWeight">
+        update
+            user_tb
+        set
+            height = #{height},
+            weight = #{weight},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+  
+    <update id="changeCurrentRun">
+        update
+            user_tb
+        set
+            current_run = #{currentRun},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+  
+    <update id="changeWeeklyRun">
+        update
+            user_tb
+        set
+            weekly_run = #{weeklyRun},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+  
     <update id="withdraw">
         update
             user_tb
@@ -78,6 +133,7 @@
         where
             user_id = #{userId};
     </update>
+  
     <delete id="deleteUser">
         delete from
             user_tb

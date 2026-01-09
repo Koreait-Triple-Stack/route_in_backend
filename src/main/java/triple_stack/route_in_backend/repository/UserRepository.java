@@ -1,6 +1,7 @@
 package triple_stack.route_in_backend.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import triple_stack.route_in_backend.entity.User;
 import triple_stack.route_in_backend.mapper.UserMapper;
@@ -24,7 +25,39 @@ public class UserRepository {
         return userMapper.getUserByProviderAndProviderUserId(provider, providerUserId);
     }
 
-    public int addUser(User user) {
+     public int addUser(User user) {
         return userMapper.addUser(user);
+    }
+
+    public int changeUsername(User user) {
+        return userMapper.changeUsername(user);
+    }
+
+    public int changeProfileImg(User user) {
+        return userMapper.changeProfileImg(user);
+    }
+
+    public int changeAddress(User user) {
+        return userMapper.changeAddress(user);
+    }
+
+    public int changeHeightAndWeight(User user) {
+        return userMapper.changeHeightAndWeight(user);
+    }
+
+    public int changeCurrentRun(User user) {
+        return userMapper.changeCurrentRun(user);
+    }
+
+    public int changeWeeklyRun(User user) {
+        return userMapper.changeWeeklyRun(user);
+    }
+
+    public int withdraw(Integer userId) {
+        return userMapper.withdraw(userId);
+    }
+
+    public void deleteUser() {
+        userMapper.deleteUser();
     }
 }

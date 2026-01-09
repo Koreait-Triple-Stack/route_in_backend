@@ -11,7 +11,12 @@ public interface UserMapper {
     Optional<User> getUserByUserId(Integer userId);
     Optional<User> getUserByProviderAndProviderUserId(String provider, String providerUserId);
     int addUser(User user);
+    int changeUsername(User user);
     int changeProfileImg(User user);
+    int changeAddress(User user);
+    int changeHeightAndWeight(User user);
+    int changeCurrentRun(User user);
+    int changeWeeklyRun(User user);
     int withdraw(Integer userId);
     void deleteUser();
 }
