@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.controller.user;
 
+import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.account.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,15 @@ public class UserAccountController {
     @Autowired
     private AccountService userAccountService;
 
-//    @GetMapping("/userId")
-//    public ResponseEntity<?> getPrincipal(@AuthenticationPrincipal PrincipalUser principalUser) {
-//        return ResponseEntity.ok(new ApiRespDto<>("success", "회원 조회 완료", principalUser));
-//    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserByUserId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(userAccountService.getUserByUserId(userId));
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getUserByUserId(@PathVariable String username) {
+        return ResponseEntity.ok(userAccountService.getUserByUsername(username));
+    }
 
     @PostMapping("/change/username")
     public ResponseEntity<?> changeUsername(@RequestBody ChangeUsernameReqDto changeUsernameReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
@@ -29,10 +35,10 @@ public class UserAccountController {
         return ResponseEntity.ok(userAccountService.changeProfileImg(changeProfileImgReqDto, principalUser));
     }
 
-    @PostMapping("/change/address")
-    public ResponseEntity<?> changeAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(userAccountService.changeAddress(changeAddressReqDto, principalUser));
-    }
+//    @PostMapping("/change/address")
+//    public ResponseEntity<?> changeAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
+//        return ResponseEntity.ok(userAccountService.changeAddress(changeAddressReqDto, principalUser));
+//    }
 
     @PostMapping("/change/bodyInfo")
     public ResponseEntity<?> changeHeightAndWeight(@RequestBody ChangeHeightAndWeightReqDto changeHeightAndWeightReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {

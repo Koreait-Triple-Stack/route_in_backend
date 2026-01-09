@@ -18,8 +18,7 @@ public class User {
     private String provider;
     private String providerUserId;
     private String profileImg;
-    private Integer gender;
-    private String address;
+    private String gender;
     private Integer birthYear;
     private Integer height;
     private Integer weight;
@@ -31,6 +30,10 @@ public class User {
     private LocalDateTime withdrawDt;
     private LocalDateTime deleteDt;
     private String role;
+    private Integer followerCnt;
+    private Integer followingCnt;
+
+    private Address address;
 
     public boolean isActive() {
         return "ACTIVE".equals(status);

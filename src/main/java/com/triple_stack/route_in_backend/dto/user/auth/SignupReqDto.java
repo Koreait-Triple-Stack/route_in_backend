@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.dto.user.auth;
 
+import com.triple_stack.route_in_backend.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import com.triple_stack.route_in_backend.entity.User;
@@ -12,8 +13,8 @@ public class SignupReqDto {
     private String username;
     private String provider;
     private String providerUserId;
-    private Integer gender;
-    private String address;
+    private String gender;
+    private Address address;
     private Integer birthYear;
     private Integer height;
     private Integer weight;
