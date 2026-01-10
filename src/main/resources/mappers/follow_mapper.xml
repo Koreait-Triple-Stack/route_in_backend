@@ -64,4 +64,40 @@
             follower_user_id = #{followerUserId} and
             following_user_id = #{followingUserId};
     </select>
+
+    <update id="plusFollower">
+        update
+            user_tb
+        set
+            follower_cnt = follower_cnt + 1
+        where
+            user_id = #{userId};
+    </update>
+
+    <update id="plusFollowing">
+        update
+            user_tb
+        set
+            following_cnt = following_cnt + 1
+        where
+            user_id = #{userId};
+    </update>
+
+    <update id="minusFollower">
+        update
+            user_tb
+        set
+            follower_cnt = follower_cnt - 1
+        where
+            user_id = #{userId};
+    </update>
+
+    <update id="minusFollowing">
+        update
+            user_tb
+        set
+            following_cnt = following_cnt - 1
+        where
+            user_id = #{userId};
+    </update>
 </mapper>
