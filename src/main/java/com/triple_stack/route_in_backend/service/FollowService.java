@@ -67,4 +67,6 @@ public class FollowService {
 
         return new ApiRespDto<>("success", "팔로우 삭제를 완료했습니다.", null);
     }
+
+    // 팔로워, 팔로잉 리스트 가져오는것 짜기
 }
