@@ -50,7 +50,7 @@ public class FollowService {
             throw new RuntimeException("이미 팔로우 상태가 아닙니다.");
         }
 
-        int followResult = followRepository.addFollow(deleteFollowReqDto.toEntity());
+        int followResult = followRepository.deleteFollow(deleteFollowReqDto.toEntity());
         if (followResult != 1) {
             throw new RuntimeException("팔로우 삭제에 실패했습니다.");
         }
@@ -66,5 +66,13 @@ public class FollowService {
         }
 
         return new ApiRespDto<>("success", "팔로우 삭제를 완료했습니다.", null);
+    }
+
+    public ApiRespDto<?> getFollowerUserList(Integer userId) {
+        return new ApiRespDto<>("success", "팔로워 조회 완료", followRepository.getFollowerUserList(userId));
+    }
+
+    public ApiRespDto<?> getFollowingUserList(Integer userId) {
+        return new ApiRespDto<>("success", "팔로잉 조회 완료", followRepository.getFollowingUserList(userId));
     }
 }

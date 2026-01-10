@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.RoutineMapper">
+    <resultMap id="InBodyResultMap" type="com.triple_stack.route_in_backend.entity.Routine">
+        <id property="routineId" column="routineId"/>
+        <result property="monday" column="monday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="tuesday" column="tuesday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="wednesday" column="wednesday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="thursday" column="thursday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="friday" column="friday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="saturday" column="saturday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="sunday" column="sunday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
+        <result property="userId" column="user_id"/>
+        <result property="boardId" column="board_id"/>
+    </resultMap>
+
+    <insert id="addRoutine">
+        insert into
+            routine_tb
+        values
+            (0,
+            #{monday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{tuesday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{wednesday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{thursday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{friday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{saturday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{sunday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            #{boardId}, #{userId});
+    </insert>
+
+    <update id="updateRoutine">
+        update
+            routine_tb
+        set
+            monday = #{monday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            tuesday = #{tuesday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            wednesday = #{wednesday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            thursday = #{thursday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            friday = #{friday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            saturday = #{saturday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            sunday = #{sunday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler}
+        where
+            routine_id = #{routineId};
+    </update>
+
+    <select id="getRoutineByUserId" resultMap="RoutineResultMap">
+        select
+            *
+        from
+            routine_tb
+        where
+            user_id = #{userId};
+    </select>
+
+    <select id="getRoutineByBoardId" resultMap="RoutineResultMap">
+        select
+            *
+        from
+            routine_tb
+        where
+            board_id = #{boardId};
+    </select>
+</mapper>

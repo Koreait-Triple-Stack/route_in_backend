@@ -22,12 +22,12 @@ public class FollowRepository {
         return followMapper.deleteFollow(follow);
     }
 
-    public List<FollowUser> getFollowUserByFollowerUserId(Integer followerUserId) {
-        return followMapper.getFollowUserByFollowerUserId(followerUserId);
+    public List<FollowUser> getFollowerUserList(Integer userId) {
+        return followMapper.getFollowerUserList(userId);
     }
 
-    public List<FollowUser> getFollowUserByFollowingUserId(Integer followingUserId) {
-        return followMapper.getFollowUserByFollowingUserId(followingUserId);
+    public List<FollowUser> getFollowingUserList(Integer userId) {
+        return followMapper.getFollowingUserList(userId);
     }
 
     public Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId){
