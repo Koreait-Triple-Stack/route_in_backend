@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface FollowMapper {
     int addFollow(Follow follow);
     int deleteFollow(Follow follow);
-    List<FollowUser> getFollowUserByFollowerUserId(Integer followerUserId);
-    List<FollowUser> getFollowUserByFollowingUserId(Integer followingUserId);
+    List<FollowUser> getFollowerUserList(Integer userId);
+    List<FollowUser> getFollowingUserList(Integer userId);
     Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId);
     int plusFollower(Integer userId);
     int plusFollowing(Integer userId);

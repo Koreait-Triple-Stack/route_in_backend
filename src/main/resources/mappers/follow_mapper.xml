@@ -31,28 +31,28 @@
             follower_user_id = #{followerUserId} and following_user_id = #{followingUserId};
     </delete>
 
-    <select id="getFollowUserByFollowerUserId" resultMap="FollowUserResultMap">
+    <select id="getFollowerUserList" resultMap="FollowUserResultMap">
         select
             user_id,
             username,
             profile_img,
             birth_year
         from
-            user_tb
+            user_tb join follow_tb on (user_tb.user_id = follow_tb.follower_user_id)
         where
-            user_id = #{followerUserId};
+            following_user_id = #{userId};
     </select>
 
-    <select id="getFollowUserByFollowingUserId" resultMap="FollowUserResultMap">
+    <select id="getFollowingUserList" resultMap="FollowUserResultMap">
         select
             user_id,
             username,
             profile_img,
             birth_year
         from
-            user_tb
+            user_tb join follow_tb on (user_tb.user_id = follow_tb.following_user_id)
         where
-            user_id = #{followingUserId};
+            follower_user_id = #{userId};
     </select>
 
     <select id="getFollowByFollowerUserIdAndFollowingUserId" resultMap="FollowResultMap">
