@@ -21,7 +21,8 @@ public class OAuth2AuthService {
     @Autowired
     private JwtUtils jwtUtils;
 
-    public ApiRespDto<?> signup(SignupReqDto signupReqDto) throws JsonProcessingException {
+    // 운동루틴 넣는것 수정하면서 트랙잭션 걸것
+    public ApiRespDto<?> signup(SignupReqDto signupReqDto) {
         Optional<User> foundUser = userRepository.getUserByUsername(signupReqDto.getUsername());
         if (foundUser.isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");

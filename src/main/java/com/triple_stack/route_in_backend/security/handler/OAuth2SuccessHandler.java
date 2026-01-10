@@ -36,6 +36,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
+        if (!foundUser.get().isActive()) {
+            response.sendRedirect("http://localhost:5173/auth/oauth2/failed");
+            return;
+        }
+
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());
 
         response.sendRedirect("http://localhost:5173/auth/oauth2/signin?accessToken="+accessToken);
