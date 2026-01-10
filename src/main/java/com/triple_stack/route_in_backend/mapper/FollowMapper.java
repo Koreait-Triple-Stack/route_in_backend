@@ -14,4 +14,8 @@ public interface FollowMapper {
     List<FollowUser> getFollowUserByFollowerUserId(Integer followerUserId);
     List<FollowUser> getFollowUserByFollowingUserId(Integer followingUserId);
     Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId);
+    int plusFollower(Integer userId);
+    int plusFollowing(Integer userId);
+    int minusFollower(Integer userId);
+    int minusFollowing(Integer userId);
 }

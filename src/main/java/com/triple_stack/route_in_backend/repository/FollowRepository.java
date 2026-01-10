@@ -34,4 +34,19 @@ public class FollowRepository {
         return followMapper.getFollowByFollowerUserIdAndFollowingUserId(followerUserId, followingUserId);
     }
 
+    public int plusFollower(Integer userId) {
+        return followMapper.plusFollower(userId);
+    }
+
+    public int plusFollowing(Integer userId) {
+        return followMapper.plusFollowing(userId);
+    }
+
+    public int minusFollower(Integer userId) {
+        return followMapper.minusFollower(userId);
+    }
+
+    public int minusFollowing(Integer userId) {
+        return followMapper.minusFollowing(userId);
+    }
 }
