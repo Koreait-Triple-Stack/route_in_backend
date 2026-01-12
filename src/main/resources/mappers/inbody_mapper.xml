@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.InBodyMapper">
+    <resultMap id="InBodyResultMap" type="com.triple_stack.route_in_backend.entity.InBody">
+        <id property="inBodyId" column="in_body_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="bodyWeight" column="body_weight"/>
+        <result property="skeletalMuscleMass" column="skeletal_muscle_mass"/>
+        <result property="bodyFatMass" column="body_fat_mass"/>
+        <result property="monthDt" column="month_dt"/>
+    </resultMap>
+
+    <insert id="addInBody">
+        insert into
+            in_body_tb
+        values
+            (0, #{userId}, #{bodyWeight}, #{skeletalMuscleMass}, #{bodyFatMass}, #{monthDt});
+    </insert>
+
+    <delete id="deleteInBody">
+        delete from
+            in_body_tb
+        where
+            in_body_id = #{inBodyId};
+    </delete>
+
+    <select id="getInBodyListByUserId" resultMap="InBodyResultMap">
+        select
+            *
+        from
+            in_body_tb
+        where
+            user_id = #{userId}
+        order by
+            month_dt desc;
+    </select>
+
+    <select id="getInBodyByUserIdAndMonthDt" resultMap="InBodyResultMap">
+        select
+            *
+        from
+            in_body_tb
+        where
+            user_id = #{userId} and month_dt = #{monthDt};
+    </select>
+
+    <select id="getInBodyByInBodyId" resultMap="InBodyResultMap">
+        select
+            *
+        from
+            in_body_tb
+        where
+            in_body_id = #{inBodyId};
+    </select>
+</mapper>
