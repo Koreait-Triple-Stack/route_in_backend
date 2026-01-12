@@ -25,6 +25,11 @@ public class UserAccountController {
         return ResponseEntity.ok(userAccountService.getUserByUsername(username));
     }
 
+    @PostMapping("/address")
+    public ResponseEntity<?> saveAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(userAccountService.saveOrUpdateAddress(changeAddressReqDto, principalUser));
+    }
+
     @PostMapping("/change/username")
     public ResponseEntity<?> changeUsername(@RequestBody ChangeUsernameReqDto changeUsernameReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(userAccountService.changeUsername(changeUsernameReqDto, principalUser));
@@ -34,11 +39,6 @@ public class UserAccountController {
     public ResponseEntity<?> changeProfileImg(@RequestBody ChangeProfileImgReqDto changeProfileImgReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(userAccountService.changeProfileImg(changeProfileImgReqDto, principalUser));
     }
-
-//    @PostMapping("/change/address")
-//    public ResponseEntity<?> changeAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
-//        return ResponseEntity.ok(userAccountService.changeAddress(changeAddressReqDto, principalUser));
-//    }
 
     @PostMapping("/change/bodyInfo")
     public ResponseEntity<?> changeHeightAndWeight(@RequestBody ChangeHeightAndWeightReqDto changeHeightAndWeightReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {

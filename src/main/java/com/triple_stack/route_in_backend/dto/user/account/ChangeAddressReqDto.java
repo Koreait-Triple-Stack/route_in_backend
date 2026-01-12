@@ -7,5 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChangeAddressReqDto {
     private Integer userId;
-    private String address;
+    private String zipCode;
+    private String baseAddress;
+    private String detailAddress;
 }
