@@ -25,8 +25,16 @@ public class UserRepository {
         return userMapper.getUserByProviderAndProviderUserId(provider, providerUserId);
     }
 
-     public int addUser(User user) {
-        return userMapper.addUser(user);
+    public Optional<User> addUser(User user) {
+        try {
+            int result = userMapper.addUser(user);
+            if (result != 1) {
+                throw new RuntimeException("회원정보 추가에 실패했습니다.");
+            }
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
+        return Optional.of(user);
     }
 
     public int changeUsername(User user) {

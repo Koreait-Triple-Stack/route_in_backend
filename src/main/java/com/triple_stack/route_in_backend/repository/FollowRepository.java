@@ -1,7 +1,7 @@
 package com.triple_stack.route_in_backend.repository;
 
 import com.triple_stack.route_in_backend.entity.Follow;
-import com.triple_stack.route_in_backend.entity.FollowUser;
+import com.triple_stack.route_in_backend.entity.User;
 import com.triple_stack.route_in_backend.mapper.FollowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,11 +22,11 @@ public class FollowRepository {
         return followMapper.deleteFollow(follow);
     }
 
-    public List<FollowUser> getFollowerUserList(Integer userId) {
+    public List<User> getFollowerUserList(Integer userId) {
         return followMapper.getFollowerUserList(userId);
     }
 
-    public List<FollowUser> getFollowingUserList(Integer userId) {
+    public List<User> getFollowingUserList(Integer userId) {
         return followMapper.getFollowingUserList(userId);
     }
 

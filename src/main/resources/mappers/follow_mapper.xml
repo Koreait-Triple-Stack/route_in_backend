@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.triple_stack.route_in_backend.mapper.InBodyMapper">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.FollowMapper">
     <resultMap id="FollowResultMap" type="com.triple_stack.route_in_backend.entity.Follow">
         <id property="followId" column="follow_id"/>
         <result property="followerUserId" column="follower_user_id"/>
@@ -10,7 +10,7 @@
         <result property="createDt" column="create_dt"/>
     </resultMap>
 
-    <resultMap id="FollowUserResultMap" type="com.triple_stack.route_in_backend.entity.FollowUser">
+    <resultMap id="UserResultMap" type="com.triple_stack.route_in_backend.entity.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
         <result property="profileImg" column="profile_img"/>
@@ -31,7 +31,7 @@
             follower_user_id = #{followerUserId} and following_user_id = #{followingUserId};
     </delete>
 
-    <select id="getFollowerUserList" resultMap="FollowUserResultMap">
+    <select id="getFollowerUserList" resultMap="UserResultMap">
         select
             user_id,
             username,
@@ -43,7 +43,7 @@
             following_user_id = #{userId};
     </select>
 
-    <select id="getFollowingUserList" resultMap="FollowUserResultMap">
+    <select id="getFollowingUserList" resultMap="UserResultMap">
         select
             user_id,
             username,
@@ -55,7 +55,7 @@
             follower_user_id = #{userId};
     </select>
 
-    <select id="getFollowByFollowerUserIdAndFollowingUserId" resultMap="FollowResultMap">
+    <select id="getFollowByFollowerUserIdAndFollowingUserId" resultMap="UserResultMap">
         select
             *
         from

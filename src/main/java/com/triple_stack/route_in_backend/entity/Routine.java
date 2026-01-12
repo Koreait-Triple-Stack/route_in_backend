@@ -3,13 +3,16 @@ package com.triple_stack.route_in_backend.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @Builder
-public class Routine { // 각각 리스트에 미리 new ArrayList로 설정해 둘지, 또한 run 관련된 테이블을 따로 뺄지
+@NoArgsConstructor
+public class Routine {
     private Integer routineId;
     private List<String> monday;
     private List<String> tuesday;
