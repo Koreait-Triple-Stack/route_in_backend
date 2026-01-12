@@ -30,57 +30,59 @@
             useGeneratedKeys="true"
             keyProperty="boardId">
         insert into board_tb
-        (user_id, type, title, content, tag, recommend_cnt, create_dt, update_dt)
+            (user_id, type, title, content, tag, recommend_cnt, create_dt, update_dt)
         values
-        (#{userId},
-        #{type},
-        #{title},
-        #{content},
-        #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-        0,
-        now(),
-        null);
+            (#{userId},
+            #{type},
+            #{title},
+            #{content},
+            #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            0,
+            now(),
+            null);
     </insert>
 
     <!-- 게시글 목록 -->
     <select id="getBoardList" resultMap="BoardRespResultMap">
         select
-        bt.board_id,
-        bt.user_id,
-        bt.type,
-        bt.title,
-        bt.content,
-        bt.tag,
-        bt.recommend_cnt,
-        bt.create_dt,
-        bt.update_dt,
-        ut.username,
-        ut.profile_img
+            bt.board_id,
+            bt.user_id,
+            bt.type,
+            bt.title,
+            bt.content,
+            bt.tag,
+            bt.recommend_cnt,
+            bt.create_dt,
+            bt.update_dt,
+            ut.username,
+            ut.profile_img
         from
-        board_tb bt
-        join user_tb ut on bt.user_id = ut.user_id
+            board_tb bt
+            join user_tb ut on bt.user_id = ut.user_id
+        where
+            board_id != 0
         order by
-        bt.create_dt desc,
-        bt.board_id desc;
+            bt.create_dt desc,
+            bt.board_id desc;
     </select>
 
     <!-- 무한 스크롤 -->
     <select id="getBoardInfinite" resultMap="BoardRespResultMap">
         select
-        bt.board_id,
-        bt.user_id,
-        bt.type,
-        bt.title,
-        bt.content,
-        bt.tag,
-        bt.recommend_cnt,
-        ut.username,
-        ut.profile_img,
-        bt.create_dt,
-        bt.update_dt
+            bt.board_id,
+            bt.user_id,
+            bt.type,
+            bt.title,
+            bt.content,
+            bt.tag,
+            bt.recommend_cnt,
+            ut.username,
+            ut.profile_img,
+            bt.create_dt,
+            bt.update_dt
         from
-        board_tb bt
-        join user_tb ut on bt.user_id = ut.user_id
+            board_tb bt
+            join user_tb ut on bt.user_id = ut.user_id
         <where>
             <if test="cursorCreateDt != null and cursorBoardId != null">
                 (
@@ -90,94 +92,94 @@
             </if>
         </where>
         order by
-        bt.create_dt desc,
-        bt.board_id desc
-        limit #{limitPlusOne};
+            bt.create_dt desc,
+            bt.board_id desc
+            limit #{limitPlusOne};
     </select>
 
     <!-- boardId로 단건 조회 -->
     <select id="getBoardByBoardId" resultMap="BoardRespResultMap">
         select
-        bt.board_id,
-        bt.user_id,
-        bt.type,
-        bt.title,
-        bt.content,
-        bt.tag,
-        bt.recommend_cnt,
-        ut.username,
-        ut.profile_img,
-        bt.create_dt,
-        bt.update_dt
+            bt.board_id,
+            bt.user_id,
+            bt.type,
+            bt.title,
+            bt.content,
+            bt.tag,
+            bt.recommend_cnt,
+            ut.username,
+            ut.profile_img,
+            bt.create_dt,
+            bt.update_dt
         from
-        board_tb bt
-        join user_tb ut on bt.user_id = ut.user_id
+            board_tb bt
+            join user_tb ut on bt.user_id = ut.user_id
         where
-        bt.board_id = #{boardId};
+            bt.board_id = #{boardId};
     </select>
 
     <!-- 키워드 검색 -->
     <select id="getBoardListByKeyword" resultMap="BoardRespResultMap">
         select
-        bt.board_id,
-        bt.user_id,
-        bt.type,
-        bt.title,
-        bt.content,
-        bt.tag,
-        bt.recommend_cnt,
-        ut.username,
-        ut.profile_img,
-        bt.create_dt,
-        bt.update_dt
+            bt.board_id,
+            bt.user_id,
+            bt.type,
+            bt.title,
+            bt.content,
+            bt.tag,
+            bt.recommend_cnt,
+            ut.username,
+            ut.profile_img,
+            bt.create_dt,
+            bt.update_dt
         from
-        board_tb bt
-        join user_tb ut on bt.user_id = ut.user_id
+            board_tb bt
+            join user_tb ut on bt.user_id = ut.user_id
         where
-        bt.title like concat('%', #{keyword}, '%')
-        or bt.content like concat('%', #{keyword}, '%')
-        or JSON_SEARCH(bt.tag, 'one', #{keyword}) is not null
-        order by
-        bt.recommend_cnt desc,
-        bt.create_dt desc,
-        bt.board_id desc;
+            bt.title like concat('%', #{keyword}, '%')
+            or bt.content like concat('%', #{keyword}, '%')
+            or JSON_SEARCH(bt.tag, 'one', #{keyword}) is not null
+            order by
+            bt.recommend_cnt desc,
+            bt.create_dt desc,
+            bt.board_id desc;
     </select>
 
     <!-- userId로 조회 -->
     <select id="getBoardListByUserId" resultMap="BoardRespResultMap">
         select
-        bt.board_id,
-        bt.user_id,
-        bt.type,
-        bt.title,
-        bt.content,
-        bt.tag,
-        bt.recommend_cnt,
-        ut.username,
-        ut.profile_img,
-        bt.create_dt,
-        bt.update_dt
+            bt.board_id,
+            bt.user_id,
+            bt.type,
+            bt.title,
+            bt.content,
+            bt.tag,
+            bt.recommend_cnt,
+            ut.username,
+            ut.profile_img,
+            bt.create_dt,
+            bt.update_dt
         from
-        board_tb bt
-        join user_tb ut on bt.user_id = ut.user_id
+            board_tb bt
+            join user_tb ut on bt.user_id = ut.user_id
         where
-        bt.user_id = #{userId}
+            bt.user_id = #{userId}
         order by
-        bt.create_dt desc,
-        bt.board_id desc;
+            bt.create_dt desc,
+            bt.board_id desc;
     </select>
 
     <!-- 게시글 수정 -->
     <update id="updateBoard" parameterType="com.triple_stack.route_in_backend.entity.Board">
         update board_tb
         set
-        type = #{type},
-        title = #{title},
-        content = #{content},
-        tag = #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-        update_dt = now()
+            type = #{type},
+            title = #{title},
+            content = #{content},
+            tag = #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+            update_dt = now()
         where
-        board_id = #{boardId};
+            board_id = #{boardId};
     </update>
 
     <!-- 게시글 삭제 -->
