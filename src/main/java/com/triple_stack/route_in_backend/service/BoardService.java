@@ -123,10 +123,7 @@ public class BoardService {
             throw new RuntimeException("존재하지 않는 게시물입니다.");
         }
 
-        List<String> tags = (updateBoardReqDto.getTags() == null) ? List.of() : updateBoardReqDto.getTags();
-        Board board = updateBoardReqDto.toEntity(tags);
-
-        int result = boardRepository.updateBoard(board);
+        int result = boardRepository.updateBoard(updateBoardReqDto.toEntity());
         if (result != 1) {
             throw new RuntimeException("게시물 수정 실패.");
         }

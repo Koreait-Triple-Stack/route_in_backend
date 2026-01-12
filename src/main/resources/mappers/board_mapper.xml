@@ -30,7 +30,7 @@
             useGeneratedKeys="true"
             keyProperty="boardId">
         insert into board_tb
-        (user_id, type, title, content, tag, recommend_cnt, create_dt, update_dt)
+        (user_id, type, title, content, tags, recommend_cnt, create_dt, update_dt)
         values
         (#{userId},
         #{type},
@@ -50,7 +50,7 @@
         bt.type,
         bt.title,
         bt.content,
-        bt.tag,
+        bt.tags,
         bt.recommend_cnt,
         bt.create_dt,
         bt.update_dt,
@@ -59,6 +59,7 @@
         from
         board_tb bt
         join user_tb ut on bt.user_id = ut.user_id
+
         order by
         bt.create_dt desc,
         bt.board_id desc;
@@ -72,7 +73,7 @@
         bt.type,
         bt.title,
         bt.content,
-        bt.tag,
+        bt.tags,
         bt.recommend_cnt,
         ut.username,
         ut.profile_img,
@@ -103,7 +104,7 @@
         bt.type,
         bt.title,
         bt.content,
-        bt.tag,
+        bt.tags,
         bt.recommend_cnt,
         ut.username,
         ut.profile_img,
@@ -124,7 +125,7 @@
         bt.type,
         bt.title,
         bt.content,
-        bt.tag,
+        bt.tags,
         bt.recommend_cnt,
         ut.username,
         ut.profile_img,
@@ -136,7 +137,7 @@
         where
         bt.title like concat('%', #{keyword}, '%')
         or bt.content like concat('%', #{keyword}, '%')
-        or JSON_SEARCH(bt.tag, 'one', #{keyword}) is not null
+        or JSON_SEARCH(bt.tags, 'one', #{keyword}) is not null
         order by
         bt.recommend_cnt desc,
         bt.create_dt desc,
@@ -151,7 +152,7 @@
         bt.type,
         bt.title,
         bt.content,
-        bt.tag,
+        bt.tags,
         bt.recommend_cnt,
         ut.username,
         ut.profile_img,
@@ -168,13 +169,15 @@
     </select>
 
     <!-- 게시글 수정 -->
+
+
     <update id="updateBoard" parameterType="com.triple_stack.route_in_backend.entity.Board">
         update board_tb
         set
         type = #{type},
         title = #{title},
         content = #{content},
-        tag = #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
+        tags = #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
         update_dt = now()
         where
         board_id = #{boardId};
