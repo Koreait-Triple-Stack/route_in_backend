@@ -30,7 +30,7 @@
             useGeneratedKeys="true"
             keyProperty="boardId">
         insert into board_tb
-            (user_id, type, title, content, tag, recommend_cnt, create_dt, update_dt)
+        (user_id, type, title, content, tags, recommend_cnt, create_dt, update_dt)
         values
             (#{userId},
             #{type},
@@ -50,7 +50,7 @@
             bt.type,
             bt.title,
             bt.content,
-            bt.tag,
+            bt.tags,
             bt.recommend_cnt,
             bt.create_dt,
             bt.update_dt,
@@ -74,7 +74,7 @@
             bt.type,
             bt.title,
             bt.content,
-            bt.tag,
+            bt.tags,
             bt.recommend_cnt,
             ut.username,
             ut.profile_img,
@@ -105,7 +105,7 @@
             bt.type,
             bt.title,
             bt.content,
-            bt.tag,
+            bt.tags,
             bt.recommend_cnt,
             ut.username,
             ut.profile_img,
@@ -126,7 +126,7 @@
             bt.type,
             bt.title,
             bt.content,
-            bt.tag,
+            bt.tags,
             bt.recommend_cnt,
             ut.username,
             ut.profile_img,
@@ -139,7 +139,7 @@
             bt.title like concat('%', #{keyword}, '%')
             or bt.content like concat('%', #{keyword}, '%')
             or JSON_SEARCH(bt.tag, 'one', #{keyword}) is not null
-            order by
+        order by
             bt.recommend_cnt desc,
             bt.create_dt desc,
             bt.board_id desc;
@@ -153,7 +153,7 @@
             bt.type,
             bt.title,
             bt.content,
-            bt.tag,
+            bt.tags,
             bt.recommend_cnt,
             ut.username,
             ut.profile_img,
@@ -170,6 +170,8 @@
     </select>
 
     <!-- 게시글 수정 -->
+
+
     <update id="updateBoard" parameterType="com.triple_stack.route_in_backend.entity.Board">
         update board_tb
         set

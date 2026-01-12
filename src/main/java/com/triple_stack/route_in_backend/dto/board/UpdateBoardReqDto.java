@@ -12,16 +12,18 @@ import java.util.List;
 
 public class UpdateBoardReqDto {
     private String title;
+    private String type;
     private List<String> tags;
     private String content;
     private Integer boardId;
     private Integer userId;
     private Integer recommendCnt;
 
-    public Board toEntity(List<String> tags) {
+    public Board toEntity() {
         return Board.builder()
                 .boardId(boardId)
-                .tags(this.tags)
+                .type(type)
+                .tags(tags)
                 .title(title)
                 .content(content)
                 .recommendCnt(recommendCnt)
