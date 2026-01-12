@@ -32,17 +32,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Optional<User> foundUser = userRepository.getUserByProviderAndProviderUserId(provider, providerUserId);
 
         if (foundUser.isEmpty()) {
-            response.sendRedirect("http://localhost:5173/auth/oauth2?provider="+provider+"&providerUserId="+providerUserId);
+            response.sendRedirect("http://localhost:5173/oauth2?provider="+provider+"&providerUserId="+providerUserId);
             return;
         }
 
         if (!foundUser.get().isActive()) {
-            response.sendRedirect("http://localhost:5173/auth/oauth2/failed");
+            response.sendRedirect("http://localhost:5173/oauth2/failed");
             return;
         }
 
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());
 
-        response.sendRedirect("http://localhost:5173/auth/oauth2/signin?accessToken="+accessToken);
+        response.sendRedirect("http://localhost:5173/oauth2/signin?accessToken="+accessToken);
     }
 }

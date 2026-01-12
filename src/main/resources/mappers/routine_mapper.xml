@@ -43,7 +43,7 @@
             saturday = #{saturday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             sunday = #{sunday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler}
         where
-            routine_id = #{routineId};
+            board_id = #{boardId} or user_id = #{userId};
     </update>
 
     <select id="getRoutineByUserId" resultMap="RoutineResultMap">

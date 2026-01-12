@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.dto.board;
 
 
+import com.triple_stack.route_in_backend.entity.Routine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import com.triple_stack.route_in_backend.entity.Board;
@@ -17,7 +18,8 @@ public class UpdateBoardReqDto {
     private String content;
     private Integer boardId;
     private Integer userId;
-    private Integer recommendCnt;
+
+    private Routine routine;
 
     public Board toEntity() {
         return Board.builder()
@@ -26,7 +28,6 @@ public class UpdateBoardReqDto {
                 .tags(tags)
                 .title(title)
                 .content(content)
-                .recommendCnt(recommendCnt)
                 .build();
     }
 

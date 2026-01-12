@@ -6,21 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
-public class Board {
+public class Recommend {
+    private Integer recommendId;
     private Integer boardId;
     private Integer userId;
-    private String type;
-    private String title;
-    private String content;
-    private List<String> tags;
-    private Integer recommendCnt;
     private LocalDateTime createDt;
-    private LocalDateTime updateDt;
 }
