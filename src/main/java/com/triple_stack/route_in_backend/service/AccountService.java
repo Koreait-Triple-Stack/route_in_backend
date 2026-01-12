@@ -1,6 +1,8 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.user.account.*;
+import com.triple_stack.route_in_backend.entity.Address;
+import com.triple_stack.route_in_backend.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
@@ -14,6 +16,8 @@ import java.util.Optional;
 public class AccountService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     public ApiRespDto<?> getUserByUserId(Integer userId) {
         Optional<User> foundUser = userRepository.getUserByUserId(userId);
@@ -76,25 +80,37 @@ public class AccountService {
         return new ApiRespDto<>("success", "사용자 프로필 이미지가 변경되었습니다.", null);
     }
 
-//    public ApiRespDto<?> changeAddress(ChangeAddressReqDto changeAddressReqDto, PrincipalUser principalUser) {
-//        if (!changeAddressReqDto.getUserId().equals(principalUser.getUserId())) {
-//            throw new RuntimeException("잘못된 접근입니다.");
-//        }
-//
-//        Optional<User> optionalUser = userRepository.getUserByUserId(changeAddressReqDto.getUserId());
-//        if(optionalUser.isEmpty()) {
-//            throw new RuntimeException("존재하지 않은 회원정보입니다.");
-//        }
-//
-//        User user = optionalUser.get();
-//        user.setAddress(changeAddressReqDto.getAddress());
-//
-//        int result = userRepository.changeAddress(user);
-//        if(result != 1) {
-//            throw new RuntimeException("사용자 주소 변경에 실패했습니다. 다시 시도해 주세요" );
-//        }
-//        return new ApiRespDto<>("success", "사용자 주소가 변경되었습니다.", null);
-//    }
+    public ApiRespDto<?> saveOrUpdateAddress(ChangeAddressReqDto changeAddressReqDto, PrincipalUser principalUser) {
+        if (changeAddressReqDto.getUserId() != principalUser.getUserId()) {
+            throw new RuntimeException("잘못된 접근입니다.");
+        }
+
+        Optional<Address> addressOptional = addressRepository.getAddressByUserId(changeAddressReqDto.getUserId());
+
+        Address address = Address.builder()
+                .userId(changeAddressReqDto.getUserId())
+                .zipCode(changeAddressReqDto.getZipCode())
+                .baseAddress(changeAddressReqDto.getBaseAddress())
+                .detailAddress(changeAddressReqDto.getDetailAddress())
+                .build();
+
+        int result;
+        String message;
+
+        if (addressOptional.isEmpty()) {
+            result = addressRepository.addAddress(address);
+            message = "주소 정보가 새롭게 등록되었습니다.";
+        } else {
+            result = addressRepository.changeAddress(address);
+            message = "주소 정보가 성공적으로 수정되었습니다.";
+        }
+
+        if (result != 1) {
+            throw new RuntimeException("주소 정보 저장 중 오류가 발생했습니다.");
+        }
+
+        return new ApiRespDto<>("success", message, null);
+    }
 
     public ApiRespDto<?> changeHeightAndWeight(ChangeHeightAndWeightReqDto changeHeightAndWeightReqDto, PrincipalUser principalUser) {
         if (!changeHeightAndWeightReqDto.getUserId().equals(principalUser.getUserId())) {
