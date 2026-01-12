@@ -23,7 +23,7 @@
         <result property="role" column="role"/>
         <result property="followerCnt" column="follower_cnt"/>
         <result property="followingCnt" column="following_cnt"/>
-        <association property="Address" resultMap="AddressResultMap"/>
+        <association property="address" resultMap="AddressResultMap"/>
     </resultMap>
 
     <resultMap id="AddressResultMap" type="com.triple_stack.route_in_backend.entity.Address">
@@ -75,7 +75,7 @@
             user_tb ut
             join address_tb at on (ut.user_id = at.user_id)
         where
-            ut.provider = #{provider} and ut.provider_user_id = #{providerUserId};
+            provider = #{provider} and provider_user_id = #{providerUserId};
     </select>
 
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">

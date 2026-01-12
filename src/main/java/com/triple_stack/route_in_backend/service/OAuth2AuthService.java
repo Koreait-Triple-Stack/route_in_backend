@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.entity.Routine;
+import com.triple_stack.route_in_backend.repository.AddressRepository;
 import com.triple_stack.route_in_backend.repository.RoutineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.triple_stack.route_in_backend.repository.UserRepository;
 import com.triple_stack.route_in_backend.security.jwt.JwtUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,9 +26,11 @@ public class OAuth2AuthService {
     private RoutineRepository routineRepository;
 
     @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
     private JwtUtils jwtUtils;
 
-    // 운동루틴 넣는것 수정하면서 트랙잭션 걸것
     @Transactional
     public ApiRespDto<?> signup(SignupReqDto signupReqDto) {
         Optional<User> foundUser = userRepository.getUserByUsername(signupReqDto.getUsername());
@@ -42,8 +46,23 @@ public class OAuth2AuthService {
             throw new RuntimeException("회원 가입에 실패했습니다.");
         }
 
+        signupReqDto.getAddress().setUserId(optionalUser.get().getUserId());
+
+        int addressResult = addressRepository.addAddress(signupReqDto.getAddress());
+        if (addressResult != 1) {
+            throw new RuntimeException("주소 추가에 실패했습니다.");
+        }
+
         Routine routine = new Routine();
         routine.setUserId(optionalUser.get().getUserId());
+        routine.setBoardId(0);
+        routine.setMonday(new ArrayList<>());
+        routine.setTuesday(new ArrayList<>());
+        routine.setWednesday(new ArrayList<>());
+        routine.setThursday(new ArrayList<>());
+        routine.setFriday(new ArrayList<>());
+        routine.setSaturday(new ArrayList<>());
+        routine.setSunday(new ArrayList<>());
         int result = routineRepository.addRoutine(routine);
         if (result != 1) {
             throw new RuntimeException("회원 가입에 실패했습니다.");

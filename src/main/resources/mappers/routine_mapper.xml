@@ -28,7 +28,7 @@
             #{friday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             #{saturday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             #{sunday, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-            #{boardId}, #{userId});
+            #{userId}, #{boardId});
     </insert>
 
     <update id="updateRoutine">
