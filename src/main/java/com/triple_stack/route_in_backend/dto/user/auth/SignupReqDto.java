@@ -14,12 +14,13 @@ public class SignupReqDto {
     private String provider;
     private String providerUserId;
     private String gender;
-    private Address address;
     private Integer birthYear;
     private Integer height;
     private Integer weight;
     private List<String> currentRun;
     private List<String> weeklyRun;
+
+    private Address address;
 
     public User toEntity() {
         return User.builder()
@@ -27,7 +28,6 @@ public class SignupReqDto {
                 .provider(provider)
                 .providerUserId(providerUserId)
                 .gender(gender)
-                .address(address)
                 .birthYear(birthYear)
                 .height(height)
                 .weight(weight)
