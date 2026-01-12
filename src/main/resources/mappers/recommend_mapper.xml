@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.RecommendMapper">
+    <resultMap id="RecommendResultMap" type="com.triple_stack.route_in_backend.entity.Recommend">
+        <id property="recommendId" column="recommend_id"/>
+        <result property="boardId" column="board_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <insert id="plusRecommend">
+        insert into
+            recommend_tb
+        values
+            (0, #{boardId}, #{userId}, now());
+    </insert>
+
+    <delete id="minusRecommend">
+        delete from
+            recommend_tb
+        where
+            board_id = #{boardId} and user_id = #{userId};
+    </delete>
+</mapper>

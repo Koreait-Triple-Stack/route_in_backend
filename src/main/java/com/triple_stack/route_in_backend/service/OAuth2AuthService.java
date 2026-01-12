@@ -55,7 +55,6 @@ public class OAuth2AuthService {
 
         Routine routine = new Routine();
         routine.setUserId(optionalUser.get().getUserId());
-        routine.setBoardId(0);
         routine.setMonday(new ArrayList<>());
         routine.setTuesday(new ArrayList<>());
         routine.setWednesday(new ArrayList<>());
