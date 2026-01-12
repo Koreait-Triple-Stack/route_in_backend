@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.triple_stack.route_in_backend.mapper.RoutineMapper">
-    <resultMap id="InBodyResultMap" type="com.triple_stack.route_in_backend.entity.Routine">
+    <resultMap id="RoutineResultMap" type="com.triple_stack.route_in_backend.entity.Routine">
         <id property="routineId" column="routineId"/>
         <result property="monday" column="monday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
         <result property="tuesday" column="tuesday" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>

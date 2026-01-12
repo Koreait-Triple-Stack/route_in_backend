@@ -28,9 +28,9 @@
 
     <resultMap id="AddressResultMap" type="com.triple_stack.route_in_backend.entity.Address">
         <id property="userId" column="at_user_id"/>
-        <result property="zipCode" column="zip_code"/>
-        <result property="baseAddress" column="base_address"/>
-        <result property="detailAddress" column="detail_address"/>
+        <result property="zipCode" column="at_zip_code"/>
+        <result property="baseAddress" column="at_base_address"/>
+        <result property="detailAddress" column="at_detail_address"/>
     </resultMap>
 
     <select id="getUserByUsername" resultMap="UserResultMap">
@@ -40,7 +40,7 @@
             at.user_id as at_user_id,
             at.zip_code as at_zip_code,
             at.base_address as at_base_address,
-            at.detail_address as at_detail_address,
+            at.detail_address as at_detail_address
         from
             user_tb ut
             join address_tb at on (ut.user_id = at.user_id)
@@ -55,7 +55,7 @@
             at.user_id as at_user_id,
             at.zip_code as at_zip_code,
             at.base_address as at_base_address,
-            at.detail_address as at_detail_address,
+            at.detail_address as at_detail_address
         from
             user_tb ut
             join address_tb at on (ut.user_id = at.user_id)
@@ -70,7 +70,7 @@
             at.user_id as at_user_id,
             at.zip_code as at_zip_code,
             at.base_address as at_base_address,
-            at.detail_address as at_detail_address,
+            at.detail_address as at_detail_address
         from
             user_tb ut
             join address_tb at on (ut.user_id = at.user_id)
@@ -86,7 +86,7 @@
             #{birthYear}, #{height}, #{weight},
             #{currentRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             #{weeklyRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
-            now(), null, "ACTIVE", null, null, "ROLE_USER", #{followerCnt}, #{followingCnt});
+            now(), null, "ACTIVE", null, null, "ROLE_USER", 0, 0);
     </insert>
   
     <update id="changeUsername">
