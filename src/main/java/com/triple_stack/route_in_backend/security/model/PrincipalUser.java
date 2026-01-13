@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.security.model;
 
+import com.triple_stack.route_in_backend.entity.Address;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,8 +16,18 @@ public class PrincipalUser implements UserDetails {
     private Integer userId;
     private String username;
     private String profileImg;
+    private String gender;
+    private Integer birthYear;
+    private Integer height;
+    private Integer weight;
+    private List<String> currentRun;
+    private List<String> weeklyRun;
     private String status;
     private String role;
+    private Integer followerCnt;
+    private Integer followingCnt;
+
+    private Address address;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

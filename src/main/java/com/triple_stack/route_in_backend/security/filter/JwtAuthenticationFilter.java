@@ -53,8 +53,17 @@ public class JwtAuthenticationFilter implements Filter {
                             .userId(user.getUserId())
                             .username(user.getUsername())
                             .profileImg(user.getProfileImg())
+                            .gender(user.getGender())
+                            .birthYear(user.getBirthYear())
+                            .height(user.getHeight())
+                            .weight(user.getHeight())
+                            .currentRun(user.getCurrentRun())
+                            .weeklyRun(user.getWeeklyRun())
                             .status(user.getStatus())
                             .role(user.getRole())
+                            .followerCnt(user.getFollowerCnt())
+                            .followingCnt(user.getFollowingCnt())
+                            .address(user.getAddress())
                             .build();
 
                     Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, "", principalUser.getAuthorities());

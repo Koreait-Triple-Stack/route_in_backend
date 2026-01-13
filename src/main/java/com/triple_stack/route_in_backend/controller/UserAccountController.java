@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.controller;
 
+import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.account.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,11 @@ import com.triple_stack.route_in_backend.service.AccountService;
 public class UserAccountController {
     @Autowired
     private AccountService userAccountService;
+
+    @GetMapping("/principal")
+    public ResponseEntity<?> getPrincipal(@AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(new ApiRespDto<>("success", "회원 조회 완료", principalUser));
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserByUserId(@PathVariable Integer userId) {
