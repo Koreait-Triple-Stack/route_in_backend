@@ -20,12 +20,12 @@ public class UserAccountController {
         return ResponseEntity.ok(new ApiRespDto<>("success", "회원 조회 완료", principalUser));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/userId/{userId}")
     public ResponseEntity<?> getUserByUserId(@PathVariable Integer userId) {
         return ResponseEntity.ok(userAccountService.getUserByUserId(userId));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/username/{username}")
     public ResponseEntity<?> getUserByUserId(@PathVariable String username) {
         return ResponseEntity.ok(userAccountService.getUserByUsername(username));
     }

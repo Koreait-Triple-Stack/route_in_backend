@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter implements Filter {
                             .gender(user.getGender())
                             .birthYear(user.getBirthYear())
                             .height(user.getHeight())
-                            .weight(user.getHeight())
+                            .weight(user.getWeight())
                             .currentRun(user.getCurrentRun())
                             .weeklyRun(user.getWeeklyRun())
                             .status(user.getStatus())
