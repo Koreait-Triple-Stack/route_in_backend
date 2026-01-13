@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.NotificationMapper">
+    <resultMap id="NotificationResultMap" type="com.triple_stack.route_in_backend.entity.Notification">
+        <id property="notificationId" column="notification_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="message" column="message"/>
+        <result property="path" column="path"/>
+        <result property="check" column="check"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <insert id="addNotification">
+        insert into
+            notification_tb
+        values
+            (0, #{userId}, #{message}, #{path}, 0, now());
+    </insert>
+
+    <select id="getNotificationListByUserId" resultMap="NotificationResultMap">
+        select
+            *
+        from
+            notification_tb
+        where
+            user_id = #{userId};
+    </select>
+
+    <delete id="deleteNotificationByNotificationId">
+        delete from
+            notification_tb
+        where
+            notification_id = #{notificationId};
+    </delete>
+
+    <delete id="deleteNotificationByUserId">
+        delete from
+            notification_tb
+        where
+            user_id = #{userId};
+    </delete>
+</mapper>
