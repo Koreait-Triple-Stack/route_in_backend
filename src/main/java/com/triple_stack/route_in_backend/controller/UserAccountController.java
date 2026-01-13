@@ -1,6 +1,5 @@
-package com.triple_stack.route_in_backend.controller.user;
+package com.triple_stack.route_in_backend.controller;
 
-import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.account.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
