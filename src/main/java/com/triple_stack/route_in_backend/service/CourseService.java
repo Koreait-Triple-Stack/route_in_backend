@@ -90,7 +90,6 @@ public class CourseService {
 
         Optional<Course> foundCourse = courseRepository.getCourseFavoriteByUserId(userId);
         if (foundCourse.isEmpty()) {
-            System.out.println(11);
             throw new RuntimeException("러닝 코스 조회에 실패했습니다");
         }
 
@@ -116,6 +115,7 @@ public class CourseService {
 
         coursePointRepository.deleteCoursePoint(updateCourseReqDto.getCourseId());
         for (CoursePoint point : updateCourseReqDto.getPoints()) {
+            point.setCourseId(updateCourseReqDto.getCourseId());
             int result = coursePointRepository.addCoursePoint(point);
             if (result != 1) {
                 throw new RuntimeException("러닝 코스 수정에 실패했습니다");

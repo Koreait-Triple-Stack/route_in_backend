@@ -19,9 +19,7 @@ public class UpdateCourseReqDto {
     private Integer distanceM;
     private Double centerLat;
     private Double centerLng;
-    private String si;
-    private String gu;
-    private String dong;
+    private String region;
 
     private List<CoursePoint> points;
 
@@ -32,9 +30,7 @@ public class UpdateCourseReqDto {
                 .distanceM(distanceM)
                 .centerLat(centerLat)
                 .centerLng(centerLng)
-                .si(si)
-                .gu(gu)
-                .dong(dong)
+                .region(region)
                 .build();
     }
 }

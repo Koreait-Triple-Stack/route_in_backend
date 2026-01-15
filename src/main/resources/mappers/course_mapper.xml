@@ -11,9 +11,7 @@
         <result property="distanceM" column="distance_m"/>
         <result property="centerLat" column="center_lat"/>
         <result property="centerLng" column="center_lng"/>
-        <result property="si" column="si"/>
-        <result property="gu" column="gu"/>
-        <result property="dong" column="dong"/>
+        <result property="region" column="region"/>
         <result property="favorite" column="favorite"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
@@ -24,7 +22,7 @@
             course_tb
         values
             (0, #{userId}, #{boardId}, #{courseName}, #{distanceM},
-            #{centerLat}, #{centerLng}, #{si}, #{gu}, #{dong}, 0, now(), null);
+            #{centerLat}, #{centerLng}, #{region}, 0, now(), null);
     </insert>
 
     <select id="getCourseByBoardId" resultMap="CourseResultMap">
@@ -62,9 +60,7 @@
             distance_M = #{distanceM},
             center_lat = #{centerLat},
             center_lng = #{centerLng},
-            si = #{si},
-            gu = #{gu},
-            dong = #{dong},
+            region = #{region},
             update_dt = now()
         where
             course_id = #{courseId};
