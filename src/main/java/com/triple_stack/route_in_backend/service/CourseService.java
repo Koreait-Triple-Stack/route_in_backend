@@ -97,7 +97,6 @@ public class CourseService {
         Course course = foundCourse.get();
         List<CoursePoint> points = coursePointRepository.getCoursePointList(course.getCourseId());
         if (points.size() < 2) {
-            System.out.println(22);
             throw new RuntimeException("러닝 코스 조회에 실패했습니다.");
         }
         course.setPoints(points);
