@@ -20,9 +20,7 @@ public class Course {
     private Integer distanceM;
     private Double centerLat;
     private Double centerLng;
-    private String si;
-    private String gu;
-    private String dong;
+    private String region;
     private Integer favorite;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
