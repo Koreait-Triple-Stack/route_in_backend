@@ -32,6 +32,7 @@ public class JwtUtils {
     public Claims getClaims(String token) throws JwtException {
         return Jwts.parser()
                 .verifyWith(KEY)
+                .clockSkewSeconds(30)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.CoursePointMapper">
+    <resultMap id="CoursePointResultMap" type="com.triple_stack.route_in_backend.entity.CoursePoint">
+        <id property="pointId" column="point_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="seq" column="seq"/>
+        <result property="lat" column="lat"/>
+        <result property="lng" column="lng"/>
+    </resultMap>
+
+    <insert id="addCoursePoint">
+        insert into
+            course_point_tb
+        values
+            (0, #{courseId}, #{seq}, #{lat}, #{lng})
+    </insert>
+
+    <delete id="deleteCoursePoint">
+        delete from
+            course_point_tb
+        where
+            course_id = #{courseId}
+    </delete>
+
+    <select id="getCoursePointList" resultMap="CoursePointResultMap">
+        select
+            *
+        from
+            course_point_tb
+        where
+            course_id = #{courseId};
+    </select>
+</mapper>
