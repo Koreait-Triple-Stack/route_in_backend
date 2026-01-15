@@ -2,6 +2,7 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.board.*;
+import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
 import com.triple_stack.route_in_backend.entity.Board;
 import com.triple_stack.route_in_backend.entity.Routine;
 import com.triple_stack.route_in_backend.entity.User;
@@ -53,12 +54,12 @@ public class BoardService {
             throw new RuntimeException("게시물 추가 실패");
         }
 
-        Routine routine = addBoardReqDto.getRoutine();
-        routine.setBoardId(optionalBoard.get().getBoardId());
-        int result = routineRepository.addRoutine(routine);
-        if (result != 1) {
-            throw new RuntimeException("운동 루틴 추가 실패");
-        }
+//        Routine routine = addBoardReqDto.getRoutine();
+//        routine.setBoardId(optionalBoard.get().getBoardId());
+//        int result = routineRepository.addRoutine(routine);
+//        if (result != 1) {
+//            throw new RuntimeException("운동 루틴 추가 실패");
+//        }
 
         return new ApiRespDto<>("success", "게시물이 추가되었습니다.", null);
     }
@@ -94,13 +95,13 @@ public class BoardService {
         }
 
         BoardRespDto board = foundBoard.get();
-        if (board.getType().equals("routine")) {
-            Optional<Routine> optionalRoutine = routineRepository.getRoutineByBoardId(boardId);
-            if (optionalRoutine.isEmpty()) {
-                throw new RuntimeException("운동 루틴 조회에 실패했습니다");
-            }
-            board.setRoutine(optionalRoutine.get());
-        }
+//        if (board.getType().equals("routine")) {
+//            List<Routine> optionalRoutine = routineRepository.getRoutine(null, board.getBoardId());
+//            if (optionalRoutine.isEmpty()) {
+//                throw new RuntimeException("운동 루틴 조회에 실패했습니다");
+//            }
+//            board.setRoutine(optionalRoutine.get());
+//        }
 
         return new ApiRespDto<>("success", "게시물 조회 완료", board);
     }

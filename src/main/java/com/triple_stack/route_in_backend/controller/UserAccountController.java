@@ -26,7 +26,7 @@ public class UserAccountController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<?> getUserByUserId(@PathVariable String username) {
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userAccountService.getUserByUsername(username));
     }
 

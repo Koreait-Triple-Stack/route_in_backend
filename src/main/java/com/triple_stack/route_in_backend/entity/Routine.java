@@ -14,13 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 public class Routine {
     private Integer routineId;
-    private List<String> monday;
-    private List<String> tuesday;
-    private List<String> wednesday;
-    private List<String> thursday;
-    private List<String> friday;
-    private List<String> saturday;
-    private List<String> sunday;
     private Integer userId;
     private Integer boardId;
+    private String weekday;
+    private String exercise;
+    private Boolean checked;
 }

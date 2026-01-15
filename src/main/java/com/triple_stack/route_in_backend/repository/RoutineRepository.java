@@ -5,6 +5,7 @@ import com.triple_stack.route_in_backend.mapper.RoutineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,11 +21,7 @@ public class RoutineRepository {
         return routineMapper.updateRoutine(routine);
     }
 
-    public Optional<Routine> getRoutineByUserId(Integer userId) {
-        return routineMapper.getRoutineByUserId(userId);
-    }
-
-    public Optional<Routine> getRoutineByBoardId(Integer boardId) {
-        return routineMapper.getRoutineByBoardId(boardId);
+    public List<Routine> getRoutine(Integer userId, Integer boardId) {
+        return routineMapper.getRoutine(userId, boardId);
     }
 }

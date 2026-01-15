@@ -53,20 +53,6 @@ public class OAuth2AuthService {
             throw new RuntimeException("주소 추가에 실패했습니다.");
         }
 
-        Routine routine = new Routine();
-        routine.setUserId(optionalUser.get().getUserId());
-        routine.setMonday(new ArrayList<>());
-        routine.setTuesday(new ArrayList<>());
-        routine.setWednesday(new ArrayList<>());
-        routine.setThursday(new ArrayList<>());
-        routine.setFriday(new ArrayList<>());
-        routine.setSaturday(new ArrayList<>());
-        routine.setSunday(new ArrayList<>());
-        int result = routineRepository.addRoutine(routine);
-        if (result != 1) {
-            throw new RuntimeException("회원 가입에 실패했습니다.");
-        }
-
         return new ApiRespDto<>("success", "회원가입에 성공했습니다.", null);
     }
 
