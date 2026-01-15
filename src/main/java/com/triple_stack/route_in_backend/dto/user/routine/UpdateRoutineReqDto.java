@@ -10,24 +10,18 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateRoutineReqDto {
     private Integer routineId;
-    private List<String> monday;
-    private List<String> tuesday;
-    private List<String> wednesday;
-    private List<String> thursday;
-    private List<String> friday;
-    private List<String> saturday;
-    private List<String> sunday;
+    private Integer userId;
+    private String weekday;
+    private String exercise;
+    private Boolean checked;
 
     public Routine toEntity() {
         return Routine.builder()
                 .routineId(routineId)
-                .monday(monday)
-                .tuesday(tuesday)
-                .wednesday(wednesday)
-                .thursday(thursday)
-                .friday(friday)
-                .saturday(saturday)
-                .sunday(sunday)
+                .userId(userId)
+                .weekday(weekday)
+                .exercise(exercise)
+                .checked(checked)
                 .build();
     }
 }

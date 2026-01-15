@@ -34,7 +34,7 @@
         where
             user_id = #{userId}
         order by
-            month_dt desc;
+            month_dt asc;
     </select>
 
     <select id="getInBodyByUserIdAndMonthDt" resultMap="InBodyResultMap">

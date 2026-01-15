@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
+import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.UpdateRoutineReqDto;
 import com.triple_stack.route_in_backend.repository.RoutineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,7 @@ public class RoutineService {
         return new ApiRespDto<>("success", "운동 루틴 수정을 완료했습니다.", null);
     }
 
-    public ApiRespDto<?> getRoutineByUserId(Integer userId) {
-        return new ApiRespDto<>("success", "운동 루틴 조회", routineRepository.getRoutineByUserId(userId));
-    }
-
-    public ApiRespDto<?> getRoutineByBoardId(Integer boardId) {
-        return new ApiRespDto<>("success", "운동 루틴 조회", routineRepository.getRoutineByBoardId(boardId));
+    public ApiRespDto<?> getRoutine(GetRoutineReqDto getRoutineReqDto) {
+        return new ApiRespDto<>("success", "운동 루틴 조회", routineRepository.getRoutine(getRoutineReqDto.getUserId(), getRoutineReqDto.getBoardId()));
     }
 }
