@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.controller;
 
+import com.triple_stack.route_in_backend.dto.user.routine.AddRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.UpdateRoutineReqDto;
 import com.triple_stack.route_in_backend.service.RoutineService;
@@ -12,6 +13,11 @@ import org.springframework.web.bind.annotation.*;
 public class RoutineController {
     @Autowired
     private RoutineService routineService;
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addRoutine(@RequestBody AddRoutineReqDto addRoutineReqDto) {
+        return ResponseEntity.ok(routineService.addRoutine(addRoutineReqDto));
+    }
 
     @PostMapping("/update")
     public ResponseEntity<?> updateRoutine(@RequestBody UpdateRoutineReqDto updateRoutineReqDto) {
