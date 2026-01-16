@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
+import com.triple_stack.route_in_backend.dto.user.routine.AddRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.UpdateRoutineReqDto;
 import com.triple_stack.route_in_backend.repository.RoutineRepository;
@@ -11,6 +12,15 @@ import org.springframework.stereotype.Service;
 public class RoutineService {
     @Autowired
     private RoutineRepository routineRepository;
+
+    public ApiRespDto<?> addRoutine(AddRoutineReqDto addRoutineReqDto) {
+        int result = routineRepository.addRoutine(addRoutineReqDto.toEntity());
+        if (result != 1) {
+            throw new RuntimeException("운동 루틴 추가에 실패했습니다.");
+        }
+
+        return new ApiRespDto<>("success", "운동 루틴 추가를 완료했습니다.", null);
+    }
 
     public ApiRespDto<?> updateRoutine(UpdateRoutineReqDto updateRoutineReqDto) {
         int result = routineRepository.updateRoutine(updateRoutineReqDto.toEntity());

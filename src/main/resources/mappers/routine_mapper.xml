@@ -20,14 +20,27 @@
     </insert>
 
     <update id="updateRoutine">
-        update
-            routine_tb
-        set
-            weekday = #{weekday},
-            exercise = #{exercise},
-            checked = #{checked}
-        where
-            board_id = #{boardId} or user_id = #{userId};
+        UPDATE
+        routine_tb
+        SET
+        weekday = #{weekday},
+        exercise = #{exercise},
+        checked = #{checked}
+        <where>
+            <choose>
+                <when test="routineId != null and routineId != 0">
+                    routine_id = #{routineId}
+                </when>
+
+                <when test="userId == null or userId == 0">
+                    board_id = #{boardId}
+                </when>
+
+                <otherwise>
+                    user_id = #{userId}
+                </otherwise>
+            </choose>
+        </where>
     </update>
 
     <select id="getRoutine" resultMap="RoutineResultMap">
