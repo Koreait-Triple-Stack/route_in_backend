@@ -11,4 +11,5 @@ public interface RoutineMapper {
     int addRoutine(Routine routine);
     int updateRoutine(Routine routine);
     List<Routine> getRoutine(Integer userId , Integer boardId);
+    int removeRoutine(Routine routine);
 }
