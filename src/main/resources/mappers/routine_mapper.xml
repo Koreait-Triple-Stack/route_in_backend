@@ -58,4 +58,11 @@
             </if>
         </where>
     </select>
+
+    <delete id="removeRoutine">
+        delete from
+            routine_tb
+        where
+            user_id = #{userId} AND weekday = #{weekday}
+    </delete>
 </mapper>

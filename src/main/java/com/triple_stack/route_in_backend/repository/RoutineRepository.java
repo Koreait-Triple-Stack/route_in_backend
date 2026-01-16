@@ -24,4 +24,6 @@ public class RoutineRepository {
     public List<Routine> getRoutine(Integer userId, Integer boardId) {
         return routineMapper.getRoutine(userId, boardId);
     }
+
+    public int removeRoutine(Routine routine) { return routineMapper.removeRoutine(routine); }
 }

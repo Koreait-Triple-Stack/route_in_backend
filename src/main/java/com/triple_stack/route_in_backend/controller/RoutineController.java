@@ -2,6 +2,7 @@ package com.triple_stack.route_in_backend.controller;
 
 import com.triple_stack.route_in_backend.dto.user.routine.AddRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
+import com.triple_stack.route_in_backend.dto.user.routine.RemoveRoutineReqDto;
 import com.triple_stack.route_in_backend.dto.user.routine.UpdateRoutineReqDto;
 import com.triple_stack.route_in_backend.service.RoutineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,10 @@ public class RoutineController {
     @PostMapping("/get")
     public ResponseEntity<?> getRoutine(@RequestBody GetRoutineReqDto getRoutineReqDto) {
         return ResponseEntity.ok(routineService.getRoutine(getRoutineReqDto));
+    }
+
+    @PostMapping("/remove")
+    public ResponseEntity<?> removeRoutine(@RequestBody RemoveRoutineReqDto removeRoutineReqDto) {
+        return ResponseEntity.ok(routineService.removeRoutine(removeRoutineReqDto));
     }
 }
