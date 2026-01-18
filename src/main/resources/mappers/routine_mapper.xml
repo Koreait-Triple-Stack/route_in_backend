@@ -65,4 +65,11 @@
         where
             user_id = #{userId} AND weekday = #{weekday}
     </delete>
+
+    <delete id="deleteRoutineByRoutineId">
+        delete from
+            routine_tb
+        where
+            routine_id = #{routineId}
+    </delete>
 </mapper>
