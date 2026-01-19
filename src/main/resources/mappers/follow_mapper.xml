@@ -14,7 +14,7 @@
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
         <result property="profileImg" column="profile_img"/>
-        <result property="birthYear" column="birth_year"/>
+        <result property="birthDate" column="birth_date"/>
     </resultMap>
 
     <insert id="addFollow">
@@ -36,7 +36,7 @@
             user_id,
             username,
             profile_img,
-            birth_year
+            birth_date
         from
             user_tb join follow_tb on (user_tb.user_id = follow_tb.follower_user_id)
         where
@@ -48,7 +48,7 @@
             user_id,
             username,
             profile_img,
-            birth_year
+            birth_date
         from
             user_tb join follow_tb on (user_tb.user_id = follow_tb.following_user_id)
         where
