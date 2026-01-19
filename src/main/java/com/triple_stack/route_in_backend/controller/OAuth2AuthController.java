@@ -21,8 +21,8 @@ public class OAuth2AuthController {
         return ResponseEntity.ok(oAuth2AuthService.signup(signupReqDto));
     }
 
-    @GetMapping("/oauth2/signin")
-    public ResponseEntity<?> signin(@RequestBody SigninReqDto signinReqDto) {
-        return ResponseEntity.ok(oAuth2AuthService.signin(signinReqDto));
-    }
+    // @GetMapping("/oauth2/signin")
+    // public ResponseEntity<?> signin(@RequestBody SigninReqDto signinReqDto) {
+    //     return ResponseEntity.ok(oAuth2AuthService.signin(signinReqDto));
+    // }
 }
