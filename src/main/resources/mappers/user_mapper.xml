@@ -10,7 +10,7 @@
         <result property="providerUserId" column="provider_user_id"/>
         <result property="profileImg" column="profile_img"/>
         <result property="gender" column="gender"/>
-        <result property="birthYear" column="birth_year"/>
+        <result property="birthDate" column="birth_date"/>
         <result property="height" column="height"/>
         <result property="weight" column="weight"/>
         <result property="currentRun" column="current_run" typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
@@ -83,7 +83,7 @@
             user_tb
         values
             (0, #{username}, #{provider}, #{providerUserId}, null, #{gender},
-            #{birthYear}, #{height}, #{weight},
+            #{birthDate}, #{height}, #{weight},
             #{currentRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             #{weeklyRun, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},
             now(), null, "ACTIVE", null, null, "ROLE_USER", 0, 0);
