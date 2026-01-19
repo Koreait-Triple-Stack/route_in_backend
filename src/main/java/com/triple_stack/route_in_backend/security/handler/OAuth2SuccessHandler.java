@@ -29,10 +29,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String provider = defaultOAuth2User.getAttribute("provider");
         String providerUserId = defaultOAuth2User.getAttribute("providerUserId");
 
+        System.out.println("asdf");
+
         Optional<User> foundUser = userRepository.getUserByProviderAndProviderUserId(provider, providerUserId);
 
         if (foundUser.isEmpty()) {
-            response.sendRedirect("http://localhost:5173/oauth2?provider="+provider+"&providerUserId="+providerUserId);
+            response.sendRedirect("http://localhost:5173/oauth2/signup?provider="+provider+"&providerUserId="+providerUserId);
             return;
         }
 

@@ -30,9 +30,22 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
-        corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
-        corsConfiguration.addAllowedOriginPattern(CorsConfiguration.ALL);
+        // corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
+        // corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
+        // corsConfiguration.addAllowedOriginPattern(CorsConfiguration.ALL);
+
+        // safari
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOrigins(java.util.List.of(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"
+        ));
+        corsConfiguration.setAllowedMethods(java.util.List.of(
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+        ));
+        corsConfiguration.setAllowedHeaders(java.util.List.of(
+                "Authorization", "Content-Type", "X-Requested-With"
+        ));
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
@@ -47,7 +60,7 @@ public class SecurityConfig {
         http.httpBasic(httpBasic -> httpBasic.disable());
         http.logout(logout -> logout.disable());
 
-        http.sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -57,7 +70,8 @@ public class SecurityConfig {
             ).hasAnyRole("ADMIN", "USER");
             auth.requestMatchers(
                     "/user/auth/**",
-                    "/oauth2/**"
+                    "/oauth2/**",
+                    "/login/oauth2/**"
             ).permitAll();
             auth.anyRequest().authenticated();
         });

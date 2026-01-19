@@ -30,13 +30,6 @@ public class JwtAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-
-        List<String> methods = List.of("POST", "GET", "PUT", "PATCH", "DELETE");
-        if (!methods.contains(request.getMethod())) {
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
-
         String authorization = request.getHeader("Authorization");
 
         if (jwtUtils.isBearer(authorization)) {

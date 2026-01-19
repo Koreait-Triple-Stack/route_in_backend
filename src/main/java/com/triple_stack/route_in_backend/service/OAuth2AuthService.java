@@ -23,9 +23,6 @@ public class OAuth2AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private RoutineRepository routineRepository;
-
-    @Autowired
     private AddressRepository addressRepository;
 
     @Autowired
@@ -33,6 +30,10 @@ public class OAuth2AuthService {
 
     @Transactional
     public ApiRespDto<?> signup(SignupReqDto signupReqDto) {
+        if (signupReqDto.getProvider() == null || signupReqDto.getProviderUserId() == null) {
+            throw new RuntimeException("구글이나 네이버 계정으로 먼저 로그인하세요");
+        }
+
         Optional<User> foundUser = userRepository.getUserByUsername(signupReqDto.getUsername());
         if (foundUser.isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
