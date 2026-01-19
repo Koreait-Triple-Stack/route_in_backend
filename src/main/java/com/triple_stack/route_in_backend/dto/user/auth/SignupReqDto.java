@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import com.triple_stack.route_in_backend.entity.User;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -14,7 +15,7 @@ public class SignupReqDto {
     private String provider;
     private String providerUserId;
     private String gender;
-    private Integer birthYear;
+    private LocalDate birthDate;
     private Integer height;
     private Integer weight;
     private List<String> currentRun;
@@ -28,7 +29,7 @@ public class SignupReqDto {
                 .provider(provider)
                 .providerUserId(providerUserId)
                 .gender(gender)
-                .birthYear(birthYear)
+                .birthDate(birthDate)
                 .height(height)
                 .weight(weight)
                 .currentRun(currentRun)
