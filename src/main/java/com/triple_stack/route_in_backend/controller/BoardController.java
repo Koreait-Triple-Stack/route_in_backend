@@ -39,12 +39,8 @@ public class BoardController {
     }
 
     @GetMapping("/list/infinite")
-    public ResponseEntity<?> getBoardInfinite(
-            @RequestParam Integer limit,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorCreateDt,
-            @RequestParam(required = false) Integer cursorBoardId
-    ) {
-        return ResponseEntity.ok(boardService.getBoardInfinite(limit, cursorCreateDt, cursorBoardId));
+    public ResponseEntity<?> getBoardInfinite(BoardInfiniteParam boardInfiniteParam) {
+        return ResponseEntity.ok(boardService.getBoardInfinite(boardInfiniteParam));
     }
 
     @GetMapping("/{boardId}")

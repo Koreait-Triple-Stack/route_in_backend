@@ -14,10 +14,10 @@
                 typeHandler="com.triple_stack.route_in_backend.security.handler.JsonTypeHandler"/>
         <result property="recommendCnt" column="recommend_cnt"/>
         <result property="username" column="username"/>
+        <result property="birthDate" column="birth_date"/>
         <result property="profileImg" column="profile_img"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
-<!--        <association property="routine" resultMap="RoutineResultMap"/>-->
     </resultMap>
 
     <resultMap id="RoutineResultMap" type="com.triple_stack.route_in_backend.entity.Routine">
@@ -64,6 +64,7 @@
             bt.create_dt,
             bt.update_dt,
             ut.username,
+            ut.birth_date,
             ut.profile_img
         from
             board_tb bt
@@ -86,6 +87,7 @@
             bt.tags,
             bt.recommend_cnt,
             ut.username,
+            ut.birth_date,
             ut.profile_img,
             bt.create_dt,
             bt.update_dt
@@ -93,10 +95,34 @@
             board_tb bt
             join user_tb ut on bt.user_id = ut.user_id
         <where>
+            <if test="type != null and type != 'ALL'">
+                AND bt.type = #{type}
+            </if>
+
             <if test="cursorCreateDt != null and cursorBoardId != null">
                 (
                 bt.create_dt &lt; #{cursorCreateDt}
                 or (bt.create_dt = #{cursorCreateDt} and bt.board_id &lt; #{cursorBoardId})
+                )
+            </if>
+
+            <if test="type == 'COURSE'">
+                <if test="tags != null and tags.size() &gt;=1 and tags[0] != null and tags[0] != ''">
+                    AND JSON_UNQUOTE(JSON_EXTRACT(bt.tags, '$[0]'))
+                    LIKE CONCAT('%', #{tags[0]}, '%')
+                </if>
+
+                <if test="tags != null and tags.size() &gt;= 2 and tags[1] != null and tags[1] != '' and tags[1] != 0">
+                    AND CAST(JSON_UNQUOTE(JSON_EXTRACT(bt.tags, '$[1]')) AS UNSIGNED)
+                    &lt;= CAST(#{tags[1]} AS UNSIGNED)
+                </if>
+            </if>
+
+            <if test="type == 'ROUTINE' and tags != null and tags.size() &gt; 0">
+                AND (
+                <foreach collection="tags" item="tag" separator=" OR ">
+                    JSON_CONTAINS(bt.tags, JSON_QUOTE(#{tag}))
+                </foreach>
                 )
             </if>
         </where>
@@ -117,6 +143,7 @@
             bt.tags,
             bt.recommend_cnt,
             ut.username,
+            ut.birth_date,
             ut.profile_img,
             bt.create_dt,
             bt.update_dt
@@ -138,6 +165,7 @@
             bt.tags,
             bt.recommend_cnt,
             ut.username,
+            ut.birth_date,
             ut.profile_img,
             bt.create_dt,
             bt.update_dt
@@ -165,6 +193,7 @@
             bt.tags,
             bt.recommend_cnt,
             ut.username,
+            ut.birth_date,
             ut.profile_img,
             bt.create_dt,
             bt.update_dt

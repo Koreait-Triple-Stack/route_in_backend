@@ -68,23 +68,27 @@ public class BoardService {
         return new ApiRespDto<>("success", "게시물 전체 조회 완료", boardRepository.getBoardList());
     }
 
-    public ApiRespDto<?> getBoardInfinite(Integer limit, LocalDateTime cursorCreateDt, Integer cursorBoardId) {
-        int limitPlusOne = limit + 1;
-
-        List<BoardRespDto> rows = boardRepository.getBoardInfinite(cursorCreateDt, cursorBoardId, limitPlusOne);
-
-        boolean hasNext = rows.size() > limit;
-        if (hasNext) {
-            rows = rows.subList(0, limit);
+    public ApiRespDto<?> getBoardInfinite(BoardInfiniteParam param) {
+        System.out.println(param);
+        if (param.getCursorBoardId() != null ^ param.getCursorCreateDt() != null) {
+            throw new RuntimeException("cursorBoardId와 cursorCreateDt가 모두 전달되지 않았습니다");
         }
 
-        BoardNextCursor nextCursor = null;
+        param.setLimitPlusOne(param.getLimitPlusOne());
+
+        List<BoardRespDto> rows = boardRepository.getBoardInfinite(param);
+
+        boolean hasNext = rows.size() > param.getLimit();
+        if (hasNext) {
+            rows = rows.subList(0, param.getLimit());
+        }
+        BoardInfiniteRespDto data = new BoardInfiniteRespDto(rows, hasNext, null, null);
         if (!rows.isEmpty()) {
             BoardRespDto last = rows.get(rows.size() - 1);
-            nextCursor = new BoardNextCursor(last.getCreateDt(), last.getBoardId());
+            data.setNextCursorBoardId(last.getBoardId());
+            data.setNextCursorCreateDt(last.getCreateDt());
         }
 
-        BoardInfiniteRespDto data = new BoardInfiniteRespDto(rows, hasNext, nextCursor);
         return new ApiRespDto<>("success", "게시물 무한스크롤 조회 완료", data);
     }
 
