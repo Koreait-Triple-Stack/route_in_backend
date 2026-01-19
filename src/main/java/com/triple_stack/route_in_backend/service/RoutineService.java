@@ -40,7 +40,16 @@ public class RoutineService {
     }
 
     public ApiRespDto<?> removeRoutine(RemoveRoutineReqDto removeRoutineReqDto) {
-        int result = routineRepository.updateRoutine(removeRoutineReqDto.toEntity());
+        int result = routineRepository.removeRoutine(removeRoutineReqDto.toEntity());
+        if (result != 1) {
+            throw new RuntimeException("운동 루틴 삭제에 실패했습니다.");
+        }
+
+        return new ApiRespDto<>("success", "운동 루틴 삭제를 완료했습니다.", null);
+    }
+
+    public ApiRespDto<?> deleteRoutineByRoutineId(Integer routineId) {
+        int result = routineRepository.deleteRoutineByRoutineId(routineId);
         if (result != 1) {
             throw new RuntimeException("운동 루틴 삭제에 실패했습니다.");
         }
