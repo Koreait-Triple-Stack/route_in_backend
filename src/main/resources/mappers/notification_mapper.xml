@@ -50,4 +50,13 @@
         where
             user_id = #{userId};
     </delete>
+    
+    <select id="countUnreadNotificationByUserId" resultType="int">
+        select
+            count(*)
+        from
+            notification_tb
+        where
+            user_id = #{userId} and is_read = 0;
+    </select>
 </mapper>

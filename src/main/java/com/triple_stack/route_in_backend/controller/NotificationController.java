@@ -36,4 +36,9 @@ public class NotificationController {
     public ResponseEntity<?> deleteNotificationByUserId(@PathVariable Integer userId) {
         return ResponseEntity.ok(notificationService.deleteNotificationByUserId(userId));
     }
+    
+    @GetMapping("/count/{userId}")
+    public ResponseEntity<?> dcountUnreadNotificationByUserId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(notificationService.countUnreadNotificationByUserId(userId));
+    }
 }
