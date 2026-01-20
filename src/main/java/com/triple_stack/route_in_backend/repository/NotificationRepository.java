@@ -27,4 +27,8 @@ public class NotificationRepository {
     public int deleteNotificationByUserId(Integer userId) {
         return notificationMapper.deleteNotificationByUserId(userId);
     }
+
+    public int markAllRead(Integer userId) {
+        return notificationMapper.markAllRead(userId);
+    }
 }

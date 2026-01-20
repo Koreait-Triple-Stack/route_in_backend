@@ -16,6 +16,6 @@ public class Notification {
     private Integer userId;
     private String message;
     private String path;
-    private Integer check;
+    private boolean isRead;
     private LocalDateTime createDt;
 }

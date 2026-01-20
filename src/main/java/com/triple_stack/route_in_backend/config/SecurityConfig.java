@@ -71,7 +71,9 @@ public class SecurityConfig {
             auth.requestMatchers(
                     "/user/auth/**",
                     "/oauth2/**",
-                    "/login/oauth2/**"
+                    "/login/oauth2/**",
+                    "/ws/**",
+                    "/test/**"
             ).permitAll();
             auth.anyRequest().authenticated();
         });
