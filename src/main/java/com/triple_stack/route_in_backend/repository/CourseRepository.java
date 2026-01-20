@@ -44,4 +44,8 @@ public class CourseRepository {
     public int changeCourseFavorite(Integer userId, Integer courseId) {
         return courseMapper.changeCourseFavorite(userId, courseId);
     }
+
+    public int deleteCourse(Integer courseId) {
+        return courseMapper.deleteCourse(courseId);
+    }
 }

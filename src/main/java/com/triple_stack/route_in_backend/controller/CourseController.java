@@ -39,4 +39,9 @@ public class CourseController {
     public ResponseEntity<?> updateCourse(@RequestBody UpdateCourseReqDto updateCourseReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(courseService.updateCourse(updateCourseReqDto, principalUser));
     }
+
+    @GetMapping("/delete/{courseId}")
+    public ResponseEntity<?> deleteCourse(@PathVariable Integer courseId) {
+        return ResponseEntity.ok(courseService.deleteCourse(courseId));
+    }
 }

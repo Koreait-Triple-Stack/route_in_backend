@@ -68,9 +68,6 @@ public class CourseService {
         }
 
         List<Course> courseList = courseRepository.getCourseListByUserId(userId);
-        if (courseList.isEmpty()) {
-            throw new RuntimeException("러닝 코스 조회에 실패했습니다");
-        }
 
         for (Course course : courseList) {
             List<CoursePoint> points = coursePointRepository.getCoursePointList(course.getCourseId());
@@ -89,9 +86,6 @@ public class CourseService {
         }
 
         Optional<Course> foundCourse = courseRepository.getCourseFavoriteByUserId(userId);
-        if (foundCourse.isEmpty()) {
-            throw new RuntimeException("러닝 코스 조회에 실패했습니다");
-        }
 
         Course course = foundCourse.get();
         List<CoursePoint> points = coursePointRepository.getCoursePointList(course.getCourseId());
@@ -123,5 +117,14 @@ public class CourseService {
         }
 
         return new ApiRespDto<>("success", "러닝 코스 수정을 완료했습니다.", null);
+    }
+
+    public ApiRespDto<?> deleteCourse(Integer courseId) {
+        int result = courseRepository.deleteCourse(courseId);
+        if (result != 1) {
+            throw new RuntimeException("코스 삭제에 실패했습니다.");
+        }
+
+        return new ApiRespDto<>("success", "코스 삭제를 완료했습니다.", null);
     }
 }
