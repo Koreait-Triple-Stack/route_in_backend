@@ -8,7 +8,7 @@
         <result property="userId" column="user_id"/>
         <result property="message" column="message"/>
         <result property="path" column="path"/>
-        <result property="check" column="check"/>
+        <result property="isRead" column="is_read"/>
         <result property="createDt" column="create_dt"/>
     </resultMap>
 
@@ -18,6 +18,15 @@
         values
             (0, #{userId}, #{message}, #{path}, 0, now());
     </insert>
+
+    <update id="markAllRead">
+        update
+            notification_tb
+        set
+            is_read = 1
+        where
+            user_id=#{userId} AND is_read = 0;
+    </update>
 
     <select id="getNotificationListByUserId" resultMap="NotificationResultMap">
         select

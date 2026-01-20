@@ -158,4 +158,13 @@
             status = "INACTIVE"
             and delete_dt <![CDATA[<=]]> now();
     </delete>
+
+    <update id="changeUserCheck">
+        update
+            user_tb
+        set
+            unread = 0
+        where
+            user_id = #{userId}
+    </update>
 </mapper>

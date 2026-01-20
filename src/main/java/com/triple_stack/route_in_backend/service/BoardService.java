@@ -69,7 +69,6 @@ public class BoardService {
     }
 
     public ApiRespDto<?> getBoardInfinite(BoardInfiniteParam param) {
-        System.out.println(param);
         if (param.getCursorBoardId() != null ^ param.getCursorCreateDt() != null) {
             throw new RuntimeException("cursorBoardId와 cursorCreateDt가 모두 전달되지 않았습니다");
         }

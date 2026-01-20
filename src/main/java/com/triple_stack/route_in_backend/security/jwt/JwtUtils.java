@@ -49,4 +49,22 @@ public class JwtUtils {
     public String removeBearer(String token) {
         return token.replaceFirst("Bearer ", "");
     }
+
+    public boolean validateToken(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public String getUserIdAsString(String token) throws JwtException {
+        Claims claims = getClaims(token);
+        String userIdStr = claims.getId();
+        if (userIdStr ==null || userIdStr.isBlank()) {
+            throw new JwtException("JWT에 userId가 없습니다.");
+        }
+        return userIdStr;
+    }
 }
