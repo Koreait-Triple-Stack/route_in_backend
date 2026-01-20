@@ -64,4 +64,9 @@ public class NotificationService {
 
         return new ApiRespDto<>("success", "알림 전체 삭제를 완료했습니다", null);
     }
+
+    public ApiRespDto<?> countUnreadNotificationByUserId(Integer userId) {
+        return new ApiRespDto<>("success", "읽지 않은 알림 갯수 조회를 완료했습니다.",
+                notificationRepository.countUnreadNotificationByUserId(userId));
+    }
 }

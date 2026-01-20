@@ -12,4 +12,5 @@ public interface NotificationMapper {
     int deleteNotificationByNotificationId(Integer notificationId);
     int deleteNotificationByUserId(Integer userId);
     int markAllRead(Integer userId);
+    int countUnreadNotificationByUserId(Integer userId);
 }

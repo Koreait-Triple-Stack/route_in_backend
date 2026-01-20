@@ -31,4 +31,8 @@ public class NotificationRepository {
     public int markAllRead(Integer userId) {
         return notificationMapper.markAllRead(userId);
     }
+
+    public int countUnreadNotificationByUserId(Integer userId) {
+        return notificationMapper.countUnreadNotificationByUserId(userId);
+    }
 }
