@@ -14,4 +14,5 @@ public interface CourseMapper {
     Optional<Course> getCourseFavoriteByUserId(Integer userId);
     int updateCourse(Course course);
     int changeCourseFavorite(Integer userId, Integer courseId);
+    int deleteCourse(Integer courseId);
 }

@@ -77,4 +77,11 @@
         where
             user_id = #{userId}
     </update>
+
+    <delete id="deleteCourse">
+        delete from
+            course_tb
+        where
+            course_id = #{courseId}
+    </delete>
 </mapper>
