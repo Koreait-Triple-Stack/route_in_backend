@@ -88,12 +88,15 @@ public class CourseService {
 
         Optional<Course> foundCourse = courseRepository.getCourseFavoriteByUserId(userId);
 
-        Course course = foundCourse.get();
-        List<CoursePoint> points = coursePointRepository.getCoursePointList(course.getCourseId());
-        if (points.size() < 2) {
-            throw new RuntimeException("러닝 코스 조회에 실패했습니다.");
+        Course course = null;
+        if (foundCourse.isPresent()) {
+            course = foundCourse.get();
+            List<CoursePoint> points = coursePointRepository.getCoursePointList(course.getCourseId());
+            if (points.size() < 2) {
+                throw new RuntimeException("러닝 코스 조회에 실패했습니다.");
+            }
+            course.setPoints(points);
         }
-        course.setPoints(points);
 
         return new ApiRespDto<>("success", "러닝 코스 조회를 완료했습니다.", course);
     }
@@ -103,6 +106,7 @@ public class CourseService {
         if (updateCourseReqDto.getUserId() != null && !updateCourseReqDto.getUserId().equals(principalUser.getUserId())) {
             throw new RuntimeException("잘못된 접근입니다.");
         }
+
         int courseResult = courseRepository.updateCourse(updateCourseReqDto.toEntity());
         if (courseResult != 1) {
             throw new RuntimeException("러닝 코스 수정에 실패했습니다.");
