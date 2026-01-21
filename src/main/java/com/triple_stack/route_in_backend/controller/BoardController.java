@@ -72,5 +72,10 @@ public class BoardController {
     public ResponseEntity<?> getRecommendListByBoardId(@PathVariable Integer boardId) {
         return ResponseEntity.ok(boardService.getRecommendListByBoardId(boardId));
     }
+
+    @PostMapping("/copy/payload")
+    public ResponseEntity<?> copyCourse(@RequestBody CopyPayloadReqDto copyPayloadReqDto) {
+        return ResponseEntity.ok(boardService.copyPayload(copyPayloadReqDto));
+    }
 }
 

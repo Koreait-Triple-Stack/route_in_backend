@@ -25,10 +25,6 @@ public class RoutineService {
     }
 
     public ApiRespDto<?> updateRoutine(UpdateRoutineByUserReqDto updateRoutineByUserReqDto) {
-//        int result = routineRepository.updateRoutine(updateRoutineReqDto.toEntity());
-//        if (result != 1) {
-//            throw new RuntimeException("운동 루틴 수정에 실패했습니다.");
-//        }
         for (Integer routineId : updateRoutineByUserReqDto.getDeleteIds()) {
             int result = routineRepository.deleteRoutineByRoutineId(routineId);
             if (result != 1) {
