@@ -130,14 +130,14 @@ public class BoardService {
             throw new RuntimeException("게시물 수정 실패.");
         }
 
-        if (updateBoardReqDto.getType().equals("routine")) {
-            Routine routine = updateBoardReqDto.getRoutine();
-            routine.setBoardId(updateBoardReqDto.getBoardId());
-            int routineResult = routineRepository.updateRoutine(routine);
-            if (routineResult != 1) {
-                throw new RuntimeException("운동 루틴 수정 실패");
-            }
-        }
+//        if (updateBoardReqDto.getType().equals("routine")) {
+//            Routine routine = updateBoardReqDto.getRoutine();
+//            routine.setBoardId(updateBoardReqDto.getBoardId());
+//            int routineResult = routineRepository.updateRoutine(routine);
+//            if (routineResult != 1) {
+//                throw new RuntimeException("운동 루틴 수정 실패");
+//            }
+//        }
 
         return new ApiRespDto<>("success", "게시물 수정 완료", null);
     }

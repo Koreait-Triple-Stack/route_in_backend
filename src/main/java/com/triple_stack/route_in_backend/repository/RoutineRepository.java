@@ -17,8 +17,8 @@ public class RoutineRepository {
         return routineMapper.addRoutine(routine);
     }
 
-    public int updateRoutine(Routine routine) {
-        return routineMapper.updateRoutine(routine);
+    public List<Routine> updateRoutine(Integer userId) {
+        return routineMapper.updateRoutine(userId);
     }
 
     public List<Routine> getRoutine(Integer userId, Integer boardId) {

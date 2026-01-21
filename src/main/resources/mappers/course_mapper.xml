@@ -74,6 +74,7 @@
                 WHEN course_id = #{courseId}
                 THEN 1
                 ELSE 0
+            END
         where
             user_id = #{userId}
     </update>

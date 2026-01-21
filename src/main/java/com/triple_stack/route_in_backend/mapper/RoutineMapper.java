@@ -9,7 +9,7 @@ import java.util.Optional;
 @Mapper
 public interface RoutineMapper {
     int addRoutine(Routine routine);
-    int updateRoutine(Routine routine);
+    List<Routine> updateRoutine(Integer userId);
     List<Routine> getRoutine(Integer userId , Integer boardId);
     int removeRoutine(Routine routine);
     int deleteRoutineByRoutineId(Integer routineId);

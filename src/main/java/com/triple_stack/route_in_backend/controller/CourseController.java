@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.controller;
 
 import com.triple_stack.route_in_backend.dto.course.AddCourseReqDto;
+import com.triple_stack.route_in_backend.dto.course.ChangeCourseFavoriteReqDto;
 import com.triple_stack.route_in_backend.dto.course.UpdateCourseReqDto;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import com.triple_stack.route_in_backend.service.CourseService;
@@ -38,6 +39,11 @@ public class CourseController {
     @PostMapping("/update")
     public ResponseEntity<?> updateCourse(@RequestBody UpdateCourseReqDto updateCourseReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(courseService.updateCourse(updateCourseReqDto, principalUser));
+    }
+
+    @PostMapping("/change/favorite")
+    public ResponseEntity<?> changeCourseFavorite(@RequestBody ChangeCourseFavoriteReqDto changeCourseFavoriteReqDto) {
+        return ResponseEntity.ok(courseService.changeCourseFavorite(changeCourseFavoriteReqDto));
     }
 
     @GetMapping("/delete/{courseId}")
