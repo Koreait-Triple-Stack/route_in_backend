@@ -2,9 +2,7 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.board.*;
-import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
 import com.triple_stack.route_in_backend.entity.Board;
-import com.triple_stack.route_in_backend.entity.Routine;
 import com.triple_stack.route_in_backend.entity.User;
 import com.triple_stack.route_in_backend.repository.BoardRepository;
 import com.triple_stack.route_in_backend.repository.RecommendRepository;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
