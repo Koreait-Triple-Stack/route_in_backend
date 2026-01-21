@@ -28,4 +28,8 @@ public class RoutineRepository {
     public int removeRoutine(Routine routine) { return routineMapper.removeRoutine(routine); }
 
     public int deleteRoutineByRoutineId(Integer routineId) { return routineMapper.deleteRoutineByRoutineId(routineId); }
+
+    public int changeChecked(Integer courseId) {
+        return routineMapper.changeChecked(courseId);
+    }
 }
