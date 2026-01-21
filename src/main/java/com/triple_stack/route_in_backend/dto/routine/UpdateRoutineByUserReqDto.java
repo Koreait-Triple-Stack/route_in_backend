@@ -11,6 +11,5 @@ import java.util.List;
 public class UpdateRoutineByUserReqDto {
     private List<Routine> addRoutines;
     private List<Integer> deleteIds;
-    private Boolean checked;
-    private Integer courseId;
+    private Integer routineId;
 }

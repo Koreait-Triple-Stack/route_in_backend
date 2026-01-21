@@ -35,8 +35,13 @@ public class RoutineController {
         return ResponseEntity.ok(routineService.removeRoutine(removeRoutineReqDto));
     }
 
-    @GetMapping("/delete/{routineId}")
+    @PostMapping("/delete/{routineId}")
     public ResponseEntity<?> deleteRoutineByRoutineId(@PathVariable Integer routineId) {
         return ResponseEntity.ok(routineService.deleteRoutineByRoutineId(routineId));
+    }
+
+    @PostMapping("/change/checked")
+    public ResponseEntity<?> changeChecked(@RequestBody UpdateRoutineByUserReqDto updateRoutineByUserReqDto) {
+        return ResponseEntity.ok(routineService.changeChecked(updateRoutineByUserReqDto));
     }
 }

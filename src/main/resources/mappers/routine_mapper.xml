@@ -72,4 +72,16 @@
         where
             routine_id = #{routineId}
     </delete>
+
+    <update id="changeChecked">
+        update
+            routine_tb
+        set
+            checked = CASE
+            WHEN checked = 1 THEN 0
+            ELSE 1
+        END
+        where
+            routine_id = #{routineId}
+    </update>
 </mapper>

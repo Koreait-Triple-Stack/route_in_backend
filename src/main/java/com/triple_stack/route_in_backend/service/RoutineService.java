@@ -9,6 +9,7 @@ import com.triple_stack.route_in_backend.entity.Routine;
 import com.triple_stack.route_in_backend.repository.RoutineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RoutineService {
@@ -24,6 +25,7 @@ public class RoutineService {
         return new ApiRespDto<>("success", "운동 루틴 추가를 완료했습니다.", null);
     }
 
+    @Transactional
     public ApiRespDto<?> updateRoutine(UpdateRoutineByUserReqDto updateRoutineByUserReqDto) {
         for (Integer routineId : updateRoutineByUserReqDto.getDeleteIds()) {
             int result = routineRepository.deleteRoutineByRoutineId(routineId);
@@ -66,8 +68,8 @@ public class RoutineService {
         return new ApiRespDto<>("success", "운동 루틴 삭제를 완료했습니다.", null);
     }
 
-    public ApiRespDto<?> changeChecked(Integer routineId) {
-        int result = routineRepository.changeChecked(routineId);
+    public ApiRespDto<?> changeChecked(UpdateRoutineByUserReqDto updateRoutineByUserReqDto) {
+        int result = routineRepository.changeChecked(updateRoutineByUserReqDto.getRoutineId());
         if (result != 1) {
             throw new RuntimeException("운동 루틴 체크에 실패했습니다.");
         }
