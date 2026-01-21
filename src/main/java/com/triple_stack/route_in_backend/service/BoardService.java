@@ -2,20 +2,17 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.board.*;
-import com.triple_stack.route_in_backend.dto.user.routine.GetRoutineReqDto;
+import com.triple_stack.route_in_backend.dto.board.CopyPayloadReqDto;
 import com.triple_stack.route_in_backend.entity.Board;
-import com.triple_stack.route_in_backend.entity.Routine;
+import com.triple_stack.route_in_backend.entity.Course;
+import com.triple_stack.route_in_backend.entity.CoursePoint;
 import com.triple_stack.route_in_backend.entity.User;
-import com.triple_stack.route_in_backend.repository.BoardRepository;
-import com.triple_stack.route_in_backend.repository.RecommendRepository;
-import com.triple_stack.route_in_backend.repository.RoutineRepository;
-import com.triple_stack.route_in_backend.repository.UserRepository;
+import com.triple_stack.route_in_backend.repository.*;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +30,12 @@ public class BoardService {
 
     @Autowired
     private RoutineRepository routineRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private CoursePointRepository coursePointRepository;
 
     @Transactional
     public ApiRespDto<?> addBoard(AddBoardReqDto addBoardReqDto, PrincipalUser principalUser) {
@@ -196,7 +199,6 @@ public class BoardService {
         if (foundUser.isEmpty()) {
             throw new RuntimeException("추천 취소에 실패했습니다");
         }
-        System.out.println(minusRecommendReqDto);
 
         int boardResult = boardRepository.minusRecommend(minusRecommendReqDto.getBoardId());
         if (boardResult != 1) {
@@ -214,5 +216,35 @@ public class BoardService {
     public ApiRespDto<?> getRecommendListByBoardId(Integer boardId) {
         return new ApiRespDto<>("success", "추천 리스트 조회 완료",
                 recommendRepository.getRecommendListByBoardId(boardId));
+    }
+
+    @Transactional
+    public ApiRespDto<?> copyPayload(CopyPayloadReqDto copyPayloadReqDto) {
+        if (copyPayloadReqDto.getType().equals("COURSE")) {
+            Optional<Course> foundCourse = courseRepository.getCourseByBoardId(copyPayloadReqDto.getBoardId());
+            if (foundCourse.isEmpty()) {
+                throw new RuntimeException("코스 조회에 실패했습니다.");
+            }
+            Course course = foundCourse.get();
+            course.setBoardId(null);
+            course.setUserId(copyPayloadReqDto.getUserId());
+
+            Optional<Course> optionalCourse = courseRepository.addCourse(course);
+            if (optionalCourse.isEmpty()) {
+                throw  new RuntimeException("코스 추가에 실패했습니다.");
+            }
+
+            for (CoursePoint point : course.getPoints()) {
+                point.setCourseId(course.getCourseId());
+                int result = coursePointRepository.addCoursePoint(point);
+                if (result != 1) {
+                    throw new RuntimeException("경로 추가에 실패했습니다.");
+                }
+            }
+        } else {
+            // 운동 루틴 저장 로직 작성
+        }
+
+        return new ApiRespDto<>("success", (copyPayloadReqDto.getType().equals("COURSE") ? "코스" : "루틴") + " 저장을 완료했습니다", null);
     }
 }

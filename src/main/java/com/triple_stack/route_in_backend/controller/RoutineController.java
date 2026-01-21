@@ -1,6 +1,9 @@
 package com.triple_stack.route_in_backend.controller;
 
-import com.triple_stack.route_in_backend.dto.user.routine.*;
+import com.triple_stack.route_in_backend.dto.routine.AddRoutineReqDto;
+import com.triple_stack.route_in_backend.dto.routine.GetRoutineReqDto;
+import com.triple_stack.route_in_backend.dto.routine.RemoveRoutineReqDto;
+import com.triple_stack.route_in_backend.dto.routine.UpdateRoutineByUserReqDto;
 import com.triple_stack.route_in_backend.service.RoutineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
