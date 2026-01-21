@@ -11,17 +11,6 @@ import java.util.List;
 public class UpdateRoutineByUserReqDto {
     private List<Routine> addRoutines;
     private List<Integer> deleteIds;
-//    private Integer userId;
-//    private String weekday;
-//    private String exercise;
-//    private Boolean checked;
-//
-//    public Routine toEntity() {
-//        return Routine.builder()
-//                .userId(userId)
-//                .weekday(weekday)
-//                .exercise(exercise)
-//                .checked(checked)
-//                .build();
-//    }
+    private Boolean checked;
+    private Integer courseId;
 }
