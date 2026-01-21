@@ -196,6 +196,7 @@ public class BoardService {
         if (foundUser.isEmpty()) {
             throw new RuntimeException("추천 취소에 실패했습니다");
         }
+        System.out.println(minusRecommendReqDto);
 
         int boardResult = boardRepository.minusRecommend(minusRecommendReqDto.getBoardId());
         if (boardResult != 1) {
@@ -208,5 +209,10 @@ public class BoardService {
         }
 
         return new ApiRespDto<>("success", "추천 취소를 완료했습니다", null);
+    }
+
+    public ApiRespDto<?> getRecommendListByBoardId(Integer boardId) {
+        return new ApiRespDto<>("success", "추천 리스트 조회 완료",
+                recommendRepository.getRecommendListByBoardId(boardId));
     }
 }
