@@ -67,5 +67,10 @@ public class BoardController {
     public ResponseEntity<?> minusRecommend(@RequestBody MinusRecommendReqDto minusRecommendReqDto) {
         return ResponseEntity.ok(boardService.minusRecommend(minusRecommendReqDto));
     }
+
+    @GetMapping("/recommend/{boardId}")
+    public ResponseEntity<?> getRecommendListByBoardId(@PathVariable Integer boardId) {
+        return ResponseEntity.ok(boardService.getRecommendListByBoardId(boardId));
+    }
 }
 

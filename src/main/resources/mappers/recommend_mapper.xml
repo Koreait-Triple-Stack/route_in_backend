@@ -23,4 +23,13 @@
         where
             board_id = #{boardId} and user_id = #{userId};
     </delete>
+
+    <select id="getRecommendListByBoardId" resultMap="RecommendResultMap">
+        select
+            *
+        from
+            recommend_tb
+        where
+            board_id = #{boardId};
+    </select>
 </mapper>

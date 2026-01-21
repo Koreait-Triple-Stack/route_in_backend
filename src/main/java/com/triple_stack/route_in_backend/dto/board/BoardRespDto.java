@@ -25,7 +25,5 @@ public class BoardRespDto {
     private String profileImg;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
-
-    private Routine routine;
 }
 
