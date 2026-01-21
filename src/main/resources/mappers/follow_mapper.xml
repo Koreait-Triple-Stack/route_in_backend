@@ -36,7 +36,8 @@
             user_id,
             username,
             profile_img,
-            birth_date
+            birth_date,
+            follow_id
         from
             user_tb join follow_tb on (user_tb.user_id = follow_tb.follower_user_id)
         where
@@ -48,7 +49,8 @@
             user_id,
             username,
             profile_img,
-            birth_date
+            birth_date,
+            follow_id
         from
             user_tb join follow_tb on (user_tb.user_id = follow_tb.following_user_id)
         where

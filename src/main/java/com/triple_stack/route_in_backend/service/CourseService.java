@@ -2,6 +2,7 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.course.AddCourseReqDto;
+import com.triple_stack.route_in_backend.dto.course.ChangeCourseFavoriteReqDto;
 import com.triple_stack.route_in_backend.dto.course.UpdateCourseReqDto;
 import com.triple_stack.route_in_backend.entity.Course;
 import com.triple_stack.route_in_backend.entity.CoursePoint;
@@ -117,6 +118,15 @@ public class CourseService {
         }
 
         return new ApiRespDto<>("success", "러닝 코스 수정을 완료했습니다.", null);
+    }
+
+    public ApiRespDto<?> changeCourseFavorite(ChangeCourseFavoriteReqDto changeCourseFavoriteReqDto) {
+        int result = courseRepository.changeCourseFavorite(changeCourseFavoriteReqDto.getUserId(), changeCourseFavoriteReqDto.getCourseId());
+        if (result == 0) {
+            throw new RuntimeException("즐겨찾기에 실패했습니다.");
+        }
+
+        return new ApiRespDto<>("success", "즐겨찾기를 완료했습니다.", null);
     }
 
     public ApiRespDto<?> deleteCourse(Integer courseId) {

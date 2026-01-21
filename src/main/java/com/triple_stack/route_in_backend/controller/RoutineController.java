@@ -18,8 +18,8 @@ public class RoutineController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateRoutine(@RequestBody UpdateRoutineReqDto updateRoutineReqDto) {
-        return ResponseEntity.ok(routineService.updateRoutine(updateRoutineReqDto));
+    public ResponseEntity<?> updateRoutine(@RequestBody UpdateRoutineByUserReqDto updateRoutineByUserReqDto) {
+        return ResponseEntity.ok(routineService.updateRoutine(updateRoutineByUserReqDto));
     }
 
     @PostMapping("/get")

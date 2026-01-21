@@ -21,7 +21,7 @@ public class Course {
     private Double centerLat;
     private Double centerLng;
     private String region;
-    private Integer favorite;
+    private boolean favorite;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
 
