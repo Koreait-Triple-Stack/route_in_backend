@@ -1,4 +1,4 @@
-package com.triple_stack.route_in_backend.dto.user.routine;
+package com.triple_stack.route_in_backend.dto.routine;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
