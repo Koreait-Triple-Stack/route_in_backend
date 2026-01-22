@@ -57,12 +57,24 @@ public class BoardService {
             throw new RuntimeException("게시물 추가 실패");
         }
 
-//        Routine routine = addBoardReqDto.getRoutine();
-//        routine.setBoardId(optionalBoard.get().getBoardId());
-//        int result = routineRepository.addRoutine(routine);
-//        if (result != 1) {
-//            throw new RuntimeException("운동 루틴 추가 실패");
-//        }
+        if ("COURSE".equals(addBoardReqDto.getType())) {
+            addBoardReqDto.getCourse().setBoardId(optionalBoard.get().getBoardId());
+            Optional<Course> optionalCourse = courseRepository.addCourse(addBoardReqDto.getCourse());
+            if (optionalCourse.isEmpty()) {
+                throw new RuntimeException("러닝 코스 추가에 실패했습니다.");
+            }
+
+            Integer courseId = optionalCourse.get().getCourseId();
+            for (CoursePoint point : addBoardReqDto.getCourse().getPoints()) {
+                point.setCourseId(courseId);
+                int result = coursePointRepository.addCoursePoint(point);
+                if (result != 1) {
+                    throw new RuntimeException("러닝 코스 추가에 실패했습니다.");
+                }
+            }
+        } else {
+            // 운동 루틴 로직 작성
+        }
 
         return new ApiRespDto<>("success", "게시물이 추가되었습니다.", null);
     }
@@ -72,8 +84,14 @@ public class BoardService {
     }
 
     public ApiRespDto<?> getBoardInfinite(BoardInfiniteParam param) {
-        if (param.getCursorBoardId() != null ^ param.getCursorCreateDt() != null) {
-            throw new RuntimeException("cursorBoardId와 cursorCreateDt가 모두 전달되지 않았습니다");
+        if ("RECOMMEND".equals(param.getSort())) {
+            if (param.getCursorBoardId() != null ^ param.getCursorRecommendCnt() != null) {
+                throw new RuntimeException("cursorBoardId와 cursorRecommendCnt가 모두 전달되지 않았습니다");
+            }
+        } else { // LATEST(default)
+            if (param.getCursorBoardId() != null ^ param.getCursorCreateDt() != null) {
+                throw new RuntimeException("cursorBoardId와 cursorCreateDt가 모두 전달되지 않았습니다");
+            }
         }
 
         param.setLimitPlusOne(param.getLimitPlusOne());
@@ -84,11 +102,15 @@ public class BoardService {
         if (hasNext) {
             rows = rows.subList(0, param.getLimit());
         }
-        BoardInfiniteRespDto data = new BoardInfiniteRespDto(rows, hasNext, null, null);
+        BoardInfiniteRespDto data = new BoardInfiniteRespDto(rows, hasNext, null, null, null);
         if (!rows.isEmpty()) {
             BoardRespDto last = rows.get(rows.size() - 1);
             data.setNextCursorBoardId(last.getBoardId());
-            data.setNextCursorCreateDt(last.getCreateDt());
+            if ("RECOMMEND".equals(param.getSort())) {
+                data.setNextCursorRecommendCnt(last.getRecommendCnt());
+            } else {
+                data.setNextCursorCreateDt(last.getCreateDt());
+            }
         }
 
         return new ApiRespDto<>("success", "게시물 무한스크롤 조회 완료", data);
