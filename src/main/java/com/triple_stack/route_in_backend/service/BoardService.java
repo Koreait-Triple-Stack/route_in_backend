@@ -174,43 +174,35 @@ public class BoardService {
     }
 
     @Transactional
-    public ApiRespDto<?> plusRecommend(PlusRecommendReqDto plusRecommendReqDto) {
-        Optional<User> foundUser = userRepository.getUserByUserId(plusRecommendReqDto.getUserId());
+    public ApiRespDto<?> changeRecommend(ChangeRecommendReqDto changeRecommendReqDto) {
+        System.out.println(changeRecommendReqDto);
+        Optional<User> foundUser = userRepository.getUserByUserId(changeRecommendReqDto.getUserId());
         if (foundUser.isEmpty()) {
             throw new RuntimeException("추천 추가에 실패했습니다");
         }
 
-        int boardResult = boardRepository.plusRecommend(plusRecommendReqDto.getBoardId());
-        if (boardResult != 1) {
-            throw new RuntimeException("추천 추가에 실패했습니다");
+        if (changeRecommendReqDto.getIsRecommended()) {
+            int boardResult = boardRepository.minusRecommend(changeRecommendReqDto.getBoardId());
+            if (boardResult != 1) {
+                throw new RuntimeException("추천 목록 삭제에 실패했습니다");
+            }
+
+            int recommendResult = recommendRepository.minusRecommend(changeRecommendReqDto.toEntity());
+            if (recommendResult != 1) {
+                throw new RuntimeException("추천 취소에 실패했습니다");
+            }
+        } else {
+            int boardResult = boardRepository.plusRecommend(changeRecommendReqDto.getBoardId());
+            if (boardResult != 1) {
+                throw new RuntimeException("추천 추가에 실패했습니다");
+            }
+
+            int recommendResult = recommendRepository.plusRecommend(changeRecommendReqDto.toEntity());
+            if (recommendResult != 1) {
+                throw new RuntimeException("추천 추가에 실패했습니다");
+            }
         }
-
-        int recommendResult = recommendRepository.plusRecommend(plusRecommendReqDto.toEntity());
-        if (recommendResult != 1) {
-            throw new RuntimeException("추천 추가에 실패했습니다");
-        }
-
-        return new ApiRespDto<>("success", "추천 추가를 완료했습니다", null);
-    }
-
-    @Transactional
-    public ApiRespDto<?> minusRecommend(MinusRecommendReqDto minusRecommendReqDto) {
-        Optional<User> foundUser = userRepository.getUserByUserId(minusRecommendReqDto.getUserId());
-        if (foundUser.isEmpty()) {
-            throw new RuntimeException("추천 취소에 실패했습니다");
-        }
-
-        int boardResult = boardRepository.minusRecommend(minusRecommendReqDto.getBoardId());
-        if (boardResult != 1) {
-            throw new RuntimeException("추천 목록 삭제에 실패했습니다");
-        }
-
-        int recommendResult = recommendRepository.minusRecommend(minusRecommendReqDto.toEntity());
-        if (recommendResult != 1) {
-            throw new RuntimeException("추천 취소에 실패했습니다");
-        }
-
-        return new ApiRespDto<>("success", "추천 취소를 완료했습니다", null);
+        return new ApiRespDto<>("success", "추천 변경 완료", null);
     }
 
     public ApiRespDto<?> getRecommendListByBoardId(Integer boardId) {
@@ -228,13 +220,19 @@ public class BoardService {
             Course course = foundCourse.get();
             course.setBoardId(null);
             course.setUserId(copyPayloadReqDto.getUserId());
+            Integer courseId = course.getCourseId();
 
             Optional<Course> optionalCourse = courseRepository.addCourse(course);
             if (optionalCourse.isEmpty()) {
                 throw  new RuntimeException("코스 추가에 실패했습니다.");
             }
 
-            for (CoursePoint point : course.getPoints()) {
+            List<CoursePoint> pointList = coursePointRepository.getCoursePointList(courseId);
+            if (pointList.size() < 2) {
+                throw new RuntimeException("경로 추가에 실패했습니다");
+            }
+
+            for (CoursePoint point : pointList) {
                 point.setCourseId(course.getCourseId());
                 int result = coursePointRepository.addCoursePoint(point);
                 if (result != 1) {

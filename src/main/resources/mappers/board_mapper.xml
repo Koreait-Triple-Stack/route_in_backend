@@ -76,35 +76,48 @@
             bt.board_id desc;
     </select>
 
-    <!-- 무한 스크롤 -->
     <select id="getBoardInfinite" resultMap="BoardRespResultMap">
         select
-            bt.board_id,
-            bt.user_id,
-            bt.type,
-            bt.title,
-            bt.content,
-            bt.tags,
-            bt.recommend_cnt,
-            ut.username,
-            ut.birth_date,
-            ut.profile_img,
-            bt.create_dt,
-            bt.update_dt
+        bt.board_id,
+        bt.user_id,
+        bt.type,
+        bt.title,
+        bt.content,
+        bt.tags,
+        bt.recommend_cnt,
+        ut.username,
+        ut.birth_date,
+        ut.profile_img,
+        bt.create_dt,
+        bt.update_dt
         from
-            board_tb bt
-            join user_tb ut on bt.user_id = ut.user_id
+        board_tb bt
+        join user_tb ut on bt.user_id = ut.user_id
+
         <where>
             <if test="type != null and type != 'ALL'">
                 AND bt.type = #{type}
             </if>
 
-            <if test="cursorCreateDt != null and cursorBoardId != null">
-                (
-                bt.create_dt &lt; #{cursorCreateDt}
-                or (bt.create_dt = #{cursorCreateDt} and bt.board_id &lt; #{cursorBoardId})
-                )
-            </if>
+            <choose>
+                <when test="sort == null or sort == 'LATEST'">
+                    <if test="cursorCreateDt != null and cursorBoardId != null">
+                        AND (
+                        bt.create_dt &lt; #{cursorCreateDt}
+                        OR (bt.create_dt = #{cursorCreateDt} AND bt.board_id &lt; #{cursorBoardId})
+                        )
+                    </if>
+                </when>
+
+                <when test="sort == 'RECOMMEND'">
+                    <if test="cursorRecommendCnt != null and cursorBoardId != null">
+                        AND (
+                        bt.recommend_cnt &lt; #{cursorRecommendCnt}
+                        OR (bt.recommend_cnt = #{cursorRecommendCnt} AND bt.board_id &lt; #{cursorBoardId})
+                        )
+                    </if>
+                </when>
+            </choose>
 
             <if test="type == 'COURSE'">
                 <if test="tags != null and tags.size() &gt;=1 and tags[0] != null and tags[0] != ''">
@@ -126,10 +139,20 @@
                 )
             </if>
         </where>
-        order by
-            bt.create_dt desc,
-            bt.board_id desc
-            limit #{limitPlusOne};
+
+        <choose>
+            <when test="sort == 'RECOMMEND'">
+                order by
+                bt.recommend_cnt desc,
+                bt.board_id desc
+            </when>
+            <otherwise>
+                order by
+                bt.create_dt desc,
+                bt.board_id desc
+            </otherwise>
+        </choose>
+        limit #{limitPlusOne};
     </select>
 
     <!-- boardId로 단건 조회 -->

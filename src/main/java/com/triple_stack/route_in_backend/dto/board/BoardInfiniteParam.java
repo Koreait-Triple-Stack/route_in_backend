@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class BoardInfiniteParam {
     private String type;
+    private String sort;
     private List<String> tags;
     private Integer limit;
     private Integer limitPlusOne;
