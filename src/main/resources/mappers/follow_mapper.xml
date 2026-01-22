@@ -57,9 +57,9 @@
             follower_user_id = #{userId};
     </select>
 
-    <select id="getFollowByFollowerUserIdAndFollowingUserId" resultMap="UserResultMap">
+    <select id="isFollowing" resultType="int">
         select
-            *
+            count(*)
         from
             follow_tb
         where

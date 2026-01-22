@@ -30,8 +30,8 @@ public class FollowRepository {
         return followMapper.getFollowingUserList(userId);
     }
 
-    public Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId){
-        return followMapper.getFollowByFollowerUserIdAndFollowingUserId(followerUserId, followingUserId);
+    public boolean isFollowing(Integer followerUserId, Integer followingUserId){
+        return followMapper.isFollowing(followerUserId, followingUserId) == 1;
     }
 
     public int plusFollower(Integer userId) {
