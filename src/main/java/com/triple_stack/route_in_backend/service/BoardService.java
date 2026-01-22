@@ -3,10 +3,7 @@ package com.triple_stack.route_in_backend.service;
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.board.*;
 import com.triple_stack.route_in_backend.dto.board.CopyPayloadReqDto;
-import com.triple_stack.route_in_backend.entity.Board;
-import com.triple_stack.route_in_backend.entity.Course;
-import com.triple_stack.route_in_backend.entity.CoursePoint;
-import com.triple_stack.route_in_backend.entity.User;
+import com.triple_stack.route_in_backend.entity.*;
 import com.triple_stack.route_in_backend.repository.*;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,6 +260,21 @@ public class BoardService {
             }
         } else {
             // 운동 루틴 저장 로직 작성
+            List<Routine> foundRoutine = routineRepository.getRoutine(null, copyPayloadReqDto.getBoardId());
+            if (foundRoutine.isEmpty()) {
+                throw new RuntimeException("루틴 조회에 실패했습니다.");
+            }
+
+            routineRepository.deleteRoutineByUserId(copyPayloadReqDto.getUserId());
+
+            for (Routine routine : foundRoutine) {
+                routine.setBoardId(null);
+                routine.setUserId(copyPayloadReqDto.getUserId());
+                int result = routineRepository.addRoutine(routine);
+                if (result != 1) {
+                    throw  new RuntimeException("루틴 추가에 실패했습니다.");
+                }
+            }
         }
 
         return new ApiRespDto<>("success", (copyPayloadReqDto.getType().equals("COURSE") ? "코스" : "루틴") + " 저장을 완료했습니다", null);

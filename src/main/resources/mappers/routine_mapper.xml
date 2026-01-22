@@ -56,6 +56,10 @@
             <if test="boardId != null">
                 OR board_id = #{boardId}
             </if>
+
+            <if test="userId != null and boardId != null">
+                user_id = #{userId} and board_id = #{boardId}
+            </if>
         </where>
     </select>
 
@@ -84,4 +88,11 @@
         where
             routine_id = #{routineId}
     </update>
+
+    <delete id="deleteRoutineByUserId">
+        delete from
+            routine_tb
+        where
+            user_id = #{userId}
+    </delete>
 </mapper>

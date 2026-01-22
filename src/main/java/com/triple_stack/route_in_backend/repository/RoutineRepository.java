@@ -32,4 +32,7 @@ public class RoutineRepository {
     public int changeChecked(Integer routineId) {
         return routineMapper.changeChecked(routineId);
     }
+
+    public int deleteRoutineByUserId(Integer userId) { return routineMapper.deleteRoutineByRoutineId(userId); }
+
 }

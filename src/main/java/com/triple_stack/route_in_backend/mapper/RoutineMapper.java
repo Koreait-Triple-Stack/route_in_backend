@@ -14,4 +14,5 @@ public interface RoutineMapper {
     int removeRoutine(Routine routine);
     int deleteRoutineByRoutineId(Integer routineId);
     int changeChecked(Integer routineId);
+    int deleteRoutineByUserId(Integer userId);
 }
