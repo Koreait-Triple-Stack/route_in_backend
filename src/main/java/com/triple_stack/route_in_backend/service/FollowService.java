@@ -2,6 +2,7 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.follow.AddFollowReqDto;
+//import com.triple_stack.route_in_backend.dto.user.follow.ChangeFollowReqDto;
 import com.triple_stack.route_in_backend.dto.user.follow.DeleteFollowReqDto;
 import com.triple_stack.route_in_backend.entity.Follow;
 import com.triple_stack.route_in_backend.repository.FollowRepository;
@@ -29,11 +30,12 @@ public class FollowService {
             throw new RuntimeException("팔로우 추가에 실패했습니다.");
         }
 
+        // 팔로워 수: 팔로우 당하는 사람
         int followerResult = followRepository.plusFollower(addFollowReqDto.getFollowerUserId());
         if (followerResult != 1) {
             throw new RuntimeException("팔로우 추가에 실패했습니다.");
         }
-
+        // 팔로잉 수 : 팔로우 하는 사람
         int followingResult = followRepository.plusFollowing(addFollowReqDto.getFollowingUserId());
         if (followingResult != 1) {
             throw new RuntimeException("팔로우 추가에 실패했습니다.");
@@ -54,12 +56,12 @@ public class FollowService {
         if (followResult != 1) {
             throw new RuntimeException("팔로우 삭제에 실패했습니다.");
         }
-
+        // 팔로워 수 감소: 언팔로우 당하는 유저
         int followerResult = followRepository.minusFollower(deleteFollowReqDto.getFollowerUserId());
         if (followerResult != 1) {
             throw new RuntimeException("팔로우 삭제에 실패했습니다.");
         }
-
+        // 팔로잉 수 감소: 언팔로우 하는 유저
         int followingResult = followRepository.minusFollowing(deleteFollowReqDto.getFollowingUserId());
         if (followingResult != 1) {
             throw new RuntimeException("팔로우 삭제에 실패했습니다.");
@@ -75,4 +77,11 @@ public class FollowService {
     public ApiRespDto<?> getFollowingUserList(Integer userId) {
         return new ApiRespDto<>("success", "팔로잉 조회 완료", followRepository.getFollowingUserList(userId));
     }
+//    @Transactional
+//    public ApiRespDto<?> changeFollow(ChangeFollowReqDto dto) {
+//        if(dto.getFollowerUserId() == null) {
+//            dto.setFollowerUserId(principalUser != null ? principal.getUserId() : null)
+//        }
+//    }
+
 }
