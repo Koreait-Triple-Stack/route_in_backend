@@ -58,14 +58,9 @@ public class BoardController {
         return ResponseEntity.ok(boardService.getBoardListByKeyword(keyword));
     }
 
-    @PostMapping("/recommend/plus")
-    public ResponseEntity<?> plusRecommend(@RequestBody PlusRecommendReqDto plusRecommendReqDto) {
-        return ResponseEntity.ok(boardService.plusRecommend(plusRecommendReqDto));
-    }
-
-    @PostMapping("/recommend/minus")
-    public ResponseEntity<?> minusRecommend(@RequestBody MinusRecommendReqDto minusRecommendReqDto) {
-        return ResponseEntity.ok(boardService.minusRecommend(minusRecommendReqDto));
+    @PostMapping("/change/recommend")
+    public ResponseEntity<?> changeRecommend(@RequestBody ChangeRecommendReqDto changeRecommendReqDto) {
+        return ResponseEntity.ok(boardService.changeRecommend(changeRecommendReqDto));
     }
 
     @GetMapping("/recommend/{boardId}")
