@@ -13,5 +13,5 @@ public interface RoutineMapper {
     List<Routine> getRoutine(Integer userId , Integer boardId);
     int removeRoutine(Routine routine);
     int deleteRoutineByRoutineId(Integer routineId);
-    int changeChecked(Integer courseId);
+    int changeChecked(Integer routineId);
 }
