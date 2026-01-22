@@ -15,4 +15,5 @@ public class BoardInfiniteRespDto {
     private boolean hasNext;
     private Integer nextCursorBoardId;
     private LocalDateTime nextCursorCreateDt;
+    private Integer nextCursorRecommendCnt;
 }

@@ -20,7 +20,8 @@ public class BoardInfiniteParam {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime cursorCreateDt;
     private Integer cursorBoardId;
-
+    private Integer cursorRecommendCnt;
+    
     public int getLimitPlusOne() {
         int l = (limit == null ? 5 : limit);
         l = Math.max(1, Math.min(l, 5));

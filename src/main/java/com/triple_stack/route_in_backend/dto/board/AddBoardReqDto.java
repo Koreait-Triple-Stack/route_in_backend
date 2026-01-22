@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.dto.board;
 
 import com.triple_stack.route_in_backend.entity.Board;
+import com.triple_stack.route_in_backend.entity.Course;
 import com.triple_stack.route_in_backend.entity.Routine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class AddBoardReqDto {
     private List<String> tags;
 
     private Routine routine;
+    private Course course;
 
     public Board toEntity(Integer userId, List<String> tags) {
         return Board.builder()
