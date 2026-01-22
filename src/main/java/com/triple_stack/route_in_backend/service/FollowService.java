@@ -18,9 +18,9 @@ public class FollowService {
 
     @Transactional
     public ApiRespDto<?> addFollow(AddFollowReqDto addFollowReqDto) {
-        Optional<Follow> foundFollow = followRepository
-                .getFollowByFollowerUserIdAndFollowingUserId(addFollowReqDto.getFollowerUserId(), addFollowReqDto.getFollowingUserId());
-        if (foundFollow.isPresent()) {
+        boolean isFollowing = followRepository
+                .isFollowing(addFollowReqDto.getFollowerUserId(), addFollowReqDto.getFollowingUserId());
+        if (isFollowing) {
             throw new RuntimeException("이미 팔로우가 완료된 요청입니다.");
         }
 
@@ -44,9 +44,9 @@ public class FollowService {
 
     @Transactional
     public ApiRespDto<?> deleteFollow(DeleteFollowReqDto deleteFollowReqDto) {
-        Optional<Follow> foundFollow = followRepository
-                .getFollowByFollowerUserIdAndFollowingUserId(deleteFollowReqDto.getFollowerUserId(), deleteFollowReqDto.getFollowingUserId());
-        if (foundFollow.isPresent()) {
+        boolean isFollowing = followRepository
+                .isFollowing(deleteFollowReqDto.getFollowerUserId(), deleteFollowReqDto.getFollowingUserId());
+        if (!isFollowing) {
             throw new RuntimeException("이미 팔로우 상태가 아닙니다.");
         }
 

@@ -13,7 +13,7 @@ public interface FollowMapper {
     int deleteFollow(Follow follow);
     List<User> getFollowerUserList(Integer userId);
     List<User> getFollowingUserList(Integer userId);
-    Optional<Follow> getFollowByFollowerUserIdAndFollowingUserId(Integer followerUserId, Integer followingUserId);
+    int isFollowing(Integer followerUserId, Integer followingUserId);
     int plusFollower(Integer userId);
     int plusFollowing(Integer userId);
     int minusFollower(Integer userId);
