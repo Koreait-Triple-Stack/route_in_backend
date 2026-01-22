@@ -33,6 +33,6 @@ public class RoutineRepository {
         return routineMapper.changeChecked(routineId);
     }
 
-    public int deleteRoutineByUserId(Integer userId) { return routineMapper.deleteRoutineByRoutineId(userId); }
+    public int deleteRoutineByUserId(Integer userId) { return routineMapper.deleteRoutineByUserId(userId); }
 
 }

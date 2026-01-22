@@ -68,8 +68,8 @@ public class RoutineService {
         return new ApiRespDto<>("success", "운동 루틴 삭제를 완료했습니다.", null);
     }
 
-    public ApiRespDto<?> changeChecked(UpdateRoutineByUserReqDto updateRoutineByUserReqDto) {
-        int result = routineRepository.changeChecked(updateRoutineByUserReqDto.getRoutineId());
+    public ApiRespDto<?> changeChecked(Integer routineId) {
+        int result = routineRepository.changeChecked(routineId);
         if (result != 1) {
             throw new RuntimeException("운동 루틴 체크에 실패했습니다.");
         }
