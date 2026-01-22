@@ -71,6 +71,14 @@ public class BoardService {
             }
         } else {
             // 운동 루틴 로직 작성
+            for (Routine routine : addBoardReqDto.getRoutines()) {
+                routine.setBoardId(optionalBoard.get().getBoardId());
+                routine.setUserId(null);
+                int result = routineRepository.addRoutine(routine);
+                if (result != 1) {
+                    throw new RuntimeException("루틴 코스 추가에 실패했습니다.");
+                }
+            }
         }
 
         return new ApiRespDto<>("success", "게시물이 추가되었습니다.", null);

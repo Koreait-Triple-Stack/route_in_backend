@@ -20,7 +20,7 @@ public class AddBoardReqDto {
     private String content;
     private List<String> tags;
 
-    private Routine routine;
+    private List<Routine> routines;
     private Course course;
 
     public Board toEntity(Integer userId, List<String> tags) {
