@@ -288,7 +288,6 @@
     <update id="updateBoard" parameterType="com.triple_stack.route_in_backend.entity.Board">
         update board_tb
         set
-            type = #{type},
             title = #{title},
             content = #{content},
             tags = #{tags, typeHandler=com.triple_stack.route_in_backend.security.handler.JsonTypeHandler},

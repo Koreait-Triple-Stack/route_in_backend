@@ -54,6 +54,10 @@ public class BoardService {
             throw new RuntimeException("게시물 추가 실패");
         }
 
+        if (!"COURSE".equals(addBoardReqDto.getType()) && !"ROUTINE".equals(addBoardReqDto.getType())) {
+            throw new RuntimeException("게시글 타입 설정 잘못됨");
+        }
+
         if ("COURSE".equals(addBoardReqDto.getType())) {
             addBoardReqDto.getCourse().setBoardId(optionalBoard.get().getBoardId());
             Optional<Course> optionalCourse = courseRepository.addCourse(addBoardReqDto.getCourse());
@@ -70,7 +74,6 @@ public class BoardService {
                 }
             }
         } else {
-            // 운동 루틴 로직 작성
             for (Routine routine : addBoardReqDto.getRoutines()) {
                 routine.setBoardId(optionalBoard.get().getBoardId());
                 routine.setUserId(null);
@@ -81,7 +84,7 @@ public class BoardService {
             }
         }
 
-        return new ApiRespDto<>("success", "게시물이 추가되었습니다.", null);
+        return new ApiRespDto<>("success", "게시물이 추가되었습니다.", board.getBoardId());
     }
 
     public ApiRespDto<?> getBoardList() {
@@ -149,6 +152,40 @@ public class BoardService {
         int result = boardRepository.updateBoard(updateBoardReqDto.toEntity());
         if (result != 1) {
             throw new RuntimeException("게시물 수정 실패.");
+        }
+
+        if (!"COURSE".equals(updateBoardReqDto.getType()) && !"ROUTINE".equals(updateBoardReqDto.getType())) {
+            throw new RuntimeException("게시글 타입 설정 잘못됨");
+        }
+
+        if ("COURSE".equals(updateBoardReqDto.getType())) {
+            updateBoardReqDto.getCourse().setBoardId(updateBoardReqDto.getBoardId());
+            Course course = updateBoardReqDto.getCourse();
+            int courseResult = courseRepository.updateCourse(course);
+            if (courseResult != 1) {
+                throw new RuntimeException("러닝 코스 수정에 실패했습니다.");
+            }
+
+            coursePointRepository.deleteCoursePoint(course.getCourseId());
+
+            for (CoursePoint point : updateBoardReqDto.getCourse().getPoints()) {
+                point.setCourseId(course.getCourseId());
+                int coursePointResult = coursePointRepository.addCoursePoint(point);
+                if (coursePointResult != 1) {
+                    throw new RuntimeException("러닝 코스 수정에 실패했습니다.");
+                }
+            }
+        } else {
+            routineRepository.deleteRoutineByBoardId(updateBoardReqDto.getBoardId());
+
+            for (Routine routine : updateBoardReqDto.getRoutines()) {
+                routine.setBoardId(updateBoardReqDto.getBoardId());
+                routine.setUserId(null);
+                int routineResult = routineRepository.addRoutine(routine);
+                if (routineResult != 1) {
+                    throw new RuntimeException("루틴 코스 수정에 실패했습니다.");
+                }
+            }
         }
 
         return new ApiRespDto<>("success", "게시물 수정 완료", null);

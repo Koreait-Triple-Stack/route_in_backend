@@ -25,14 +25,23 @@ public class RoutineRepository {
         return routineMapper.getRoutine(userId, boardId);
     }
 
-    public int removeRoutine(Routine routine) { return routineMapper.removeRoutine(routine); }
+    public int removeRoutine(Routine routine) {
+        return routineMapper.removeRoutine(routine);
+    }
 
-    public int deleteRoutineByRoutineId(Integer routineId) { return routineMapper.deleteRoutineByRoutineId(routineId); }
+    public int deleteRoutineByRoutineId(Integer routineId) {
+        return routineMapper.deleteRoutineByRoutineId(routineId);
+    }
 
     public int changeChecked(Integer routineId) {
         return routineMapper.changeChecked(routineId);
     }
 
-    public int deleteRoutineByUserId(Integer userId) { return routineMapper.deleteRoutineByUserId(userId); }
+    public int deleteRoutineByUserId(Integer userId) {
+        return routineMapper.deleteRoutineByUserId(userId);
+    }
 
+    public int deleteRoutineByBoardId(Integer boardId) {
+        return routineMapper.deleteRoutineByBoardId(boardId);
+    }
 }
