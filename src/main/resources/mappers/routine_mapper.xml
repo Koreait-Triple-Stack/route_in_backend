@@ -95,4 +95,11 @@
         where
             user_id = #{userId}
     </delete>
+
+    <delete id="deleteRoutineByBoardId">
+        delete from
+            routine_tb
+        where
+            board_id = #{boardId}
+    </delete>
 </mapper>

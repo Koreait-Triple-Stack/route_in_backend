@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.dto.board;
 
 
+import com.triple_stack.route_in_backend.entity.Course;
 import com.triple_stack.route_in_backend.entity.Routine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,19 +13,19 @@ import java.util.List;
 @AllArgsConstructor
 
 public class UpdateBoardReqDto {
-    private String title;
-    private String type;
-    private List<String> tags;
-    private String content;
     private Integer boardId;
     private Integer userId;
+    private String title;
+    private String content;
+    private String type;
+    private List<String> tags;
 
-    private Routine routine;
+    private Course course;
+    private List<Routine> routines;
 
     public Board toEntity() {
         return Board.builder()
                 .boardId(boardId)
-                .type(type)
                 .tags(tags)
                 .title(title)
                 .content(content)
