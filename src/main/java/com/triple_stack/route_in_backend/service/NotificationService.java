@@ -2,41 +2,26 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.account.AddNotificationReqDto;
-import com.triple_stack.route_in_backend.dto.user.account.NotificationItemDto;
 import com.triple_stack.route_in_backend.repository.NotificationRepository;
-import lombok.RequiredArgsConstructor;
+import com.triple_stack.route_in_backend.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    private final SimpMessagingTemplate messagingTemplate;
-
+    @Autowired
+    private NotificationUtils notificationUtils;
 
     @Transactional
     public ApiRespDto<?> addNotification(AddNotificationReqDto addNotificationReqDto) {
-        Map<String, Object> payload = addNotificationReqDto.toSendTemplate();
-
-        for (Integer userId : addNotificationReqDto.getUserIds()) {
-            int result = notificationRepository.addNotification(addNotificationReqDto.toEntity(userId));
-            if (result != 1) {
-                throw new RuntimeException("알림 전송에 실패했습니다.");
-            }
-
-            messagingTemplate.convertAndSendToUser(
-                    String.valueOf(userId),
-                    "/queue/notification",
-                    payload
-            );
-        }
+        notificationUtils.sendAndAddNotification(addNotificationReqDto.getUserIds(),
+                addNotificationReqDto.getMessage(), addNotificationReqDto.getPath());
 
         return new ApiRespDto<>("success", "알림 전송을 완료했습니다.", null);
     }

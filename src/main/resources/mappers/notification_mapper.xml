@@ -34,7 +34,9 @@
         from
             notification_tb
         where
-            user_id = #{userId};
+            user_id = #{userId}
+        order by
+            create_dt desc;
     </select>
 
     <delete id="deleteNotificationByNotificationId">

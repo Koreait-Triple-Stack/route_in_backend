@@ -6,6 +6,7 @@ import com.triple_stack.route_in_backend.dto.board.CopyPayloadReqDto;
 import com.triple_stack.route_in_backend.entity.*;
 import com.triple_stack.route_in_backend.repository.*;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
+import com.triple_stack.route_in_backend.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,12 @@ public class BoardService {
 
     @Autowired
     private CoursePointRepository coursePointRepository;
+
+    @Autowired
+    private FollowRepository followRepository;
+
+    @Autowired
+    private NotificationUtils notificationUtils;
 
     @Transactional
     public ApiRespDto<?> addBoard(AddBoardReqDto addBoardReqDto, PrincipalUser principalUser) {
@@ -83,6 +90,15 @@ public class BoardService {
                 }
             }
         }
+
+        List<User> followerList = followRepository.getFollowerUserList(addBoardReqDto.getUserId());
+        List<Integer> userIds = followerList.stream()
+                .map(User::getUserId)
+                .toList();
+
+        notificationUtils.sendAndAddNotification(userIds,
+                principalUser.getUsername() + "님이 게시글을 작성했습니다.",
+                "/board/detail/" + board.getBoardId());
 
         return new ApiRespDto<>("success", "게시물이 추가되었습니다.", board.getBoardId());
     }
