@@ -67,16 +67,14 @@
     </update>
 
     <update id="changeCourseFavorite">
-        update
+        UPDATE
             course_tb
-        set
+        SET
             favorite = CASE
-                WHEN course_id = #{courseId}
-                THEN 1
-                ELSE 0
+            WHEN course_id = #{courseId} THEN (1 - favorite)
+            ELSE 0
             END
-        where
-            user_id = #{userId}
+        WHERE user_id = #{userId}
     </update>
 
     <delete id="deleteCourse">

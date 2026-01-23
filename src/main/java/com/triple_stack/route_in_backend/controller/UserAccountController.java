@@ -30,6 +30,11 @@ public class UserAccountController {
         return ResponseEntity.ok(userAccountService.getUserByUsername(username));
     }
 
+    @GetMapping("/duplicated/{username}")
+    public ResponseEntity<?> isDuplicatedUsername(@PathVariable String username) {
+        return ResponseEntity.ok(userAccountService.isDuplicatedUsername(username));
+    }
+
     @PostMapping("/address")
     public ResponseEntity<?> saveAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(userAccountService.saveOrUpdateAddress(changeAddressReqDto, principalUser));

@@ -37,6 +37,10 @@ public class AccountService {
         return new ApiRespDto<>("success", "유저 조회 완료", foundUser.get());
     }
 
+    public ApiRespDto<?> isDuplicatedUsername(String username) {
+        return new ApiRespDto<>("success", "중복 조회 완료", userRepository.getUserByUsername(username).isPresent());
+    }
+
     public ApiRespDto<?> changeUsername(ChangeUsernameReqDto changeUsernameReqDto, PrincipalUser principalUser) {
         if (!changeUsernameReqDto.getUserId().equals(principalUser.getUserId())) {
             throw new RuntimeException("잘못된 접근입니다.");
