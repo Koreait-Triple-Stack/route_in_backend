@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.repository;
 
+import com.triple_stack.route_in_backend.dto.board.BoardDetailRespDto;
 import com.triple_stack.route_in_backend.dto.board.BoardInfiniteParam;
 import com.triple_stack.route_in_backend.dto.board.BoardRespDto;
 import com.triple_stack.route_in_backend.entity.Board;
@@ -46,7 +47,7 @@ public class BoardRepository {
         return boardMapper.getBoardInfinite(param);
     }
 
-    public Optional<BoardRespDto> getBoardByBoardId(Integer boardId) {
+    public Optional<BoardDetailRespDto> getBoardByBoardId(Integer boardId) {
         return boardMapper.getBoardByBoardId(boardId);
     }
 

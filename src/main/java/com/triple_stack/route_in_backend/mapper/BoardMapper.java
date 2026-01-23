@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.mapper;
 
+import com.triple_stack.route_in_backend.dto.board.BoardDetailRespDto;
 import com.triple_stack.route_in_backend.dto.board.BoardInfiniteParam;
 import com.triple_stack.route_in_backend.dto.board.BoardRespDto;
 import com.triple_stack.route_in_backend.entity.Board;
@@ -17,7 +18,7 @@ public interface BoardMapper {
     int removeBoard(Integer boardId);
     List<BoardRespDto> getBoardList();
     List<BoardRespDto> getBoardInfinite(BoardInfiniteParam param);
-    Optional<BoardRespDto> getBoardByBoardId(Integer boardId);
+    Optional<BoardDetailRespDto> getBoardByBoardId(Integer boardId);
     List<BoardRespDto> getBoardListByKeyword(String keyword);
     List<BoardRespDto> getBoardListByUserId(Integer userId);
     int plusRecommend(Integer boardId);
