@@ -122,21 +122,12 @@ public class BoardService {
     }
 
     public ApiRespDto<?> getBoardByBoardId(Integer boardId) {
-        Optional<BoardRespDto> foundBoard = boardRepository.getBoardByBoardId(boardId);
+        Optional<BoardDetailRespDto> foundBoard = boardRepository.getBoardByBoardId(boardId);
         if (foundBoard.isEmpty()) {
             throw new RuntimeException("존재하지 않는 게시물입니다");
         }
 
-        BoardRespDto board = foundBoard.get();
-//        if (board.getType().equals("routine")) {
-//            List<Routine> optionalRoutine = routineRepository.getRoutine(null, board.getBoardId());
-//            if (optionalRoutine.isEmpty()) {
-//                throw new RuntimeException("운동 루틴 조회에 실패했습니다");
-//            }
-//            board.setRoutine(optionalRoutine.get());
-//        }
-
-        return new ApiRespDto<>("success", "게시물 조회 완료", board);
+        return new ApiRespDto<>("success", "게시물 조회 완료", foundBoard.get());
     }
 
     public ApiRespDto<?> getBoardListByKeyword(String keyword) {
@@ -150,7 +141,7 @@ public class BoardService {
             throw new RuntimeException("잘못된 접근입니다.");
         }
 
-        Optional<BoardRespDto> foundBoard = boardRepository.getBoardByBoardId(updateBoardReqDto.getBoardId());
+        Optional<BoardDetailRespDto> foundBoard = boardRepository.getBoardByBoardId(updateBoardReqDto.getBoardId());
         if (foundBoard.isEmpty()) {
             throw new RuntimeException("존재하지 않는 게시물입니다.");
         }
@@ -159,15 +150,6 @@ public class BoardService {
         if (result != 1) {
             throw new RuntimeException("게시물 수정 실패.");
         }
-
-//        if (updateBoardReqDto.getType().equals("routine")) {
-//            Routine routine = updateBoardReqDto.getRoutine();
-//            routine.setBoardId(updateBoardReqDto.getBoardId());
-//            int routineResult = routineRepository.updateRoutine(routine);
-//            if (routineResult != 1) {
-//                throw new RuntimeException("운동 루틴 수정 실패");
-//            }
-//        }
 
         return new ApiRespDto<>("success", "게시물 수정 완료", null);
     }
@@ -178,7 +160,7 @@ public class BoardService {
             throw new RuntimeException("잘못된 접근입니다.");
         }
 
-        Optional<BoardRespDto> foundBoard = boardRepository.getBoardByBoardId(removeBoardReqDto.getBoardId());
+        Optional<BoardDetailRespDto> foundBoard = boardRepository.getBoardByBoardId(removeBoardReqDto.getBoardId());
         if (foundBoard.isEmpty()) {
             throw new RuntimeException("존재하지 않는 게시물입니다.");
         }
