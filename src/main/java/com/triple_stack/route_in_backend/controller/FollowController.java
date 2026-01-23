@@ -1,7 +1,7 @@
 package com.triple_stack.route_in_backend.controller;
 
 import com.triple_stack.route_in_backend.dto.user.follow.AddFollowReqDto;
-//import com.triple_stack.route_in_backend.dto.user.follow.ChangeFollowReqDto;
+import com.triple_stack.route_in_backend.dto.user.follow.ChangeFollowReqDto;
 import com.triple_stack.route_in_backend.dto.user.follow.DeleteFollowReqDto;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import com.triple_stack.route_in_backend.service.FollowService;
@@ -25,16 +25,26 @@ public class FollowController {
     public ResponseEntity<?> deleteFollow(@RequestBody DeleteFollowReqDto deleteFollowReqDto) {
         return ResponseEntity.ok(followService.deleteFollow(deleteFollowReqDto));
     }
-//    // 현재 상태 받아서 토글
-//    @PostMapping("/change")
-//    public ResponseEntity<?> changeFollow(@RequestBody ChangeFollowReqDto changeFollowReqDto) {
-//        return ResponseEntity.ok(followService.changeFollow(changeFollowReqDto));
-//    }
-//    // 두 유저 간의 팔로우 여부 boolean반환
-//    @GetMapping("/status")
-//    public ResponseEntity<?> getFollowStatus(@RequestParam Integer followUserId, @RequestParam Integer followingUserId) {
-//    return ResponseEntity.ok(followService.getFollowerStatus(followUserId, followingUserId));
-//    }
+    // 현재 상태 받아서 토글
+    @PostMapping("/change")
+    public ResponseEntity<?> changeFollow(
+            @RequestBody ChangeFollowReqDto dto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(followService.changeFollow(dto, principalUser));
+    }
+
+    // 두 유저 간의 팔로우 여부 boolean반환
+    @GetMapping("/status")
+    public ResponseEntity<?> getFollowStatus(
+            @RequestParam Integer followerUserId,
+            @RequestParam Integer followingUserId,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(
+                followService.getFollowStatus(followerUserId, followingUserId, principalUser)
+        );
+    }
 
 
     @GetMapping("/follower/{userId}")
