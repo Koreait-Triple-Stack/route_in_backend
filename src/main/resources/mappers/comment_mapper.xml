@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.CommentMapper">
+    <resultMap id="CommentResultMap" type="com.triple_stack.route_in_backend.entity.Comment">
+        <id property="commentId" column="comment_id" />
+        <result property="boardId" column="board_id" />
+        <result property="userId" column="user_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="content" column="content" />
+        <result property="isDeleted" column="is_deleted" />
+        <result property="createDt" column="create_dt" />
+        <result property="updateDt" column="update_dt" />
+    </resultMap>
+
+    <resultMap id="CommentRespResultMap" type="com.triple_stack.route_in_backend.dto.comment.CommentRespDto">
+        <id property="commentId" column="comment_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="profileImg" column="profile_img"/>
+        <result property="content" column="content" />
+        <result property="isDeleted" column="is_deleted" />
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <insert id="addComment" useGeneratedKeys="true" keyProperty="commentId">
+        insert into comment_tb
+            (board_id, user_id, parent_id, content, is_deleted, create_dt, update_dt)
+        values
+        (#{boardId}, #{userId}, #{parentId}, #{content}, 0, now(), null)
+    </insert>
+
+    <select id="getCommentListByBoardId" resultMap="CommentRespResultMap">
+        select
+            ct.comment_id,
+            ct.board_id,
+            ct.user_id,
+            ct.parent_id,
+            ct.content,
+            ct.is_deleted,
+            ct.create_dt,
+            ct.update_dt,
+            ut.username,
+            ut.profile_img
+        from
+            comment_tb ct
+            join user_tb ut on (ct.user_id = ut.user_id)
+        where
+            ct.board_id = #{boardId}
+        order by
+            COALESCE(ct.parent_id, ct.comment_id) ASC,
+            ct.parent_id IS NOT NULL ASC,
+            ct.comment_id ASC
+    </select>
+
+    <select id="getCommentByCommentId" resultMap="CommentResultMap">
+        select
+            *
+        from
+            comment_tb
+        where
+            comment_id = #{commentId}
+    </select>
+
+    <update id="deleteComment">
+        update
+            comment_tb
+        set
+            is_deleted = 1
+        where
+            comment_id = #{commentId}
+    </update>
+</mapper>

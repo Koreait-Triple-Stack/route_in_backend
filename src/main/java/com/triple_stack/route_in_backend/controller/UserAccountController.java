@@ -65,7 +65,7 @@ public class UserAccountController {
         return ResponseEntity.ok(userAccountService.changeWeeklyRun(changeWeeklyRunReqDto, principalUser));
     }
 
-    @PostMapping("withdraw")
+    @PostMapping("/withdraw")
     public ResponseEntity<?> withdraw(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(userAccountService.withdraw(principalUser));
     }

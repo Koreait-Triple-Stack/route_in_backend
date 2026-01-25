@@ -186,14 +186,14 @@ public class AccountService {
         }
         User user = foundUser.get();
         if (!user.isActive()) {
-            throw new RuntimeException("이미 탈퇴 처리된 계정입니다.");
+            return new ApiRespDto<>("success", "이미 탈퇴 처리된 계정입니다. 로그아웃합니다.", null);
         }
 
         int result = userRepository.withdraw(user.getUserId());
         if (result != 1) {
             throw new RuntimeException("탈퇴처리에 실패했습니다.");
         }
-        return new ApiRespDto<>("success", "탈퇴처리가 완료되었습니다. 90일 이후 회원 정보가 삭제됩니다.", null);
+        return new ApiRespDto<>("success", "탈퇴처리가 완료되었습니다. 30일 이후 회원 정보가 삭제됩니다.", null);
     }
 
 }
