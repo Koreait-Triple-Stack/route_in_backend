@@ -6,18 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Notification {
-    private Integer notificationId;
-    private Integer userId;
-    private String title;
-    private String message;
-    private String path;
-    private String profileImg;
-    private Boolean isRead;
+public class Room {
+    private Integer roomId;
+    private String type; // 1대1 또는 그룹
+    private String lastMessage;
+    private LocalDateTime lastMessageDt;
     private LocalDateTime createDt;
+
+    List<RoomParticipant> participants;
 }

@@ -1,0 +1,27 @@
+package com.triple_stack.route_in_backend.repository;
+
+import com.triple_stack.route_in_backend.dto.message.MessageInfiniteParam;
+import com.triple_stack.route_in_backend.entity.Message;
+import com.triple_stack.route_in_backend.mapper.MessageMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public class MessageRepository {
+    @Autowired
+    private MessageMapper messageMapper;
+
+    public int addMessage(Message message) {
+        return messageMapper.addMessage(message);
+    }
+
+    public int deleteMessage(Integer messageId) {
+        return messageMapper.deleteMessage(messageId);
+    }
+
+    public List<Message> getMessageListInfinite(MessageInfiniteParam messageInfiniteParam) {
+        return messageMapper.getMessageListInfinite(messageInfiniteParam);
+    }
+}
