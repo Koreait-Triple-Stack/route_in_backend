@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.RoomMapper">
+    <resultMap id="RoomResultMap" type="com.triple_stack.route_in_backend.entity.Room">
+        <id property="roomId" column="room_id"/>
+        <result property="type" column="type"/>
+        <result property="lastMessage" column="last_message"/>
+        <result property="lastMessageDt" column="last_message_dt"/>
+        <result property="createDt" column="create_dt"/>
+        <collection property="participants" resultMap="RoomParticipantResultMap"/>
+    </resultMap>
+
+    <resultMap id="RoomParticipantResultMap" type="com.triple_stack.route_in_backend.entity.RoomParticipant">
+        <result property="roomId" column="rpt_room_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="role" column="role"/>
+        <result property="unreadCnt" column="unread_cnt"/>
+        <result property="joinedDt" column="joined_dt"/>
+        <result property="leftDt" column="left_dt"/>
+    </resultMap>
+
+    <insert id="addRoom" useGeneratedKeys="true" keyProperty="roomId">
+        insert into
+            room_tb
+        values
+            (0, #{type}, null, null, now());
+    </insert>
+
+    <insert id="addRoomParticipant">
+        insert into
+        values
+            (#{roomId}, #{userId}, #{title}, #{role}, 0, now(), null);
+    </insert>
+
+    <select id="getRoomListByUserId" resultMap="RoomResultMap">
+        select
+            rt.*,
+            rpt.room_id as rpt_room_id,
+            rpt.user_id,
+            rpt.title,
+            rpt.role,
+            rpt.unread_cnt,
+            rpt.joined_dt,
+            rpt.left_dt
+        from
+            room_tb rt
+            join room_participant_tb rpt on (rt.room_id = rpt.room_id)
+        where
+            rpt.user_id = #{userId} and rt.last_message_dt != null
+        order by
+            rt.last_message_dt desc;
+    </select>
+
+    <delete id="deleteRoom">
+        delete from
+            room_participant_tb
+        where
+            user_id = #{userId} and room_id = #{roomId};
+    </delete>
+
+    <update id="changeRoomTitle">
+        update
+            room_participant_tb
+        set
+            title = #{title}
+        where
+            user_id = #{userId} and room_id = #{roomId};
+    </update>
+
+    <select id="getRoomByUserIdAndRoomId" resultMap="RoomResultMap">
+        select
+            rt.*,
+            rpt.room_id as rpt_room_id,
+            rpt.user_id,
+            rpt.title,
+            rpt.role,
+            rpt.unread_cnt,
+            rpt.joined_dt,
+            rpt.left_dt
+        from
+            room_tb rt
+            join room_participant_tb rpt on (rt.room_id = rpt.room_id)
+        where
+            rpt.user_id = #{userId}
+            and rpt.room_id = #{roomId}
+            and rt.last_message_dt != null
+    </select>
+
+    <select id="getRoomByRoomId" resultMap="RoomResultMap">
+        select
+            rt.*,
+            rpt.room_id as rpt_room_id,
+            rpt.user_id,
+            rpt.title,
+            rpt.role,
+            rpt.unread_cnt,
+            rpt.joined_dt,
+            rpt.left_dt
+        from
+            room_tb rt
+            join room_participant_tb rpt on (rt.room_id = rpt.room_id)
+        where
+            room_id = #{roomId};
+    </select>
+</mapper>

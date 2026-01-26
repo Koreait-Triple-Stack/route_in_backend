@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Notification {
-    private Integer notificationId;
+public class RoomParticipant {
+    private Integer roomId;
     private Integer userId;
     private String title;
-    private String message;
-    private String path;
-    private String profileImg;
-    private Boolean isRead;
-    private LocalDateTime createDt;
+    private String role;
+    private Integer unreadCnt;
+    private LocalDateTime joinedDt;
+    private LocalDateTime leftDt;
 }

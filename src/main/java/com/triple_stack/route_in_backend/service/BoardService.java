@@ -43,6 +43,7 @@ public class BoardService {
 
     @Transactional
     public ApiRespDto<?> addBoard(AddBoardReqDto addBoardReqDto, PrincipalUser principalUser) {
+        System.out.println(addBoardReqDto);
         if (!addBoardReqDto.getUserId().equals(principalUser.getUserId())) {
             throw new RuntimeException("잘못된 접근입니다.");
         }
@@ -96,9 +97,10 @@ public class BoardService {
                 .map(User::getUserId)
                 .toList();
 
-        notificationUtils.sendAndAddNotification(userIds,
+        String profileImg = foundUser.get().getProfileImg() == null ? "" : foundUser.get().getProfileImg();
+        notificationUtils.sendAndAddNotification(userIds, "새 게시글",
                 principalUser.getUsername() + "님이 게시글을 작성했습니다.",
-                "/board/detail/" + board.getBoardId());
+                "/board/detail/" + board.getBoardId(), profileImg);
 
         return new ApiRespDto<>("success", "게시물이 추가되었습니다.", board.getBoardId());
     }

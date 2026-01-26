@@ -20,8 +20,8 @@ public class NotificationService {
 
     @Transactional
     public ApiRespDto<?> addNotification(AddNotificationReqDto addNotificationReqDto) {
-        notificationUtils.sendAndAddNotification(addNotificationReqDto.getUserIds(),
-                addNotificationReqDto.getMessage(), addNotificationReqDto.getPath());
+        notificationUtils.sendAndAddNotification(addNotificationReqDto.getUserIds(), addNotificationReqDto.getTitle(),
+                addNotificationReqDto.getMessage(), addNotificationReqDto.getPath(), "");
 
         return new ApiRespDto<>("success", "알림 전송을 완료했습니다.", null);
     }

@@ -14,23 +14,17 @@ import java.util.Map;
 @NoArgsConstructor
 public class AddNotificationReqDto {
     private List<Integer> userIds;
+    private String title;
     private String message;
     private String path;
-
-    public Map<String, Object> toSendTemplate() {
-        return Map.of(
-            "type", "NOTIFICATION",
-            "message", message,
-            "path", path,
-            "createDt", Instant.now().toString()
-        );
-    }
+    private String profileImg;
 
     public Notification toEntity(Integer userId) {
         return Notification.builder()
                 .userId(userId)
                 .message(message)
                 .path(path)
+                .profileImg(profileImg)
                 .build();
     }
 }

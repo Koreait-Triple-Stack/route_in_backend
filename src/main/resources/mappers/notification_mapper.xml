@@ -6,8 +6,10 @@
     <resultMap id="NotificationResultMap" type="com.triple_stack.route_in_backend.entity.Notification">
         <id property="notificationId" column="notification_id"/>
         <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
         <result property="message" column="message"/>
         <result property="path" column="path"/>
+        <result property="profileImg" column="profile_img"/>
         <result property="isRead" column="is_read"/>
         <result property="createDt" column="create_dt"/>
     </resultMap>
@@ -16,7 +18,7 @@
         insert into
             notification_tb
         values
-            (0, #{userId}, #{message}, #{path}, 0, now());
+            (0, #{userId}, #{title}, #{message}, #{path}, #{profileImg}, 0, now());
     </insert>
 
     <update id="markAllRead">
