@@ -1,9 +1,11 @@
 package com.triple_stack.route_in_backend.controller;
 
 import com.triple_stack.route_in_backend.dto.comment.AddComment;
+import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import com.triple_stack.route_in_backend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,8 +15,8 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addComment(@RequestBody AddComment addComment) {
-        return ResponseEntity.ok(commentService.addComment(addComment));
+    public ResponseEntity<?> addComment(@RequestBody AddComment addComment, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(commentService.addComment(addComment, principalUser));
     }
 
     @GetMapping("/{boardId}")

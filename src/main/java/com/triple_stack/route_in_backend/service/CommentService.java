@@ -1,10 +1,16 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
+import com.triple_stack.route_in_backend.dto.board.BoardDetailRespDto;
 import com.triple_stack.route_in_backend.dto.comment.AddComment;
 import com.triple_stack.route_in_backend.dto.comment.CommentRespDto;
+import com.triple_stack.route_in_backend.entity.Board;
 import com.triple_stack.route_in_backend.entity.Comment;
+import com.triple_stack.route_in_backend.repository.BoardRepository;
 import com.triple_stack.route_in_backend.repository.CommentRepository;
+import com.triple_stack.route_in_backend.repository.UserRepository;
+import com.triple_stack.route_in_backend.security.model.PrincipalUser;
+import com.triple_stack.route_in_backend.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +22,28 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private NotificationUtils notificationUtils;
+
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional
-    public ApiRespDto<?> addComment(AddComment addComment) {
+    public ApiRespDto<?> addComment(AddComment addComment, PrincipalUser principalUser) {
         Integer parentId = addComment.getParentId();
+        Integer currentUserId = principalUser.getUserId();
+
+        Optional<BoardDetailRespDto> board = boardRepository.getBoardByBoardId(addComment.getBoardId());
+        if (board.isEmpty()) {
+            throw new RuntimeException("게시물이 존재하지 않습니다.");
+        }
+
+        Integer boardWriterId = board.get().getUserId();
+
+        Integer parentCommentWriterId = null;
 
         if (parentId != null) {
             Optional<Comment> parentComment = commentRepository.getCommentByCommentId(parentId);
@@ -27,6 +52,8 @@ public class CommentService {
                 throw new RuntimeException("부모 댓글이 존재하지 않습니다.");
             }
 
+            parentCommentWriterId = parentComment.get().getUserId();
+
             if (parentComment.get().getParentId() != null) {
                 parentId = parentComment.get().getParentId();
             }
@@ -34,10 +61,26 @@ public class CommentService {
 
         Comment comment = addComment.toEntity();
         comment.setParentId(parentId);
+        comment.setUserId(currentUserId);
+
 
         int result = commentRepository.addComment(comment);
         if (result != 1) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
+        }
+
+        String notifyPath = "/board/detail/" + addComment.getBoardId();
+
+        if (!currentUserId.equals(boardWriterId)) {
+            String message = board.get().getUsername() + "님의" + board.get().getTitle() + "게시글에 새로운 댓글이 달렸습니다.";
+            notificationUtils.sendAndAddNotification(List.of(boardWriterId), message, notifyPath);
+        }
+
+        if (parentCommentWriterId != null && !currentUserId.equals(parentCommentWriterId)) {
+            if (!parentCommentWriterId.equals(boardWriterId)) {
+                String message = userRepository.getUserByUserId(parentCommentWriterId).get().getUsername() + "님의 댓글에 답글이 달렸습니다.";
+                notificationUtils.sendAndAddNotification(List.of(parentCommentWriterId), message, notifyPath);
+            }
         }
 
         return new ApiRespDto<>("success", "댓글이 작성되었습니다.", null);
