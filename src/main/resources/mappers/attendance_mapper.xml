@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.AttendanceMapper">
+
+    <insert id = "insertToday">
+        INSERT IGNORE INTO attendance_tb (user_id, attendance_date)
+        VALUES (#{userId}, CURDATE())
+    </insert>
+    <select id="selectMonthDates" resultType="string">
+        SELECT DATE_FORMAT(attendance_date, '%Y-%m-%d')
+        FROM attendance_tb
+        WHERE user_id = #{userId}
+        AND attendance_date >= CONCAT(#{ym}, '-01')
+        AND attendance_date &lt; DATE_ADD(CONCAT(#{ym}, '-01'), INTERVAL 1 MONTH)
+        ORDER BY attendance_date
+    </select>
+
+</mapper>
