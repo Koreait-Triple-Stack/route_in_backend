@@ -2,6 +2,7 @@ package com.triple_stack.route_in_backend.controller;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.account.*;
+import com.triple_stack.route_in_backend.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,8 +16,13 @@ public class UserAccountController {
     @Autowired
     private AccountService userAccountService;
 
+    @Autowired
+    private AttendanceService attendanceService;
+
     @GetMapping("/principal")
     public ResponseEntity<?> getPrincipal(@AuthenticationPrincipal PrincipalUser principalUser) {
+        //로그인하면 출석 자동 저장
+        attendanceService.autoCheckToday(principalUser);
         return ResponseEntity.ok(new ApiRespDto<>("success", "회원 조회 완료", principalUser));
     }
 
