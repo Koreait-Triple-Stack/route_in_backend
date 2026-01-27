@@ -15,10 +15,11 @@ public class AddMessageReqDto {
     private String type;
     private String content;
 
-    public Room toRoomEntity() {
+    public Room toRoomEntity(Integer lastMessageId) {
         return Room.builder()
                 .roomId(roomId)
                 .lastMessage(content)
+                .lastMessageId(lastMessageId)
                 .build();
     }
 

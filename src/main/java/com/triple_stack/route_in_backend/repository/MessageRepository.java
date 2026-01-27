@@ -14,8 +14,17 @@ public class MessageRepository {
     @Autowired
     private MessageMapper messageMapper;
 
-    public int addMessage(Message message) {
-        return messageMapper.addMessage(message);
+    public Optional<Message> addMessage(Message message) {
+        try {
+            int result = messageMapper.addMessage(message);
+            if (result !=1 ) {
+                return Optional.empty();
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return Optional.of(message);
     }
 
     public int changeMessage(Message message) {

@@ -20,6 +20,7 @@ public class Room {
     private LocalDateTime createDt;
     private String lastMessage;
     private LocalDateTime lastMessageDt;
+    private Integer lastMessageId;
 
     List<RoomParticipant> participants;
 }

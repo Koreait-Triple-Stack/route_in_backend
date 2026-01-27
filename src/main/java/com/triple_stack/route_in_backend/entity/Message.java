@@ -20,4 +20,6 @@ public class Message {
     private LocalDateTime createDt;
 
     private String profileImg;
+    private String username;
+    private Integer unreadCnt;
 }

@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.dto.chat;
 
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
+import com.triple_stack.route_in_backend.entity.RoomRead;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddRoomReqDto {
-    private String type;
     private String title;
     private List<Integer> userIds;
 

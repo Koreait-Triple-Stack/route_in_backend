@@ -20,4 +20,5 @@ public class RoomParticipant {
     private LocalDateTime leftDt;
 
     private String profileImg;
+    private String username;
 }

@@ -5,6 +5,7 @@ import com.triple_stack.route_in_backend.dto.chat.*;
 import com.triple_stack.route_in_backend.entity.Message;
 import com.triple_stack.route_in_backend.entity.Room;
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
+import com.triple_stack.route_in_backend.entity.RoomRead;
 import com.triple_stack.route_in_backend.repository.MessageRepository;
 import com.triple_stack.route_in_backend.repository.RoomRepository;
 import com.triple_stack.route_in_backend.repository.UserRepository;
@@ -32,12 +33,18 @@ public class ChatService {
     private UserRepository userRepository;
 
     @Transactional
-    public ApiRespDto<?> addRoom(AddRoomReqDto addRoomReqDto) {
+    public ApiRespDto<?> addRoom(AddRoomReqDto addRoomReqDto, PrincipalUser principalUser) {
         if (addRoomReqDto.getUserIds().isEmpty()) {
             throw new RuntimeException("1명 이상 있어야 합니다.");
         }
 
-        Optional<Room> optionalRoom = roomRepository.addRoom(Room.builder().type(addRoomReqDto.getType()).build());
+        Integer profileUserId = addRoomReqDto.getUserIds().stream().filter(id -> id.equals(principalUser.getUserId())).findFirst().orElse(null);
+        String type = addRoomReqDto.getUserIds().size() > 2 ? "GROUP" : "DM";
+        Room room = Room.builder()
+                .type(type)
+                .profileUserId(profileUserId)
+                .build();
+        Optional<Room> optionalRoom = roomRepository.addRoom(room);
         if (optionalRoom.isEmpty()) {
             throw new RuntimeException("채팅방 생성에 실패했습니다");
         }
@@ -48,6 +55,11 @@ public class ChatService {
             if (result != 1) {
                 throw new RuntimeException("채팅방 생성에 실패했습니다");
             }
+
+            int readResult = roomRepository.addRoomRead(RoomRead.builder().roomId(roomId).userId(userId).build());
+            if (readResult != 1) {
+                throw new RuntimeException("채팅방 생성에 실패했습니다");
+            }
         }
 
         return new ApiRespDto<>("success", "채팅창 생성 성공!", null);
@@ -55,6 +67,16 @@ public class ChatService {
 
     public ApiRespDto<?> getRoomListByUserId(Integer userId) {
         return new ApiRespDto<>("success", "채팅방 목록 조회", roomRepository.getRoomListByUserId(userId));
+    }
+
+    @Transactional
+    public ApiRespDto<?> getRoomByRoomId(Integer roomId) {
+        Optional<Room> foundRoom = roomRepository.getRoomByRoomId(roomId);
+        if (foundRoom.isEmpty()) {
+            throw new RuntimeException("채팅방 조회 실패");
+        }
+
+        return new ApiRespDto<>("success", "채팅방 상세 조회 완료", foundRoom.get());
     }
 
     public ApiRespDto<?> quitRoom(QuitRoomReqDto quitRoomReqDto) {
@@ -92,12 +114,12 @@ public class ChatService {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
         }
 
-        int result = messageRepository.addMessage(addMessageReqDto.toMessageEntity());
-        if (result != 1) {
+        Optional<Message> optionalMessage = messageRepository.addMessage(addMessageReqDto.toMessageEntity());
+        if (optionalMessage.isEmpty()) {
             throw new RuntimeException("메시지 전송에 실패했습니다");
         }
 
-        int roomResult = roomRepository.changeRoomLastMessage(addMessageReqDto.toRoomEntity());
+        int roomResult = roomRepository.changeRoomLastMessage(addMessageReqDto.toRoomEntity(optionalMessage.get().getMessageId()));
         if (roomResult != 1) {
             throw new RuntimeException("메시지 전송에 실패했습니다.");
         }
@@ -160,9 +182,27 @@ public class ChatService {
         return new ApiRespDto<>("success", "메시지 삭제 완료", null);
     }
 
+    @Transactional
     public ApiRespDto<?> getMessageListInfinite(MessageInfiniteParam param) {
         if (param.getCursorMessageId() != null ^ param.getCursorCreateDt() != null) {
             throw new RuntimeException("cursorMessageId와 cursorCreateDt가 모두 전달되지 않았습니다");
+        }
+
+        Optional<Room> optionalRoom = roomRepository.getRoomByRoomId(param.getRoomId());
+        if (optionalRoom.isEmpty()) {
+            throw new RuntimeException("해당 채팅방이 존재하지 않습니다.");
+        }
+
+        if (param.getCursorMessageId() == null && param.getCursorCreateDt() == null) {
+            RoomRead roomRead = RoomRead.builder()
+                    .roomId(param.getRoomId())
+                    .userId(22)
+                    .lastReadMessageId(optionalRoom.get().getLastMessageId())
+                    .build();
+            int result = roomRepository.changeRoomRead(roomRead);
+            if (result != 1) {
+                throw new RuntimeException("채팅방 조회 실패");
+            }
         }
 
         param.setLimitPlusOne(param.getLimitPlusOne());
