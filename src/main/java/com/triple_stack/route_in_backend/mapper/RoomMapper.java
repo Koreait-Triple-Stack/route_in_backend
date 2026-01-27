@@ -3,6 +3,7 @@ package com.triple_stack.route_in_backend.mapper;
 import com.triple_stack.route_in_backend.dto.chat.RoomRespDto;
 import com.triple_stack.route_in_backend.entity.Room;
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
+import com.triple_stack.route_in_backend.entity.RoomRead;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface RoomMapper {
     Optional<RoomParticipant> getRoomParticipantByUserIdAndRoomId(RoomParticipant roomParticipant);
     Optional<Room> getRoomByRoomId(Integer roomId);
     int changeRoomLastMessage(Room room);
+    int addRoomRead(RoomRead roomRead);
+    int changeRoomRead(RoomRead roomRead);
 }

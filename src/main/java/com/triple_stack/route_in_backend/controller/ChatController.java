@@ -1,9 +1,11 @@
 package com.triple_stack.route_in_backend.controller;
 
 import com.triple_stack.route_in_backend.dto.chat.*;
+import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import com.triple_stack.route_in_backend.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,13 +15,18 @@ public class ChatController {
     private ChatService chatService;
 
     @PostMapping("/room/add")
-    private ResponseEntity<?> addRoom(@RequestBody AddRoomReqDto addRoomReqDto) {
-        return ResponseEntity.ok(chatService.addRoom(addRoomReqDto));
+    private ResponseEntity<?> addRoom(@RequestBody AddRoomReqDto addRoomReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(chatService.addRoom(addRoomReqDto, principalUser));
     }
 
-    @GetMapping("/room/list")
-    private ResponseEntity<?> getRoomListByUserId(@RequestBody Integer userId) {
+    @GetMapping("/room/list/{userId}")
+    private ResponseEntity<?> getRoomListByUserId(@PathVariable Integer userId) {
         return ResponseEntity.ok(chatService.getRoomListByUserId(userId));
+    }
+
+    @GetMapping("/room/{roomId}")
+    private ResponseEntity<?> getRoomByRoomId(@PathVariable Integer roomId) {
+        return ResponseEntity.ok(chatService.getRoomByRoomId(roomId));
     }
 
     @PostMapping("/room/quit")
@@ -47,7 +54,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.deleteMessage(messageId));
     }
 
-    @GetMapping("/message/{roomId}")
+    @GetMapping("/message/list")
     private ResponseEntity<?> getMessageListInfinite(MessageInfiniteParam messageInfiniteParam) {
         return ResponseEntity.ok(chatService.getMessageListInfinite(messageInfiniteParam));
     }

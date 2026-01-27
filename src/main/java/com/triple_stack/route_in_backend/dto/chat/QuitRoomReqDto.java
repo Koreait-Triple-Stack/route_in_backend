@@ -14,7 +14,7 @@ public class QuitRoomReqDto {
 
     public RoomParticipant toEntity() {
         return RoomParticipant.builder()
-                .userId(roomId)
+                .userId(userId)
                 .roomId(roomId)
                 .build();
     }

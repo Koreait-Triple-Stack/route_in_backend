@@ -3,6 +3,7 @@ package com.triple_stack.route_in_backend.repository;
 import com.triple_stack.route_in_backend.dto.chat.RoomRespDto;
 import com.triple_stack.route_in_backend.entity.Room;
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
+import com.triple_stack.route_in_backend.entity.RoomRead;
 import com.triple_stack.route_in_backend.mapper.RoomMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -54,5 +55,13 @@ public class RoomRepository {
 
     public int changeRoomLastMessage(Room room) {
         return roomMapper.changeRoomLastMessage(room);
+    }
+
+    public int addRoomRead(RoomRead roomRead) {
+        return roomMapper.addRoomRead(roomRead);
+    }
+
+    public int changeRoomRead(RoomRead roomRead) {
+        return roomMapper.changeRoomRead(roomRead);
     }
 }
