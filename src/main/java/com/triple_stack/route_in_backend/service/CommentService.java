@@ -73,13 +73,13 @@ public class CommentService {
 
         if (!currentUserId.equals(boardWriterId)) {
             String message = board.get().getUsername() + "님의" + board.get().getTitle() + "게시글에 새로운 댓글이 달렸습니다.";
-            notificationUtils.sendAndAddNotification(List.of(boardWriterId), message, notifyPath);
+            notificationUtils.sendAndAddNotification(List.of(boardWriterId), "title", message, notifyPath, "profileImg");
         }
 
         if (parentCommentWriterId != null && !currentUserId.equals(parentCommentWriterId)) {
             if (!parentCommentWriterId.equals(boardWriterId)) {
                 String message = userRepository.getUserByUserId(parentCommentWriterId).get().getUsername() + "님의 댓글에 답글이 달렸습니다.";
-                notificationUtils.sendAndAddNotification(List.of(parentCommentWriterId), message, notifyPath);
+                notificationUtils.sendAndAddNotification(List.of(parentCommentWriterId), "title", message, notifyPath, "profileImg");
             }
         }
 
@@ -110,7 +110,7 @@ public class CommentService {
             }
         }
 
-        int totalCount = 0;
+        long totalCount = 0;
 
         for (CommentRespDto root : resultList) {
             List<CommentRespDto> children = root.getCommentRespDtoList();
