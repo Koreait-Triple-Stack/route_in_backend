@@ -6,9 +6,11 @@
     <resultMap id="RoomResultMap" type="com.triple_stack.route_in_backend.entity.Room">
         <id property="roomId" column="room_id"/>
         <result property="type" column="type"/>
+        <result property="unreadCnt" column="unread_cnt"/>
+        <result property="profileUserId" column="profile_user_id"/>
+        <result property="createDt" column="create_dt"/>
         <result property="lastMessage" column="last_message"/>
         <result property="lastMessageDt" column="last_message_dt"/>
-        <result property="createDt" column="create_dt"/>
         <collection property="participants" resultMap="RoomParticipantResultMap"/>
     </resultMap>
 
@@ -17,44 +19,75 @@
         <result property="userId" column="user_id"/>
         <result property="title" column="title"/>
         <result property="role" column="role"/>
-        <result property="unreadCnt" column="unread_cnt"/>
         <result property="joinedDt" column="joined_dt"/>
         <result property="leftDt" column="left_dt"/>
+    </resultMap>
+
+    <resultMap id="RoomReadResultMap" type="com.triple_stack.route_in_backend.entity.RoomRead">
+        <result property="roomId" column="rpt_room_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="lastReadMessageId" column="last_read_message_id"/>
+        <result property="updateDt" column="update_dt"/>
+    </resultMap>
+
+    <resultMap id="RoomRespResultMap" type="com.triple_stack.route_in_backend.dto.chat.RoomRespDto">
+        <id property="roomId" column="room_id"/>
+        <result property="type" column="type"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="lastMessage" column="last_message"/>
+        <result property="lastMessageDt" column="last_message_dt"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="role" column="role"/>
+        <result property="joinedDt" column="joined_dt"/>
+        <result property="leftDt" column="left_dt"/>
+        <result property="unreadCnt" column="unread_cnt"/>
+        <result property="profileImg" column="profile_img"/>
     </resultMap>
 
     <insert id="addRoom" useGeneratedKeys="true" keyProperty="roomId">
         insert into
             room_tb
         values
-            (0, #{type}, null, null, now());
+            (0, #{type}, 0, #{profileUserId}, now(), null, null);
     </insert>
 
     <insert id="addRoomParticipant">
         insert into
+            room_participant_tb
         values
-            (#{roomId}, #{userId}, #{title}, #{role}, 0, now(), null);
+            (#{roomId}, #{userId}, #{title}, #{role}, now(), null);
     </insert>
 
-    <select id="getRoomListByUserId" resultMap="RoomResultMap">
+    <select id="getRoomListByUserId" resultMap="RoomRespResultMap">
         select
-            rt.*,
-            rpt.room_id as rpt_room_id,
+            rt.room_id,
+            rt.type,
+            rt.create_dt,
+            rt.last_message,
+            rt.last_message_dt,
             rpt.user_id,
             rpt.title,
             rpt.role,
-            rpt.unread_cnt,
             rpt.joined_dt,
-            rpt.left_dt
+            rpt.left_dt,
+            count(mt.message_id) as unread_cnt,
+            ut.profile_img
         from
             room_tb rt
             join room_participant_tb rpt on (rt.room_id = rpt.room_id)
+            join room_read_tb rrt on (rrt.room_id = rpt.room_id and rrt.user_id = rpt.user_id)
+            join user_tb ut on (ut.user_id = rt.profile_user_id)
+            left join message_tb mt on (mt.room_id = rt.room_id and rrt.last_read_message_id &lt; mt.message_id)
         where
             rpt.user_id = #{userId} and rt.last_message_dt != null
         order by
-            rt.last_message_dt desc;
+            rt.last_message_dt desc
+        group by
+            rt.room_id;
     </select>
 
-    <delete id="deleteRoom">
+    <delete id="quitRoom">
         delete from
             room_participant_tb
         where
@@ -70,23 +103,14 @@
             user_id = #{userId} and room_id = #{roomId};
     </update>
 
-    <select id="getRoomByUserIdAndRoomId" resultMap="RoomResultMap">
+    <select id="getRoomParticipantByUserIdAndRoomId" resultMap="RoomParticipantResultMap">
         select
-            rt.*,
-            rpt.room_id as rpt_room_id,
-            rpt.user_id,
-            rpt.title,
-            rpt.role,
-            rpt.unread_cnt,
-            rpt.joined_dt,
-            rpt.left_dt
+            *
         from
-            room_tb rt
-            join room_participant_tb rpt on (rt.room_id = rpt.room_id)
+            room_participant_tb
         where
-            rpt.user_id = #{userId}
-            and rpt.room_id = #{roomId}
-            and rt.last_message_dt != null
+            user_id = #{userId}
+            and room_id = #{roomId}
     </select>
 
     <select id="getRoomByRoomId" resultMap="RoomResultMap">
@@ -96,7 +120,6 @@
             rpt.user_id,
             rpt.title,
             rpt.role,
-            rpt.unread_cnt,
             rpt.joined_dt,
             rpt.left_dt
         from
@@ -105,4 +128,31 @@
         where
             room_id = #{roomId};
     </select>
+
+    <update id="changeRoomLastMessage">
+        update
+            room_tb
+        set
+            last_message = #{lastMessage},
+            last_message_dt = now()
+        where
+            room_id = #{room_id};
+    </update>
+
+    <insert id="addRoomRead">
+        insert into
+            room_read_tb
+        values
+            (#{roomId}, #{userId}, 0, null);
+    </insert>
+
+    <update id="changeRoomRead">
+        update
+            room_read_tb
+        set
+            last_read_message_id = #{lastReadMessageId},
+            update_dt = now()
+        where
+            room_id = #{roomId} and user_id = #{userId};
+    </update>
 </mapper>

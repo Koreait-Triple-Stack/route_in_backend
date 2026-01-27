@@ -10,6 +10,7 @@
         <result property="type" column="last_message_dt"/>
         <result property="content" column="create_dt"/>
         <result property="createDt" column="create_dt"/>
+        <result property="profileImg" column="profile_img"/>
     </resultMap>
 
     <insert id="addMessage">
@@ -19,20 +20,23 @@
             (0, #{roomId}, #{senderId}, #{type}, #{content}, now());
     </insert>
 
-    <update id="deleteMessage">
+    <update id="changeMessage">
         update
             message_tb
         set
-            sender_id = null
+            sender_id = #{senderId},
+            content = #{content}
         where
             message_id = #{messageId};
     </update>
 
     <select id="getMessageListInfinite" resultMap="MessageResultMap">
         select
-            *
+            message_tb.*,
+            user_tb.profile_img as profile_img
         from
             message_tb
+            join user_tb on (user_tb.user_id = message_tb.sender_id)
         <where>
             <if test="cursorCreateDt != null and cursorMessageId != null">
                 create_dt &lt;= #{cursorCreateDt}
@@ -44,5 +48,14 @@
             create_dt desc,
             message_id desc
         limit #{limitPlusOne};
+    </select>
+
+    <select id="getMessageByMessageId" resultMap="MessageResultMap">
+        select
+            *
+        from
+            message_tb
+        where
+            message_id = #{messageId};
     </select>
 </mapper>

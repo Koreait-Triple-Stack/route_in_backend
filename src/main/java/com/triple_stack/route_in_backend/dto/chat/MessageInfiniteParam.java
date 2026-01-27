@@ -1,4 +1,4 @@
-package com.triple_stack.route_in_backend.dto.message;
+package com.triple_stack.route_in_backend.dto.chat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

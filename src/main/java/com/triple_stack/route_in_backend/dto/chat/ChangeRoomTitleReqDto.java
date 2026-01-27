@@ -1,27 +1,23 @@
-package com.triple_stack.route_in_backend.dto.message;
+package com.triple_stack.route_in_backend.dto.chat;
 
-import com.triple_stack.route_in_backend.entity.Room;
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddRoomReqDto {
-    private String type;
+public class ChangeRoomTitleReqDto {
+    private Integer roomId;
+    private Integer userId;
     private String title;
-    private List<Integer> userIds;
 
-    public RoomParticipant toEntity(Integer roomId, Integer userId, String role) {
+    public RoomParticipant toEntity() {
         return RoomParticipant.builder()
                 .roomId(roomId)
                 .userId(userId)
                 .title(title)
-                .role(role)
                 .build();
     }
 }

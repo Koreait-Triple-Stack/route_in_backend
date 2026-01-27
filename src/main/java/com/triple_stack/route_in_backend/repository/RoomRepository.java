@@ -1,5 +1,6 @@
 package com.triple_stack.route_in_backend.repository;
 
+import com.triple_stack.route_in_backend.dto.chat.RoomRespDto;
 import com.triple_stack.route_in_backend.entity.Room;
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
 import com.triple_stack.route_in_backend.mapper.RoomMapper;
@@ -31,23 +32,27 @@ public class RoomRepository {
         return roomMapper.addRoomParticipant(roomParticipant);
     }
 
-    public List<Room> getRoomListByUserId(Integer userId) {
+    public List<RoomRespDto> getRoomListByUserId(Integer userId) {
         return roomMapper.getRoomListByUserId(userId);
     }
 
-    public int deleteRoom(RoomParticipant roomParticipant) {
-        return roomMapper.deleteRoom(roomParticipant);
+    public int quitRoom(RoomParticipant roomParticipant) {
+        return roomMapper.quitRoom(roomParticipant);
     }
 
     public int changeRoomTitle(RoomParticipant roomParticipant) {
         return roomMapper.changeRoomTitle(roomParticipant);
     }
 
-    public Optional<Room> getRoomParticipantByUserIdAndRoomId(RoomParticipant roomParticipant) {
+    public Optional<RoomParticipant> getRoomParticipantByUserIdAndRoomId(RoomParticipant roomParticipant) {
         return roomMapper.getRoomParticipantByUserIdAndRoomId(roomParticipant);
     }
 
     public Optional<Room> getRoomByRoomId(Integer roomId) {
         return roomMapper.getRoomByRoomId(roomId);
+    }
+
+    public int changeRoomLastMessage(Room room) {
+        return roomMapper.changeRoomLastMessage(room);
     }
 }
