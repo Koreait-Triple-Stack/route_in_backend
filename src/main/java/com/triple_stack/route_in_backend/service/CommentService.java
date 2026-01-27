@@ -6,6 +6,7 @@ import com.triple_stack.route_in_backend.dto.comment.AddComment;
 import com.triple_stack.route_in_backend.dto.comment.CommentRespDto;
 import com.triple_stack.route_in_backend.entity.Board;
 import com.triple_stack.route_in_backend.entity.Comment;
+import com.triple_stack.route_in_backend.entity.User;
 import com.triple_stack.route_in_backend.repository.BoardRepository;
 import com.triple_stack.route_in_backend.repository.CommentRepository;
 import com.triple_stack.route_in_backend.repository.UserRepository;
@@ -71,15 +72,18 @@ public class CommentService {
 
         String notifyPath = "/board/detail/" + addComment.getBoardId();
 
+        Optional<User> user = userRepository.getUserByUserId(currentUserId);
+        System.out.println(user.get().getUsername() + user.get().getProfileImg());
+
         if (!currentUserId.equals(boardWriterId)) {
-            String message = board.get().getUsername() + "님의" + board.get().getTitle() + "게시글에 새로운 댓글이 달렸습니다.";
-            notificationUtils.sendAndAddNotification(List.of(boardWriterId), "title", message, notifyPath, "profileImg");
+            String message = user.get().getUsername() + "님이" + "게시글에 새로운 댓글을 달았습니다.";
+            notificationUtils.sendAndAddNotification(List.of(boardWriterId), board.get().getTitle(), message, notifyPath, userRepository.getUserByUserId(22).get().getProfileImg());
         }
 
         if (parentCommentWriterId != null && !currentUserId.equals(parentCommentWriterId)) {
             if (!parentCommentWriterId.equals(boardWriterId)) {
-                String message = userRepository.getUserByUserId(parentCommentWriterId).get().getUsername() + "님의 댓글에 답글이 달렸습니다.";
-                notificationUtils.sendAndAddNotification(List.of(parentCommentWriterId), "title", message, notifyPath, "profileImg");
+                String message = user.get().getUsername() + "님이 답글을 달았습니다.";
+                notificationUtils.sendAndAddNotification(List.of(parentCommentWriterId), board.get().getTitle(), message, notifyPath, "profileImg");
             }
         }
 
