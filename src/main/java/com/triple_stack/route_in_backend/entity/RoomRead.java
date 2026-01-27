@@ -11,13 +11,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Message {
-    private Integer messageId;
+public class RoomRead {
     private Integer roomId;
-    private Integer senderId;
-    private String type;
-    private String content;
-    private LocalDateTime createDt;
-
-    private String profileImg;
+    private Integer userId;
+    private Integer lastReadMessageId;
+    private LocalDateTime updateDt;
 }

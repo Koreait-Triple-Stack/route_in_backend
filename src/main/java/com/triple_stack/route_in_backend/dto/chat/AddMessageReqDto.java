@@ -1,7 +1,7 @@
-package com.triple_stack.route_in_backend.dto.message;
+package com.triple_stack.route_in_backend.dto.chat;
 
 import com.triple_stack.route_in_backend.entity.Message;
-import com.triple_stack.route_in_backend.entity.RoomParticipant;
+import com.triple_stack.route_in_backend.entity.Room;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +15,10 @@ public class AddMessageReqDto {
     private String type;
     private String content;
 
-    public RoomParticipant toRoomEntity() {
-        return RoomParticipant.builder()
+    public Room toRoomEntity() {
+        return Room.builder()
                 .roomId(roomId)
-                .userId(senderId)
+                .lastMessage(content)
                 .build();
     }
 

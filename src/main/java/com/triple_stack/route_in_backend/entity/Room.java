@@ -14,10 +14,12 @@ import java.util.List;
 @Builder
 public class Room {
     private Integer roomId;
-    private String type; // 1대1 또는 그룹
+    private String type; // 1대1(DM) 또는 그룹(GROUP)
+    private Integer unreadCnt;
+    private Integer profileUserId;
+    private LocalDateTime createDt;
     private String lastMessage;
     private LocalDateTime lastMessageDt;
-    private LocalDateTime createDt;
 
     List<RoomParticipant> participants;
 }

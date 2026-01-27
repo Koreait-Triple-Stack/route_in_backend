@@ -1,10 +1,8 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
-import com.triple_stack.route_in_backend.dto.message.AddMessageReqDto;
-import com.triple_stack.route_in_backend.dto.message.AddRoomReqDto;
-import com.triple_stack.route_in_backend.dto.message.ChangeRoomTitleReqDto;
-import com.triple_stack.route_in_backend.dto.message.DeleteRoomReqDto;
+import com.triple_stack.route_in_backend.dto.chat.*;
+import com.triple_stack.route_in_backend.entity.Message;
 import com.triple_stack.route_in_backend.entity.Room;
 import com.triple_stack.route_in_backend.entity.RoomParticipant;
 import com.triple_stack.route_in_backend.repository.MessageRepository;
@@ -34,13 +32,9 @@ public class ChatService {
     private UserRepository userRepository;
 
     @Transactional
-    public ApiRespDto<?> addRoom(AddRoomReqDto addRoomReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<?> addRoom(AddRoomReqDto addRoomReqDto) {
         if (addRoomReqDto.getUserIds().isEmpty()) {
             throw new RuntimeException("1명 이상 있어야 합니다.");
-        }
-
-        if (!addRoomReqDto.getUserIds().contains(principalUser.getUserId())) {
-            throw new RuntimeException("잘못된 접근입니다.");
         }
 
         Optional<Room> optionalRoom = roomRepository.addRoom(Room.builder().type(addRoomReqDto.getType()).build());
@@ -63,13 +57,13 @@ public class ChatService {
         return new ApiRespDto<>("success", "채팅방 목록 조회", roomRepository.getRoomListByUserId(userId));
     }
 
-    public ApiRespDto<?> deleteRoom(DeleteRoomReqDto deleteRoomReqDto) {
-        Optional<Room> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(deleteRoomReqDto.toEntity());
+    public ApiRespDto<?> quitRoom(QuitRoomReqDto quitRoomReqDto) {
+        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(quitRoomReqDto.toEntity());
         if (foundRoom.isEmpty()) {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
         }
 
-        int result = roomRepository.deleteRoom(deleteRoomReqDto.toEntity());
+        int result = roomRepository.quitRoom(quitRoomReqDto.toEntity());
         if (result != 1) {
             throw new RuntimeException("채팅방 나가기에 실패했습니다");
         }
@@ -78,7 +72,7 @@ public class ChatService {
     }
 
     public ApiRespDto<?> changeRoomTitle(ChangeRoomTitleReqDto changeRoomTitleReqDto) {
-        Optional<Room> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(changeRoomTitleReqDto.toEntity());
+        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(changeRoomTitleReqDto.toEntity());
         if (foundRoom.isEmpty()) {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
         }
@@ -103,6 +97,11 @@ public class ChatService {
             throw new RuntimeException("메시지 전송에 실패했습니다");
         }
 
+        int roomResult = roomRepository.changeRoomLastMessage(addMessageReqDto.toRoomEntity());
+        if (roomResult != 1) {
+            throw new RuntimeException("메시지 전송에 실패했습니다.");
+        }
+
         List<RoomParticipant> roomParticipants = optionalRoom.get().getParticipants();
         RoomParticipant roomParticipant = roomParticipants.stream()
                 .filter(r -> r.getUserId().equals(addMessageReqDto.getSenderId()))
@@ -118,5 +117,69 @@ public class ChatService {
                 userRepository.getUserByUserId(addMessageReqDto.getSenderId()).get().getProfileImg());
 
         return new ApiRespDto<>("success", "메시지 전송 완료", null);
+    }
+
+    public ApiRespDto<?> changeMessage(ChangeMessageReqDto changeMessageReqDto) {
+        Optional<Message> foundMessage = messageRepository.getMessageByMessageId(changeMessageReqDto.getMessageId());
+        if (foundMessage.isEmpty()) {
+            throw new RuntimeException("존재하지 않는 메시지 입니다");
+        }
+
+        if (foundMessage.get().getSenderId() == null) {
+            throw new RuntimeException("이미 삭제된 메시지 입니다.");
+        }
+
+        int result = messageRepository.changeMessage(changeMessageReqDto.toEntity());
+        if (result != 1) {
+            throw new RuntimeException("메시지 수정을 실패했습니다");
+        }
+
+        return new ApiRespDto<>("success", "메시지 수정 완료", null);
+    }
+
+    public ApiRespDto<?> deleteMessage(Integer messageId) {
+        Optional<Message> foundMessage = messageRepository.getMessageByMessageId(messageId);
+        if (foundMessage.isEmpty()) {
+            throw new RuntimeException("존재하지 않는 메시지 입니다");
+        }
+
+        if (foundMessage.get().getSenderId() == null) {
+            throw new RuntimeException("이미 삭제된 메시지 입니다.");
+        }
+
+        Message message = Message.builder()
+                .messageId(messageId)
+                .senderId(null)
+                .content("삭제된 메시지입니다")
+                .build();
+        int result = messageRepository.changeMessage(message);
+        if (result != 1) {
+            throw new RuntimeException("메시지 삭제를 실패했습니다");
+        }
+
+        return new ApiRespDto<>("success", "메시지 삭제 완료", null);
+    }
+
+    public ApiRespDto<?> getMessageListInfinite(MessageInfiniteParam param) {
+        if (param.getCursorMessageId() != null ^ param.getCursorCreateDt() != null) {
+            throw new RuntimeException("cursorMessageId와 cursorCreateDt가 모두 전달되지 않았습니다");
+        }
+
+        param.setLimitPlusOne(param.getLimitPlusOne());
+
+        List<Message> rows = messageRepository.getMessageListInfinite(param);
+        boolean hasNext = rows.size() > param.getLimit();
+        if (hasNext) {
+            rows = rows.subList(0, param.getLimit());
+        }
+
+        MessageInfiniteRespDto data = new MessageInfiniteRespDto(rows, hasNext, null, null);
+        if (!rows.isEmpty()) {
+            Message last = rows.get(rows.size() - 1);
+            data.setNextCursorMessageId(last.getMessageId());
+            data.setNextCursorCreateDt(last.getCreateDt());
+        }
+
+        return new ApiRespDto<>("success", "메시지 무한스크롤 조회 완료", data);
     }
 }
