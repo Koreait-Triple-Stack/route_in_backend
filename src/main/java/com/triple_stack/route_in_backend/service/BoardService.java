@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,9 +99,17 @@ public class BoardService {
                 .toList();
 
         String profileImg = foundUser.get().getProfileImg() == null ? "" : foundUser.get().getProfileImg();
-        notificationUtils.sendAndAddNotification(userIds, "새 게시글",
-                principalUser.getUsername() + "님이 게시글을 작성했습니다.",
-                "/board/detail/" + board.getBoardId(), profileImg);
+        List<Notification> notifications = new ArrayList<>();
+        for (Integer userId : userIds) {
+            notifications.add(Notification.builder()
+                    .userId(userId)
+                    .title("새 게시글")
+                    .message(principalUser.getUsername() + "님이 게시글을 작성했습니다.")
+                    .path("/board/detail/" + board.getBoardId())
+                    .profileImg(profileImg)
+                    .build());
+        }
+        notificationUtils.sendAndAddNotification(notifications);
 
         return new ApiRespDto<>("success", "게시물이 추가되었습니다.", board.getBoardId());
     }

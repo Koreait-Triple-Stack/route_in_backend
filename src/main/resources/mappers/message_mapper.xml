@@ -56,8 +56,8 @@
             room_id = #{roomId}
             <if test="cursorCreateDt != null and cursorMessageId != null">
                 and (
-                create_dt &lt; #{cursorCreateDt}
-                or (create_dt = #{cursorCreateDt} and message_id &lt; #{cursorMessageId})
+                message_tb.create_dt &lt; #{cursorCreateDt}
+                or (message_tb.create_dt = #{cursorCreateDt} and message_id &lt; #{cursorMessageId})
                 )
             </if>
         </where>

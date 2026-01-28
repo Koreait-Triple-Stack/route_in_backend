@@ -77,7 +77,7 @@
             rpt.left_dt,
 
             COALESCE(uc.unread_cnt, 0) AS unread_cnt,
-            ut.profile_img as profile_img,
+            ut.profile_img as profile_img
         FROM room_tb rt
             JOIN room_participant_tb rpt
                 ON rt.room_id = rpt.room_id

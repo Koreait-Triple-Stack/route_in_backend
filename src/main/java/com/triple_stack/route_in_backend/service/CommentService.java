@@ -6,6 +6,7 @@ import com.triple_stack.route_in_backend.dto.comment.AddComment;
 import com.triple_stack.route_in_backend.dto.comment.CommentRespDto;
 import com.triple_stack.route_in_backend.entity.Board;
 import com.triple_stack.route_in_backend.entity.Comment;
+import com.triple_stack.route_in_backend.entity.Notification;
 import com.triple_stack.route_in_backend.entity.User;
 import com.triple_stack.route_in_backend.repository.BoardRepository;
 import com.triple_stack.route_in_backend.repository.CommentRepository;
@@ -75,17 +76,33 @@ public class CommentService {
         Optional<User> user = userRepository.getUserByUserId(currentUserId);
         System.out.println(user.get().getUsername() + user.get().getProfileImg());
 
+        List<Notification> notifications = new ArrayList<>();
+
         if (!currentUserId.equals(boardWriterId)) {
             String message = user.get().getUsername() + "님이" + "게시글에 새로운 댓글을 달았습니다.";
-            notificationUtils.sendAndAddNotification(List.of(boardWriterId), board.get().getTitle(), message, notifyPath, userRepository.getUserByUserId(22).get().getProfileImg());
+            notifications.add(Notification.builder()
+                            .userId(boardWriterId)
+                            .title(board.get().getTitle())
+                            .message(message)
+                            .path(notifyPath)
+                            .profileImg(userRepository.getUserByUserId(22).get().getProfileImg())
+                    .build());
         }
 
         if (parentCommentWriterId != null && !currentUserId.equals(parentCommentWriterId)) {
             if (!parentCommentWriterId.equals(boardWriterId)) {
                 String message = user.get().getUsername() + "님이 답글을 달았습니다.";
-                notificationUtils.sendAndAddNotification(List.of(parentCommentWriterId), board.get().getTitle(), message, notifyPath, "profileImg");
+                notifications.add(Notification.builder()
+                        .userId(parentCommentWriterId)
+                        .title(board.get().getTitle())
+                        .message(message)
+                        .path(notifyPath)
+                        .profileImg(userRepository.getUserByUserId(22).get().getProfileImg())
+                        .build());
             }
         }
+
+        notificationUtils.sendAndAddNotification(notifications);
 
         return new ApiRespDto<>("success", "댓글이 작성되었습니다.", null);
     }

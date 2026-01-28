@@ -2,23 +2,25 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.chat.*;
-import com.triple_stack.route_in_backend.entity.Message;
-import com.triple_stack.route_in_backend.entity.Room;
-import com.triple_stack.route_in_backend.entity.RoomParticipant;
-import com.triple_stack.route_in_backend.entity.RoomRead;
+import com.triple_stack.route_in_backend.entity.*;
 import com.triple_stack.route_in_backend.repository.MessageRepository;
 import com.triple_stack.route_in_backend.repository.RoomRepository;
 import com.triple_stack.route_in_backend.repository.UserRepository;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import com.triple_stack.route_in_backend.utils.NotificationUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ChatService {
     @Autowired
     private RoomRepository roomRepository;
@@ -31,6 +33,9 @@ public class ChatService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public ApiRespDto<?> addRoom(AddRoomReqDto addRoomReqDto, PrincipalUser principalUser) {
@@ -62,7 +67,7 @@ public class ChatService {
             }
         }
 
-        return new ApiRespDto<>("success", "채팅창 생성 성공!", null);
+        return new ApiRespDto<>("success", "채팅창 생성 성공!", roomId);
     }
 
     public ApiRespDto<?> getRoomListByUserId(Integer userId) {
@@ -70,11 +75,21 @@ public class ChatService {
     }
 
     @Transactional
-    public ApiRespDto<?> getRoomByRoomId(Integer roomId) {
+    public ApiRespDto<?> getRoomByRoomId(Integer roomId, PrincipalUser principalUser) {
         Optional<Room> foundRoom = roomRepository.getRoomByRoomId(roomId);
         if (foundRoom.isEmpty()) {
             throw new RuntimeException("채팅방 조회 실패");
         }
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + roomId,
+                Map.of(
+                        "type", "read",
+                        "roomId", roomId,
+                        "userId", principalUser.getUserId(),
+                        "lastReadMessageId", foundRoom.get().getLastMessageId()
+                )
+        );
 
         return new ApiRespDto<>("success", "채팅방 상세 조회 완료", foundRoom.get());
     }
@@ -124,19 +139,33 @@ public class ChatService {
             throw new RuntimeException("메시지 전송에 실패했습니다.");
         }
 
-        List<RoomParticipant> roomParticipants = optionalRoom.get().getParticipants();
-        RoomParticipant roomParticipant = roomParticipants.stream()
-                .filter(r -> r.getUserId().equals(addMessageReqDto.getSenderId()))
-                .findFirst().orElse(null);
+        List<RoomParticipant> roomParticipants = optionalRoom.get().getParticipants().stream()
+                .filter(r -> !r.getUserId().equals(addMessageReqDto.getSenderId()))
+                .toList();
 
-        if (roomParticipant == null) {
+        if (roomParticipants.isEmpty()) {
             throw new RuntimeException("메시지 전송에 실패했습니다");
         }
 
-        List<Integer> userIds = roomParticipants.stream().map(RoomParticipant::getUserId).toList();
-        notificationUtils.sendAndAddNotification(userIds, roomParticipant.getTitle(),
-                addMessageReqDto.getContent(), "/chat/room/"+addMessageReqDto.getRoomId(),
-                userRepository.getUserByUserId(addMessageReqDto.getSenderId()).get().getProfileImg());
+        List<Notification> notifications = new ArrayList<>();
+        for (RoomParticipant participant : roomParticipants) {
+            notifications.add(Notification.builder()
+                    .userId(participant.getUserId())
+                    .title(participant.getTitle())
+                    .message(addMessageReqDto.getContent())
+                    .path("/chat/room/"+addMessageReqDto.getRoomId())
+                    .profileImg(userRepository.getUserByUserId(addMessageReqDto.getSenderId()).get().getProfileImg())
+                    .build());
+        }
+        notificationUtils.sendAndAddNotification(notifications);
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + addMessageReqDto.getRoomId(),
+                Map.of(
+                        "type", "read",
+                        "roomId", addMessageReqDto.getRoomId(),
+                        "userId", addMessageReqDto.getSenderId()
+                )
+        );
 
         return new ApiRespDto<>("success", "메시지 전송 완료", null);
     }
@@ -183,7 +212,7 @@ public class ChatService {
     }
 
     @Transactional
-    public ApiRespDto<?> getMessageListInfinite(MessageInfiniteParam param) {
+    public ApiRespDto<?> getMessageListInfinite(MessageInfiniteParam param, PrincipalUser principalUser) {
         if (param.getCursorMessageId() != null ^ param.getCursorCreateDt() != null) {
             throw new RuntimeException("cursorMessageId와 cursorCreateDt가 모두 전달되지 않았습니다");
         }
@@ -196,7 +225,7 @@ public class ChatService {
         if (param.getCursorMessageId() == null && param.getCursorCreateDt() == null) {
             RoomRead roomRead = RoomRead.builder()
                     .roomId(param.getRoomId())
-                    .userId(22)
+                    .userId(principalUser.getUserId())
                     .lastReadMessageId(optionalRoom.get().getLastMessageId())
                     .build();
             int result = roomRepository.changeRoomRead(roomRead);

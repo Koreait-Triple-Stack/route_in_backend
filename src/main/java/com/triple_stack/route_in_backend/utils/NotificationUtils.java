@@ -19,24 +19,24 @@ public class NotificationUtils {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendAndAddNotification(List<Integer> userIds, String title, String message, String path, String profileImg) {
-        Map<String, Object> payload = Map.of(
-                "type", "NOTIFICATION",
-                "title", title,
-                "message", message,
-                "path", path,
-                "profileImg", profileImg,
-                "createDt", Instant.now().toString()
-        );
+    public void sendAndAddNotification(List<Notification> notifications) {
+        for (Notification notification : notifications) {
+            Map<String, Object> payload = Map.of(
+                    "type", "NOTIFICATION",
+                    "title", notification.getTitle(),
+                    "message", notification.getMessage(),
+                    "path", notification.getPath(),
+                    "profileImg", notification.getProfileImg(),
+                    "createDt", Instant.now().toString()
+            );
 
-        for (Integer userId : userIds) {
-            int result = notificationRepository.addNotification(toEntity(userId, title, message, path, profileImg));
+            int result = notificationRepository.addNotification(notification);
             if (result != 1) {
                 throw new RuntimeException("알림 전송에 실패했습니다.");
             }
 
             messagingTemplate.convertAndSendToUser(
-                    String.valueOf(userId),
+                    String.valueOf(notification.getUserId()),
                     "/queue/notification",
                     payload
             );
