@@ -41,8 +41,8 @@ public class UserAccountController {
         return ResponseEntity.ok(userAccountService.isDuplicatedUsername(username));
     }
 
-    @PostMapping("/address")
-    public ResponseEntity<?> saveAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
+    @PostMapping("/change/address")
+    public ResponseEntity<?> changeAddress(@RequestBody ChangeAddressReqDto changeAddressReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(userAccountService.saveOrUpdateAddress(changeAddressReqDto, principalUser));
     }
 
