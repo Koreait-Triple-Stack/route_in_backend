@@ -25,8 +25,8 @@ public class ChatController {
     }
 
     @GetMapping("/room/{roomId}")
-    private ResponseEntity<?> getRoomByRoomId(@PathVariable Integer roomId) {
-        return ResponseEntity.ok(chatService.getRoomByRoomId(roomId));
+    private ResponseEntity<?> getRoomByRoomId(@PathVariable Integer roomId, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(chatService.getRoomByRoomId(roomId, principalUser));
     }
 
     @PostMapping("/room/quit")
@@ -55,7 +55,7 @@ public class ChatController {
     }
 
     @GetMapping("/message/list")
-    private ResponseEntity<?> getMessageListInfinite(MessageInfiniteParam messageInfiniteParam) {
-        return ResponseEntity.ok(chatService.getMessageListInfinite(messageInfiniteParam));
+    private ResponseEntity<?> getMessageListInfinite(MessageInfiniteParam messageInfiniteParam, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(chatService.getMessageListInfinite(messageInfiniteParam, principalUser));
     }
 }

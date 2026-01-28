@@ -22,6 +22,7 @@ public class AddNotificationReqDto {
     public Notification toEntity(Integer userId) {
         return Notification.builder()
                 .userId(userId)
+                .title(title)
                 .message(message)
                 .path(path)
                 .profileImg(profileImg)

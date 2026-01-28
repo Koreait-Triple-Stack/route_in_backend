@@ -2,12 +2,15 @@ package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.user.account.AddNotificationReqDto;
+import com.triple_stack.route_in_backend.entity.Notification;
 import com.triple_stack.route_in_backend.repository.NotificationRepository;
 import com.triple_stack.route_in_backend.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,8 +23,11 @@ public class NotificationService {
 
     @Transactional
     public ApiRespDto<?> addNotification(AddNotificationReqDto addNotificationReqDto) {
-        notificationUtils.sendAndAddNotification(addNotificationReqDto.getUserIds(), addNotificationReqDto.getTitle(),
-                addNotificationReqDto.getMessage(), addNotificationReqDto.getPath(), "");
+        List<Notification> notifications = new ArrayList<>();
+        for (Integer userId : addNotificationReqDto.getUserIds()) {
+            notifications.add(addNotificationReqDto.toEntity(userId));
+        }
+        notificationUtils.sendAndAddNotification(notifications);
 
         return new ApiRespDto<>("success", "알림 전송을 완료했습니다.", null);
     }
