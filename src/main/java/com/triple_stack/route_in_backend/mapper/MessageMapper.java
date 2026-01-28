@@ -13,4 +13,5 @@ public interface MessageMapper {
     int changeMessage(Message message);
     List<Message> getMessageListInfinite(MessageInfiniteParam messageInfiniteParam);
     Optional<Message> getMessageByMessageId(Integer messageId);
+    Optional<Integer> getLastMessageIdByRoomId(Integer roomId);
 }

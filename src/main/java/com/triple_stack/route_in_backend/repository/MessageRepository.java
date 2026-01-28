@@ -38,4 +38,8 @@ public class MessageRepository {
     public Optional<Message> getMessageByMessageId(Integer messageId) {
         return messageMapper.getMessageByMessageId(messageId);
     }
+
+    public Optional<Integer> getLastMessageIdByRoomId(Integer roomId) {
+        return messageMapper.getLastMessageIdByRoomId(roomId);
+    }
 }
