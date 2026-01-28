@@ -77,4 +77,13 @@
         where
             message_id = #{messageId};
     </select>
+
+    <select id="getLastMessageIdByRoomId" resultType="int">
+        select
+            IFNULL(MAX(message_id), 0)
+        from
+            message_tb
+        where
+            room_id = #{roomId};
+    </select>
 </mapper>

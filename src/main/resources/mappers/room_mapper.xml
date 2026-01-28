@@ -171,7 +171,7 @@
         update
             room_read_tb
         set
-            last_read_message_id = #{lastReadMessageId},
+            last_read_message_id = GREATEST(last_read_message_id, #{lastReadMessageId}),
             update_dt = now()
         where
             room_id = #{roomId} and user_id = #{userId};

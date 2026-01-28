@@ -43,13 +43,28 @@ public class NotificationUtils {
         }
     }
 
-    private Notification toEntity(Integer userId, String title, String message, String path, String profileImg) {
-        return Notification.builder()
-                .userId(userId)
-                .title(title)
-                .message(message)
-                .path(path)
-                .profileImg(profileImg)
-                .build();
+    public void sendAndAddNotification(List<Notification> notifications, Integer roomId, Integer senderId) {
+        for (Notification notification : notifications) {
+            Map<String, Object> payload = Map.of(
+                    "type", "CHAT_MESSAGE",
+                    "title", notification.getTitle(),
+                    "message", notification.getMessage(),
+                    "path", notification.getPath(),
+                    "profileImg", notification.getProfileImg(),
+                    "createDt", Instant.now().toString(),
+                    "roomId", roomId
+            );
+
+            int result = notificationRepository.addNotification(notification);
+            if (result != 1) {
+                throw new RuntimeException("알림 전송에 실패했습니다.");
+            }
+
+            messagingTemplate.convertAndSendToUser(
+                    String.valueOf(notification.getUserId()),
+                    "/queue/notification",
+                    payload
+            );
+        }
     }
 }

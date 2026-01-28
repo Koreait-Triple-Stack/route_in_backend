@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,15 +83,28 @@ public class ChatService {
             throw new RuntimeException("채팅방 조회 실패");
         }
 
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId,
-                Map.of(
-                        "type", "read",
-                        "roomId", roomId,
-                        "userId", principalUser.getUserId(),
-                        "lastReadMessageId", foundRoom.get().getLastMessageId()
-                )
-        );
+        RoomRead roomRead = RoomRead.builder()
+                .roomId(roomId)
+                .userId(principalUser.getUserId())
+                .lastReadMessageId(foundRoom.get().getLastMessageId())
+                .build();
+
+        int result = roomRepository.changeRoomRead(roomRead);
+        if (result != 1) throw new RuntimeException("읽음 처리 실패");
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + roomId,
+                        Map.of(
+                                "type", "read",
+                                "roomId", roomId,
+                                "userId", principalUser.getUserId()
+                        )
+                );
+            }
+        });
 
         return new ApiRespDto<>("success", "채팅방 상세 조회 완료", foundRoom.get());
     }
@@ -139,9 +154,7 @@ public class ChatService {
             throw new RuntimeException("메시지 전송에 실패했습니다.");
         }
 
-        List<RoomParticipant> roomParticipants = optionalRoom.get().getParticipants().stream()
-                .filter(r -> !r.getUserId().equals(addMessageReqDto.getSenderId()))
-                .toList();
+        List<RoomParticipant> roomParticipants = optionalRoom.get().getParticipants();
 
         if (roomParticipants.isEmpty()) {
             throw new RuntimeException("메시지 전송에 실패했습니다");
@@ -157,12 +170,13 @@ public class ChatService {
                     .profileImg(userRepository.getUserByUserId(addMessageReqDto.getSenderId()).get().getProfileImg())
                     .build());
         }
-        notificationUtils.sendAndAddNotification(notifications);
+
+        notificationUtils.sendAndAddNotification(notifications, addMessageReqDto.getRoomId(), addMessageReqDto.getSenderId());
         messagingTemplate.convertAndSend(
-                "/topic/room/" + addMessageReqDto.getRoomId(),
+                "/topic/room/" + optionalRoom.get().getRoomId(),
                 Map.of(
-                        "type", "read",
-                        "roomId", addMessageReqDto.getRoomId(),
+                        "type", "MESSAGE",
+                        "roomId", optionalRoom.get().getRoomId(),
                         "userId", addMessageReqDto.getSenderId()
                 )
         );
@@ -217,16 +231,12 @@ public class ChatService {
             throw new RuntimeException("cursorMessageId와 cursorCreateDt가 모두 전달되지 않았습니다");
         }
 
-        Optional<Room> optionalRoom = roomRepository.getRoomByRoomId(param.getRoomId());
-        if (optionalRoom.isEmpty()) {
-            throw new RuntimeException("해당 채팅방이 존재하지 않습니다.");
-        }
-
+        int lastMessageId = messageRepository.getLastMessageIdByRoomId(param.getRoomId()).orElse(0);
         if (param.getCursorMessageId() == null && param.getCursorCreateDt() == null) {
             RoomRead roomRead = RoomRead.builder()
                     .roomId(param.getRoomId())
                     .userId(principalUser.getUserId())
-                    .lastReadMessageId(optionalRoom.get().getLastMessageId())
+                    .lastReadMessageId(lastMessageId)
                     .build();
             int result = roomRepository.changeRoomRead(roomRead);
             if (result != 1) {
