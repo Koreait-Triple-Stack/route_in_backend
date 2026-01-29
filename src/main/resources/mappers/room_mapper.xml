@@ -86,30 +86,40 @@
                 AND rrt.user_id = rpt.user_id
             JOIN user_tb ut
                 ON ut.user_id = rt.profile_user_id
-            LEFT JOIN (
+                LEFT JOIN (
                     SELECT
                         mt.room_id,
                         COUNT(*) AS unread_cnt
-                    FROM message_tb mt
-                        JOIN room_read_tb r
-                            ON (r.room_id = mt.room_id and r.user_id = #{userId})
-                    WHERE mt.message_id > r.last_read_message_id
-                    GROUP BY mt.room_id
-                    ) uc
+                            FROM message_tb mt
+                            JOIN room_read_tb r
+                            ON r.room_id = mt.room_id
+                            AND r.user_id = #{userId}
+                                JOIN room_participant_tb rpt2
+                                ON rpt2.room_id = mt.room_id
+                                AND rpt2.user_id = #{userId}
+        WHERE mt.message_id > r.last_read_message_id
+            AND mt.sender_id IS NOT NULL
+            AND mt.create_dt > rpt2.joined_dt
+            AND rpt2.left_dt IS NULL
+                GROUP BY mt.room_id
+                ) uc
                 ON uc.room_id = rt.room_id
-        WHERE
-            rpt.user_id = #{userId}
-            AND rt.last_message_dt IS NOT NULL
-        ORDER BY
-            rt.last_message_dt DESC;
+                WHERE
+                rpt.user_id = #{userId}
+                AND rt.last_message_dt IS NOT NULL
+                AND rpt.left_dt IS NULL
+                ORDER BY
+                rt.last_message_dt DESC;
     </select>
 
-    <delete id="quitRoom">
-        delete from
+    <update id="quitRoom">
+        update
             room_participant_tb
+        set
+            left_dt = now()
         where
             user_id = #{userId} and room_id = #{roomId};
-    </delete>
+    </update>
 
     <update id="changeRoomTitle">
         update
@@ -122,12 +132,17 @@
 
     <select id="getRoomParticipantByUserIdAndRoomId" resultMap="RoomParticipantResultMap">
         select
-            *
+            room_id as rpt_room_id,
+            user_id,
+            title,
+            role,
+            joined_dt,
+            left_dt
         from
             room_participant_tb
         where
             user_id = #{userId}
-            and room_id = #{roomId}
+            and room_id = #{roomId};
     </select>
 
     <select id="getRoomByRoomId" resultMap="RoomResultMap">
@@ -146,7 +161,8 @@
             join room_participant_tb rpt on (rt.room_id = rpt.room_id)
             join user_tb ut on (ut.user_id = rpt.user_id)
         where
-            rt.room_id = #{roomId};
+            rt.room_id = #{roomId}
+            AND rpt.left_dt IS NULL;
     </select>
 
     <update id="changeRoomLastMessage">
@@ -164,7 +180,7 @@
         insert into
             room_read_tb
         values
-            (#{roomId}, #{userId}, 0, null);
+            (#{roomId}, #{userId}, #{lastMessageId}, null);
     </insert>
 
     <update id="changeRoomRead">
@@ -173,6 +189,16 @@
         set
             last_read_message_id = GREATEST(last_read_message_id, #{lastReadMessageId}),
             update_dt = now()
+        where
+            room_id = #{roomId} and user_id = #{userId};
+    </update>
+
+    <update id="cancelQuitRoom">
+        update
+            room_participant_tb
+        set
+            left_dt = NULL,
+            joined_dt = now()
         where
             room_id = #{roomId} and user_id = #{userId};
     </update>

@@ -64,4 +64,8 @@ public class RoomRepository {
     public int changeRoomRead(RoomRead roomRead) {
         return roomMapper.changeRoomRead(roomRead);
     }
+
+    public int cancelQuitRoom(Integer roomId, Integer userId) {
+        return roomMapper.cancelQuitRoom(roomId, userId);
+    }
 }

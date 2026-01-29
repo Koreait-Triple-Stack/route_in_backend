@@ -39,6 +39,11 @@ public class ChatController {
         return ResponseEntity.ok(chatService.changeRoomTitle(changeRoomTitleReqDto));
     }
 
+    @PostMapping("/room/participant/add")
+    private ResponseEntity<?> addRoomParticipant(@RequestBody AddRoomParticipantReqDto addRoomParticipantReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(chatService.addRoomParticipant(addRoomParticipantReqDto, principalUser));
+    }
+
     @PostMapping("/message/add")
     private ResponseEntity<?> addMessage(@RequestBody AddMessageReqDto addMessageReqDto) {
         return ResponseEntity.ok(chatService.addMessage(addMessageReqDto));

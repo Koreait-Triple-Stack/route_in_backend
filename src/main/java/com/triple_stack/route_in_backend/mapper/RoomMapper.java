@@ -21,4 +21,5 @@ public interface RoomMapper {
     int changeRoomLastMessage(Room room);
     int addRoomRead(RoomRead roomRead);
     int changeRoomRead(RoomRead roomRead);
+    int cancelQuitRoom(Integer roomId, Integer userId);
 }
