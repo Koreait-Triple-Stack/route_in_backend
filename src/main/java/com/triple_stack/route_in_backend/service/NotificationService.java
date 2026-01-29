@@ -1,7 +1,7 @@
 package com.triple_stack.route_in_backend.service;
 
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
-import com.triple_stack.route_in_backend.dto.user.account.AddNotificationReqDto;
+import com.triple_stack.route_in_backend.dto.Notification.AddNotificationReqDto;
 import com.triple_stack.route_in_backend.entity.Notification;
 import com.triple_stack.route_in_backend.repository.NotificationRepository;
 import com.triple_stack.route_in_backend.utils.NotificationUtils;
@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class NotificationService {

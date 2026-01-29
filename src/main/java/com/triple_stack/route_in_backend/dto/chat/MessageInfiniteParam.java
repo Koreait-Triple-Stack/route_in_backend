@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MessageInfiniteParam {
     private Integer roomId;
+    private Integer userId;
     private Integer limit;
     private Integer limitPlusOne;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

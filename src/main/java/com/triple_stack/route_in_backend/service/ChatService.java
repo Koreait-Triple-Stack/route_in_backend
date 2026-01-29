@@ -109,16 +109,36 @@ public class ChatService {
         return new ApiRespDto<>("success", "채팅방 상세 조회 완료", foundRoom.get());
     }
 
+    @Transactional
     public ApiRespDto<?> quitRoom(QuitRoomReqDto quitRoomReqDto) {
-        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(quitRoomReqDto.toEntity());
+        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(quitRoomReqDto.toParticipantEntity());
         if (foundRoom.isEmpty()) {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
         }
 
-        int result = roomRepository.quitRoom(quitRoomReqDto.toEntity());
+        int result = roomRepository.quitRoom(quitRoomReqDto.toParticipantEntity());
         if (result != 1) {
             throw new RuntimeException("채팅방 나가기에 실패했습니다");
         }
+
+        Optional<Message> optionalMessage = messageRepository.addMessage(quitRoomReqDto.toMessageEntity());
+        if (optionalMessage.isEmpty()) {
+            throw new RuntimeException("채팅방 나가기에 실패했습니다");
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + quitRoomReqDto.getRoomId(),
+                        Map.of(
+                                "type", "MESSAGE",
+                                "roomId", quitRoomReqDto.getRoomId(),
+                                "userId", quitRoomReqDto.getUserId()
+                        )
+                );
+            }
+        });
 
         return new ApiRespDto<>("success", "채팅방 나기기 완료", null);
     }
@@ -172,14 +192,19 @@ public class ChatService {
         }
 
         notificationUtils.sendAndAddNotification(notifications, addMessageReqDto.getRoomId(), addMessageReqDto.getSenderId());
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + optionalRoom.get().getRoomId(),
-                Map.of(
-                        "type", "MESSAGE",
-                        "roomId", optionalRoom.get().getRoomId(),
-                        "userId", addMessageReqDto.getSenderId()
-                )
-        );
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + optionalRoom.get().getRoomId(),
+                        Map.of(
+                                "type", "MESSAGE",
+                                "roomId", optionalRoom.get().getRoomId(),
+                                "userId", addMessageReqDto.getSenderId()
+                        )
+                );
+            }
+        });
 
         return new ApiRespDto<>("success", "메시지 전송 완료", null);
     }
@@ -260,5 +285,49 @@ public class ChatService {
         }
 
         return new ApiRespDto<>("success", "메시지 무한스크롤 조회 완료", data);
+    }
+
+    @Transactional
+    public ApiRespDto<?> addRoomParticipant(AddRoomParticipantReqDto addRoomParticipantReqDto, PrincipalUser principalUser) {
+        System.out.println(addRoomParticipantReqDto);
+        String profileImg = userRepository.getUserByUserId(principalUser.getUserId()).get().getProfileImg();
+        for (Integer userId : addRoomParticipantReqDto.getUserIds()) {
+            String username = userRepository.getUserByUserId(userId).get().getUsername();
+            Optional<Message> optionalMessage = messageRepository.addMessage(addRoomParticipantReqDto.toMessageEntity(username));
+            if (optionalMessage.isEmpty()) {
+                throw new RuntimeException("초대에 실패했습니다");
+            }
+
+            Optional<RoomParticipant> participant = roomRepository.getRoomParticipantByUserIdAndRoomId(addRoomParticipantReqDto.toParticipantEntity(userId, profileImg));
+            if (participant.isPresent()) {
+                System.out.println(participant.get());
+                int result = roomRepository.cancelQuitRoom(participant.get().getRoomId(), participant.get().getUserId());
+                if (result != 1) {
+                    throw new RuntimeException("초대에 실패했습니다");
+                }
+                // int readResult= roomRepository.changeRoomRead();
+            } else {
+                int result = roomRepository.addRoomParticipant(addRoomParticipantReqDto.toParticipantEntity(userId, profileImg));
+                if (result != 1) {
+                    throw new RuntimeException("초대에 실패했습니다");
+                }
+            }
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + addRoomParticipantReqDto.getRoomId(),
+                        Map.of(
+                                "type", "MESSAGE",
+                                "roomId", addRoomParticipantReqDto.getRoomId(),
+                                "userId", principalUser.getUserId()
+                        )
+                );
+            }
+        });
+
+        return new ApiRespDto<>("success", "초대 완료", null);
     }
 }

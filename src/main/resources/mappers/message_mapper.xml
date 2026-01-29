@@ -37,36 +37,38 @@
             message_tb.*,
             user_tb.profile_img as profile_img,
             user_tb.username as username,
-                (
-                select count(*)
-                from room_participant_tb rpt
-                join room_read_tb rrt
-                on rrt.room_id = rpt.room_id
-                and rrt.user_id = rpt.user_id
-                where rpt.room_id = message_tb.room_id
-                and rpt.left_dt is null
-                and rpt.user_id != message_tb.sender_id
-                and rrt.last_read_message_id &lt; message_tb.message_id
-                ) as unread_cnt
-
+            (
+            select count(*)
+            from room_participant_tb rpt2
+            join room_read_tb rrt
+            on rrt.room_id = rpt2.room_id
+            and rrt.user_id = rpt2.user_id
+            where rpt2.room_id = message_tb.room_id
+            and rpt2.left_dt is null
+            and message_tb.sender_id is not null
+            and rpt2.user_id != message_tb.sender_id
+            and rrt.last_read_message_id &lt; message_tb.message_id
+            and message_tb.create_dt > rpt2.joined_dt
+            ) as unread_cnt
         from message_tb
-            join user_tb on (user_tb.user_id = message_tb.sender_id)
-
-        <where>
-            room_id = #{roomId}
+            left join user_tb
+            on user_tb.user_id = message_tb.sender_id
+            join room_participant_tb rpt
+            on rpt.room_id = message_tb.room_id
+            and rpt.user_id = #{userId}
+            where
+            message_tb.room_id = #{roomId}
+            and message_tb.create_dt > rpt.joined_dt
             <if test="cursorCreateDt != null and cursorMessageId != null">
                 and (
                 message_tb.create_dt &lt; #{cursorCreateDt}
-                or (message_tb.create_dt = #{cursorCreateDt} and message_id &lt; #{cursorMessageId})
+                or (message_tb.create_dt = #{cursorCreateDt} and message_tb.message_id &lt; #{cursorMessageId})
                 )
             </if>
-        </where>
-
         order by
-            create_dt desc,
-            message_id desc
-        limit #{limitPlusOne};
-
+            message_tb.create_dt desc,
+            message_tb.message_id desc
+            limit #{limitPlusOne};
     </select>
 
     <select id="getMessageByMessageId" resultMap="MessageResultMap">

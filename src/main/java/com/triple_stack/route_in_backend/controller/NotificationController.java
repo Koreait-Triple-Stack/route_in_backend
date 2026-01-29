@@ -1,15 +1,10 @@
 package com.triple_stack.route_in_backend.controller;
 
-import com.triple_stack.route_in_backend.dto.user.account.AddNotificationReqDto;
+import com.triple_stack.route_in_backend.dto.Notification.AddNotificationReqDto;
 import com.triple_stack.route_in_backend.service.NotificationService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/notification")
