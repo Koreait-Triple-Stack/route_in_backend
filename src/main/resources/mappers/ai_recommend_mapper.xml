@@ -2,33 +2,40 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.triple_stack.route_in_backend.mapper.AIRecommend">
-    <resultMap id="AIResultMap" type="com.triple_stack.route_in_backend.dto.Gemini.AIRecommendReqDto">
-        <id column="user_id" property="userId" />
-        <association property="userProfile" javaType="com.triple_stack.route_in_backend.dto.Gemini.AIRecommendReqDto$UserProfileDto">
-            <result column="birth_date" property="birthDate"/>
-            <result column="gender" property="gender"/>
+<mapper namespace="com.triple_stack.route_in_backend.mapper.AIRecommendMapper">
+    <resultMap id="AIRecommendResultMap" type="com.triple_stack.route_in_backend.entity.AIRecommend">
+        <id property="aiRecommendId" column="ai_recommend_id"  />
+        <result property="userId" column="user_id" />
+        <result property="aiResp" column="ai_resp" typeHandler="com.triple_stack.route_in_backend.security.handler.RecommendationTypeHandler" />
+        <result property="createDt" column="create_dt" />
+    </resultMap>
+
+    <resultMap id="AIRecommendReqResultMap" type="com.triple_stack.route_in_backend.dto.ai.AIRecommendReqDto">
+        <id property="userId" column="user_id"  />
+        <association property="userProfile" javaType="com.triple_stack.route_in_backend.dto.ai.AIRecommendReqDto$UserProfileDto">
+            <result property="birthDate" column="birth_date" />
+            <result property="gender" column="gender" />
         </association>
 
-        <association property="bodyInfo" javaType="com.triple_stack.route_in_backend.dto.Gemini.AIRecommendReqDto$BodyInfoDto">
-            <result column="height" property="height"/>
-            <result column="weight" property="weight"/>
-            <result column="skeletal_muscle" property="skeletalMuscleMass"/>
-            <result column="body_fat_mass" property="bodyFatMass" />
-            <result column="month_dt" property="monthDt" />
+        <association property="bodyInfo" javaType="com.triple_stack.route_in_backend.dto.ai.AIRecommendReqDto$BodyInfoDto">
+            <result property="height" column="height" />
+            <result property="weight" column="weight" />
+            <result property="skeletalMuscleMass" column="skeletal_muscle" />
+            <result property="bodyFatMass" column="body_fat_mass" />
+            <result property="monthDt" column="month_dt" />
         </association>
 
-        <association property="location" javaType="com.triple_stack.route_in_backend.dto.Gemini.AIRecommendReqDto$LocationDto">
-            <result column="zip_code" property="zipCode"/>
-            <result column="lat" property="lat"/>
-            <result column="lng" property="lng"/>
+        <association property="location" javaType="com.triple_stack.route_in_backend.dto.ai.AIRecommendReqDto$LocationDto">
+            <result property="zipCode" column="zip_code" />
+            <result property="lat" column="lat" />
+            <result property="lng" column="lng" />
         </association>
 
-        <association property="workoutHistory" javaType="com.triple_stack.route_in_backend.dto.Gemini.AIRecommendReqDto$WorkoutHistoryDto">
-            <result column="current_run" property="currentRun"/>
-            <result column="weekly_run" property="weeklyRun"/>
-            <result column="exercise" property="exercise"/>
-            <result column="weekday" property="weekday" />
+        <association property="workoutHistory" javaType="com.triple_stack.route_in_backend.dto.ai.AIRecommendReqDto$WorkoutHistoryDto">
+            <result property="currentRun" column="current_run" />
+            <result property="weeklyRun" column="weekly_run" />
+            <result property="exercise" column="exercise" />
+            <result property="weekday" column="weekday" />
         </association>
 
         <collection property="course" resultMap="CourseResultMap" />
@@ -48,7 +55,7 @@
         <result property="updateDt" column="update_dt"/>
     </resultMap>
 
-    <select id="getAIContext" resultMap="AIResultMap">
+    <select id="getAIContext" resultMap="AIRecommendReqResultMap">
         select
             ut.birth_date,
             ut.gender,
@@ -75,4 +82,20 @@
         where
             ut.user_id = #{userId}
     </select>
+
+    <select id="getRecommendationByUserId" resultMap="AIRecommendResultMap">
+        select
+            *
+        from
+            ai_recommend_tb
+        where
+            user_id = #{userId}
+    </select>
+
+    <insert id="addRecommendation">
+        insert into
+            ai_recommend_tb
+        values
+            (0, #{userId}, #{aiResp, typeHandler=com.triple_stack.route_in_backend.security.handler.RecommendationTypeHandler}, now())
+    </insert>
 </mapper>

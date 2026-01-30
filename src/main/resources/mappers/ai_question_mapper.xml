@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.AIQuestionMapper">
+    <resultMap id="AIQuestionResultMap" type="com.triple_stack.route_in_backend.entity.AIQuestion">
+        <id property="questionId" column="question_id" />
+        <result property="userId" column="user_id" />
+        <result property="question" column="question" />
+        <result property="resp" column="resp" />
+        <result property="createDt" column="create_dt" />
+    </resultMap>
+
+    <insert id="sendQuestion">
+        insert into
+            ai_question_tb
+        values
+            (0, #{userId}, #{question}, #{resp}, now())
+    </insert>
+
+    <select id="getAIChatListByUserId" resultMap="AIQuestionResultMap">
+        select
+            *
+        from
+            ai_question_tb
+        where
+            user_id = #{userId}
+    </select>
+</mapper>

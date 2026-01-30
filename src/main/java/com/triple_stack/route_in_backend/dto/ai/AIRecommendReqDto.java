@@ -1,4 +1,4 @@
-package com.triple_stack.route_in_backend.dto.Gemini;
+package com.triple_stack.route_in_backend.dto.ai;
 
 import com.triple_stack.route_in_backend.entity.Course;
 import lombok.Data;
