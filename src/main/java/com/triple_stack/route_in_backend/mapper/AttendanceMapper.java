@@ -9,5 +9,7 @@ import java.util.List;
 public interface AttendanceMapper {
     // 금일 출석 기록
     int insertToday(Integer userId); // 1이면 신규 0이면 이미 출석 완료
+//        int updatePopupShownToday(Integer userId);// 1이면 팝업 0이면 이미 띄움
+    Integer selectPopupShownToday(Integer userId);
     List<String> selectMonthDates(AttendanceMonthReqDto attendanceMonthReqDto); // 각 유저의 출석한 날짜 기록
 }
