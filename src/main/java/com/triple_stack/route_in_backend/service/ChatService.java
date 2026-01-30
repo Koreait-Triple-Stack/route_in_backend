@@ -63,7 +63,7 @@ public class ChatService {
                 throw new RuntimeException("채팅방 생성에 실패했습니다");
             }
 
-            int readResult = roomRepository.addRoomRead(RoomRead.builder().roomId(roomId).userId(userId).build());
+            int readResult = roomRepository.addRoomRead(addRoomReqDto.toReadEntity(roomId, userId));
             if (readResult != 1) {
                 throw new RuntimeException("채팅방 생성에 실패했습니다");
             }
@@ -191,7 +191,7 @@ public class ChatService {
                     .build());
         }
 
-        notificationUtils.sendAndAddNotification(notifications, addMessageReqDto.getRoomId(), addMessageReqDto.getSenderId());
+        notificationUtils.sendAndAddNotification(notifications, addMessageReqDto.getRoomId());
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
@@ -210,12 +210,13 @@ public class ChatService {
     }
 
     public ApiRespDto<?> changeMessage(ChangeMessageReqDto changeMessageReqDto) {
-        Optional<Message> foundMessage = messageRepository.getMessageByMessageId(changeMessageReqDto.getMessageId());
-        if (foundMessage.isEmpty()) {
+        Optional<Message> optionalMessage = messageRepository.getMessageByMessageId(changeMessageReqDto.getMessageId());
+        if (optionalMessage.isEmpty()) {
             throw new RuntimeException("존재하지 않는 메시지 입니다");
         }
+        Message foundMessage = optionalMessage.get();
 
-        if (foundMessage.get().getSenderId() == null) {
+        if (foundMessage.getSenderId() == null) {
             throw new RuntimeException("이미 삭제된 메시지 입니다.");
         }
 
@@ -224,16 +225,38 @@ public class ChatService {
             throw new RuntimeException("메시지 수정을 실패했습니다");
         }
 
+        Optional<Room> optionalRoom = roomRepository.getRoomByRoomId(foundMessage.getRoomId());
+        if (optionalRoom.isEmpty()) {
+            throw new RuntimeException("메시지 수정을 실패했습니다");
+        }
+
+        if (optionalRoom.get().getLastMessageId().equals(foundMessage.getMessageId())) {
+            int roomResult = roomRepository.changeRoomLastMessage(changeMessageReqDto.toRoomEntity(optionalMessage.get().getRoomId()));
+            if (roomResult != 1) {
+                throw new RuntimeException("메시지 삭제를 실패했습니다");
+            }
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + foundMessage.getRoomId(),
+                Map.of(
+                        "type", "MESSAGE",
+                        "roomId", foundMessage.getRoomId(),
+                        "userId", foundMessage.getSenderId()
+                )
+        );
+
         return new ApiRespDto<>("success", "메시지 수정 완료", null);
     }
 
     public ApiRespDto<?> deleteMessage(Integer messageId) {
-        Optional<Message> foundMessage = messageRepository.getMessageByMessageId(messageId);
-        if (foundMessage.isEmpty()) {
+        Optional<Message> optionalMessage = messageRepository.getMessageByMessageId(messageId);
+        if (optionalMessage.isEmpty()) {
             throw new RuntimeException("존재하지 않는 메시지 입니다");
         }
+        Message foundMessage = optionalMessage.get();
 
-        if (foundMessage.get().getSenderId() == null) {
+        if (foundMessage.getSenderId() == null) {
             throw new RuntimeException("이미 삭제된 메시지 입니다.");
         }
 
@@ -246,6 +269,32 @@ public class ChatService {
         if (result != 1) {
             throw new RuntimeException("메시지 삭제를 실패했습니다");
         }
+
+        Optional<Room> optionalRoom = roomRepository.getRoomByRoomId(foundMessage.getRoomId());
+        if (optionalRoom.isEmpty()) {
+            throw new RuntimeException("메시지 삭제를 실패했습니다");
+        }
+
+        if (optionalRoom.get().getLastMessageId().equals(foundMessage.getMessageId())) {
+            Room room = Room.builder()
+                    .roomId(foundMessage.getRoomId())
+                    .lastMessage("삭제된 메시지입니다")
+                    .lastMessageId(messageId)
+                    .build();
+            int roomResult = roomRepository.changeRoomLastMessage(room);
+            if (roomResult != 1) {
+                throw new RuntimeException("메시지 삭제를 실패했습니다");
+            }
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + foundMessage.getRoomId(),
+                Map.of(
+                        "type", "MESSAGE",
+                        "roomId", foundMessage.getRoomId(),
+                        "userId", foundMessage.getSenderId()
+                )
+        );
 
         return new ApiRespDto<>("success", "메시지 삭제 완료", null);
     }
@@ -289,7 +338,6 @@ public class ChatService {
 
     @Transactional
     public ApiRespDto<?> addRoomParticipant(AddRoomParticipantReqDto addRoomParticipantReqDto, PrincipalUser principalUser) {
-        System.out.println(addRoomParticipantReqDto);
         String profileImg = userRepository.getUserByUserId(principalUser.getUserId()).get().getProfileImg();
         for (Integer userId : addRoomParticipantReqDto.getUserIds()) {
             String username = userRepository.getUserByUserId(userId).get().getUsername();
@@ -300,15 +348,21 @@ public class ChatService {
 
             Optional<RoomParticipant> participant = roomRepository.getRoomParticipantByUserIdAndRoomId(addRoomParticipantReqDto.toParticipantEntity(userId, profileImg));
             if (participant.isPresent()) {
-                System.out.println(participant.get());
                 int result = roomRepository.cancelQuitRoom(participant.get().getRoomId(), participant.get().getUserId());
                 if (result != 1) {
                     throw new RuntimeException("초대에 실패했습니다");
                 }
-                // int readResult= roomRepository.changeRoomRead();
+                int readResult= roomRepository.changeRoomRead(addRoomParticipantReqDto.toReadEntity(userId, optionalMessage.get().getMessageId()));
+                if (readResult != 1) {
+                    throw new RuntimeException("초대에 실패했습니다");
+                }
             } else {
                 int result = roomRepository.addRoomParticipant(addRoomParticipantReqDto.toParticipantEntity(userId, profileImg));
                 if (result != 1) {
+                    throw new RuntimeException("초대에 실패했습니다");
+                }
+                int readResult = roomRepository.addRoomRead(addRoomParticipantReqDto.toReadEntity(userId, optionalMessage.get().getMessageId()));
+                if (readResult != 1) {
                     throw new RuntimeException("초대에 실패했습니다");
                 }
             }

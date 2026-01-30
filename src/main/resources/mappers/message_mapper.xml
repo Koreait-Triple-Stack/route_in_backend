@@ -40,15 +40,14 @@
             (
             select count(*)
             from room_participant_tb rpt2
-            join room_read_tb rrt
-            on rrt.room_id = rpt2.room_id
-            and rrt.user_id = rpt2.user_id
+                join room_read_tb rrt
+                on (rrt.room_id = rpt2.room_id and rrt.user_id = rpt2.user_id)
             where rpt2.room_id = message_tb.room_id
-            and rpt2.left_dt is null
-            and message_tb.sender_id is not null
-            and rpt2.user_id != message_tb.sender_id
-            and rrt.last_read_message_id &lt; message_tb.message_id
-            and message_tb.create_dt > rpt2.joined_dt
+                and rpt2.left_dt is null
+                and message_tb.sender_id is not null
+                and rpt2.user_id != message_tb.sender_id
+                and rrt.last_read_message_id &lt; message_tb.message_id
+                and message_tb.create_dt > rpt2.joined_dt
             ) as unread_cnt
         from message_tb
             left join user_tb
@@ -56,7 +55,7 @@
             join room_participant_tb rpt
             on rpt.room_id = message_tb.room_id
             and rpt.user_id = #{userId}
-            where
+        where
             message_tb.room_id = #{roomId}
             and message_tb.create_dt > rpt.joined_dt
             <if test="cursorCreateDt != null and cursorMessageId != null">

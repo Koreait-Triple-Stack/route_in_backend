@@ -34,11 +34,11 @@ public class AddRoomParticipantReqDto {
                 .build();
     }
 
-    public RoomRead toReadEntity(Integer userId, Integer lastMessageId) {
+    public RoomRead toReadEntity(Integer userId, Integer lastReadMessageId) {
         return RoomRead.builder()
                 .roomId(roomId)
                 .userId(userId)
-                .lastReadMessageId(lastMessageId)
+                .lastReadMessageId(lastReadMessageId)
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.dto.chat;
 
 import com.triple_stack.route_in_backend.entity.Message;
+import com.triple_stack.route_in_backend.entity.Room;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,14 @@ public class ChangeMessageReqDto {
                 .messageId(messageId)
                 .senderId(senderId)
                 .content(content)
+                .build();
+    }
+
+    public Room toRoomEntity(Integer roomId) {
+        return Room.builder()
+                .roomId(roomId)
+                .lastMessage(content)
+                .lastMessageId(messageId)
                 .build();
     }
 }

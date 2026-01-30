@@ -180,7 +180,7 @@
         insert into
             room_read_tb
         values
-            (#{roomId}, #{userId}, #{lastMessageId}, null);
+            (#{roomId}, #{userId}, #{lastReadMessageId}, null);
     </insert>
 
     <update id="changeRoomRead">
