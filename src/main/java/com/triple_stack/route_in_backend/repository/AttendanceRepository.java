@@ -19,5 +19,10 @@ public class AttendanceRepository {
     public int insertToday(Integer userId) {
         return attendanceMapper.insertToday(userId);
     }
-
+//        public int updatePopupShownToday(Integer userId) {
+//        return attendanceMapper.updatePopupShownToday(userId);
+//    }
+    public Integer selectPopupShownToday(Integer userId) {
+        return attendanceMapper.selectPopupShownToday(userId);
+    }
 }
