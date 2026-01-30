@@ -11,13 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddNotificationReqDto {
-    private List<Integer> userIds;
+    private Integer userId;
     private String title;
     private String message;
     private String path;
     private String profileImg;
-    // 웹소켓 이용해서 알림 보내는 거 수정해야함 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public Notification toEntity(Integer userId) {
+
+    public Notification toEntity() {
         return Notification.builder()
                 .userId(userId)
                 .title(title)

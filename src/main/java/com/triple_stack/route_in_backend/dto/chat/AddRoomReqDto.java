@@ -23,4 +23,12 @@ public class AddRoomReqDto {
                 .role(role)
                 .build();
     }
+
+    public RoomRead toReadEntity(Integer rooId, Integer userId) {
+        return RoomRead.builder()
+                .roomId(rooId)
+                .userId(userId)
+                .lastReadMessageId(0)
+                .build();
+    }
 }
