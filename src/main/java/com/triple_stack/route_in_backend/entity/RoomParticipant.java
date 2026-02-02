@@ -19,6 +19,8 @@ public class RoomParticipant {
     private LocalDateTime joinedDt;
     private LocalDateTime leftDt;
     private Integer profileUserId;
+    private Boolean favorite;
+    private Boolean muteNotification;
 
     private String profileImg;
     private String username;

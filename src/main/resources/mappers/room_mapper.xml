@@ -22,6 +22,8 @@
         <result property="joinedDt" column="joined_dt"/>
         <result property="leftDt" column="left_dt"/>
         <result property="profileUserId" column="profile_user_id"/>
+        <result property="favorite" column="favorite"/>
+        <result property="muteNotification" column="mute_notification"/>
         <result property="profileImg" column="profile_img"/>
         <result property="username" column="username"/>
     </resultMap>
@@ -44,6 +46,8 @@
         <result property="role" column="role"/>
         <result property="joinedDt" column="joined_dt"/>
         <result property="leftDt" column="left_dt"/>
+        <result property="favorite" column="favorite"/>
+        <result property="muteNotification" column="mute_notification"/>
         <result property="unreadCnt" column="unread_cnt"/>
         <result property="profileImg" column="profile_img"/>
     </resultMap>
@@ -59,7 +63,7 @@
         insert into
             room_participant_tb
         values
-            (#{roomId}, #{userId}, #{title}, #{role}, now(), null, #{profileUserId});
+            (#{roomId}, #{userId}, #{title}, #{role}, now(), null, #{profileUserId}, 0, 0);
     </insert>
 
     <select id="getRoomListByUserId" resultMap="RoomRespResultMap">
@@ -75,6 +79,8 @@
             rpt.role,
             rpt.joined_dt,
             rpt.left_dt,
+            rpt.favorite,
+            rpt.mute_notification,
 
             COALESCE(uc.unread_cnt, 0) AS unread_cnt,
             ut.profile_img as profile_img
@@ -109,6 +115,7 @@
             AND rt.last_message_dt IS NOT NULL
             AND rpt.left_dt IS NULL
         ORDER BY
+            rpt.favorite DESC,
             rt.last_message_dt DESC;
     </select>
 
@@ -221,4 +228,22 @@
             AND mt.create_dt > rpt2.joined_dt
             AND rpt2.left_dt IS NULL;
     </select>
+
+    <update id="muteNotification">
+        update
+            room_participant_tb
+        set
+            mute_notification = 1 - #{muteNotification}
+        where
+            user_id = #{userId} and room_id = #{roomId};
+    </update>
+
+    <update id="changeRoomFavorite">
+        update
+            room_participant_tb
+        set
+            favorite = 1 - #{favorite}
+        where
+            user_id = #{userId} and room_id = #{roomId};
+    </update>
 </mapper>

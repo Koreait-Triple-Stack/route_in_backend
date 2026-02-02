@@ -72,4 +72,12 @@ public class RoomRepository {
     public int countUnreadChatByUserId(Integer userId) {
         return roomMapper.countUnreadChatByUserId(userId);
     }
+
+    public int muteNotification(RoomParticipant roomParticipant) {
+        return roomMapper.muteNotification(roomParticipant);
+    }
+
+    public int changeRoomFavorite(RoomParticipant roomParticipant) {
+        return roomMapper.changeRoomFavorite(roomParticipant);
+    }
 }
