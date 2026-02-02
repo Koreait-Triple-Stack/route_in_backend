@@ -1,26 +1,19 @@
 package com.triple_stack.route_in_backend.dto.weather;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true) // 필요 없는 필드는 무시
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class WeatherRespDto {
-    private List<Weather> weather;
-    private Main main;
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Weather {
-        private String main; // 날씨 상태 (Rain, Clear, Clouds, Snow 등)
-        private String description; // 상세 설명
-    }
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Main {
-        private double temp; // 현재 온도
-    }
+    private String description; // 날씨 설명 (예: 맑음, 구름 조금)
+    private Double temp;        // 현재 온도
+    private Double feelsLike;   // 체감 온도
+    private Integer humidity;   // 습도
+    private String icon;        // 날씨 아이콘 코드 (이미지 URL 만들 때 사용)
+    private String city;        // 도시 이름
 }

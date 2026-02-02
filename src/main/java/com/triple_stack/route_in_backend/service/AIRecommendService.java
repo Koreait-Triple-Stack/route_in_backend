@@ -16,6 +16,7 @@ import com.triple_stack.route_in_backend.repository.AIRecommendRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +29,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor // 생성자 주입 (Autowired 대신 권장)
 public class AIRecommendService {
-
     @Autowired
     private AIRecommendRepository aiRecommendRepository;
     @Autowired
     private AIQuestionRepository aiQuestionRepository;
-
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Value("${gemini.api.key}")
     private String apiKey;
@@ -46,9 +45,6 @@ public class AIRecommendService {
 
     public ApiRespDto<?> getAIChatListByUserId(Integer userId) {
         List<AIQuestion> aiChatList = aiQuestionRepository.getAIChatListByUserId(userId);
-        if (aiChatList.isEmpty()) {
-            throw new RuntimeException("채팅 리스트를 가져오는데 실패했습니다.");
-        }
         return new ApiRespDto<>("success", "채팅 리스트를 불러왔습니다.", aiChatList);
     }
 
@@ -78,11 +74,12 @@ public class AIRecommendService {
             - 특정 부위 부상이 있다면 그 부위에 무리가 가지 않는 운동을 추천하세요.
 
             [응답 형식]
+            글자수는 200자 이하.
             반드시 아래 JSON 형식으로만 응답하세요. (설명이나 마크다운 ```json 금지)
             {
                 "runningTitle": "추천 제목",
                 "runningReason": "추천 이유",
-                "runningTags": ["#태그1", "#태그2"]
+                "runningTags": ["#태그1", "#태그2"],
                 "routineTitle": "추천 제목",
                 "routineReason": "추천 이유",
                 "routineTags": ["#태그1", "#태그2"]
@@ -102,6 +99,22 @@ public class AIRecommendService {
             ObjectNode rootNode = objectMapper.createObjectNode();
             rootNode.putArray("contents").add(contentNode);
 
+            ArrayNode safetySettingsArray = objectMapper.createArrayNode();
+            String[] categories = {
+                    "HARM_CATEGORY_HARASSMENT",
+                    "HARM_CATEGORY_HATE_SPEECH",
+                    "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "HARM_CATEGORY_DANGEROUS_CONTENT"
+            };
+
+            for (String category : categories) {
+                ObjectNode setting = objectMapper.createObjectNode();
+                setting.put("category", category);
+                setting.put("threshold", "BLOCK_NONE"); // 차단 안 함 설정
+                safetySettingsArray.add(setting);
+            }
+            rootNode.set("safetySettings", safetySettingsArray);
+
             String requestBody = objectMapper.writeValueAsString(rootNode);
 
             // HTTP 요청
@@ -114,17 +127,26 @@ public class AIRecommendService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            int result = aiRecommendRepository.addRecommendation(new AddRecommendationDto(userId, parseGeminiResponse(response.body())));
+            try {
+                int result = aiRecommendRepository.addRecommendation(new AddRecommendationDto(userId, parseGeminiResponse(response.body())));
+                if (result != 1) {
+                    throw new RuntimeException("추천 운동 저장 실패");
+                }
 
-            if (result != 1) {
-                throw new RuntimeException("추천운동 저장 중 오류가 발생했습니다.");
+                return new ApiRespDto<>("success", "새로운 추천을 완료했습니다.", aiRecommendRepository.getRecommendationByUserId(userId));
+
+            } catch (DuplicateKeyException e) {
+                Optional<AIRecommend> retry = aiRecommendRepository.getRecommendationByUserId(userId);
+
+                if (retry.isEmpty()) {
+                    throw new RuntimeException("데이터 조회 중 알 수 없는 오류 발생");
+                }
+
+                return new ApiRespDto<>("success", "오늘의 추천 내역을 불러왔습니다.", retry.get());
             }
-
-            return new ApiRespDto<>("success", "새로운 추천을 완료했습니다.", result);
 
         } catch (Exception e) {
             e.printStackTrace();
-            // 구체적인 에러 메시지 반환
             throw new RuntimeException("AI 추천 실패: " + e.getMessage());
         }
     }
@@ -158,6 +180,7 @@ public class AIRecommendService {
             %s
     
             [지침]
+            글자수는 200자 이하.
             위 정보를 바탕으로 사용자의 질문에 대해 친절하게 줄글(Text)로 답변하세요.
             """, userProfileJson, todayRecommendationJson, historyJson, sendQuestionDto.getQuestion());
 
@@ -172,6 +195,22 @@ public class AIRecommendService {
             contentNode.set("parts", partsArray);
             contentsArray.add(contentNode);
             rootNode.set("contents", contentsArray);
+
+            ArrayNode safetySettingsArray = objectMapper.createArrayNode();
+            String[] categories = {
+                    "HARM_CATEGORY_HARASSMENT",
+                    "HARM_CATEGORY_HATE_SPEECH",
+                    "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "HARM_CATEGORY_DANGEROUS_CONTENT"
+            };
+
+            for (String category : categories) {
+                ObjectNode setting = objectMapper.createObjectNode();
+                setting.put("category", category);
+                setting.put("threshold", "BLOCK_NONE"); // 차단 해제
+                safetySettingsArray.add(setting);
+            }
+            rootNode.set("safetySettings", safetySettingsArray);
 
             String requestBody = objectMapper.writeValueAsString(rootNode);
 
@@ -203,6 +242,7 @@ public class AIRecommendService {
 
     // [Helper 메소드] API 응답 JSON에서 텍스트만 뽑아내는 로직
     private String extractContentFromResponse(String jsonResponse) {
+        System.out.println("Gemini Chat Response: " + jsonResponse);
         try {
             JsonNode root = objectMapper.readTree(jsonResponse);
             // Gemini API 응답 구조: candidates[0].content.parts[0].text
