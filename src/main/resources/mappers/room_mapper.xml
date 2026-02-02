@@ -7,7 +7,6 @@
         <id property="roomId" column="room_id"/>
         <result property="type" column="type"/>
         <result property="unreadCnt" column="unread_cnt"/>
-        <result property="profileUserId" column="profile_user_id"/>
         <result property="createDt" column="create_dt"/>
         <result property="lastMessage" column="last_message"/>
         <result property="lastMessageDt" column="last_message_dt"/>
@@ -22,6 +21,7 @@
         <result property="role" column="role"/>
         <result property="joinedDt" column="joined_dt"/>
         <result property="leftDt" column="left_dt"/>
+        <result property="profileUserId" column="profile_user_id"/>
         <result property="profileImg" column="profile_img"/>
         <result property="username" column="username"/>
     </resultMap>
@@ -52,14 +52,14 @@
         insert into
             room_tb
         values
-            (0, #{type}, 0, #{profileUserId}, now(), null, null, 0);
+            (0, #{type}, 0, now(), null, null, 0);
     </insert>
 
     <insert id="addRoomParticipant">
         insert into
             room_participant_tb
         values
-            (#{roomId}, #{userId}, #{title}, #{role}, now(), null);
+            (#{roomId}, #{userId}, #{title}, #{role}, now(), null, #{profileUserId});
     </insert>
 
     <select id="getRoomListByUserId" resultMap="RoomRespResultMap">
@@ -85,31 +85,31 @@
                 ON rrt.room_id = rt.room_id
                 AND rrt.user_id = rpt.user_id
             JOIN user_tb ut
-                ON ut.user_id = rt.profile_user_id
-                LEFT JOIN (
-                    SELECT
-                        mt.room_id,
-                        COUNT(*) AS unread_cnt
-                            FROM message_tb mt
-                            JOIN room_read_tb r
-                            ON r.room_id = mt.room_id
-                            AND r.user_id = #{userId}
-                                JOIN room_participant_tb rpt2
-                                ON rpt2.room_id = mt.room_id
-                                AND rpt2.user_id = #{userId}
-        WHERE mt.message_id > r.last_read_message_id
-            AND mt.sender_id IS NOT NULL
-            AND mt.create_dt > rpt2.joined_dt
-            AND rpt2.left_dt IS NULL
-                GROUP BY mt.room_id
-                ) uc
+                ON ut.user_id = rpt.profile_user_id
+            LEFT JOIN (
+                SELECT
+                    mt.room_id,
+                    COUNT(*) AS unread_cnt
+                FROM message_tb mt
+                    JOIN room_read_tb r
+                    ON r.room_id = mt.room_id
+                    AND r.user_id = #{userId}
+                        JOIN room_participant_tb rpt2
+                        ON rpt2.room_id = mt.room_id
+                        AND rpt2.user_id = #{userId}
+                WHERE mt.message_id > r.last_read_message_id
+                    AND mt.sender_id IS NOT NULL
+                    AND mt.create_dt > rpt2.joined_dt
+                    AND rpt2.left_dt IS NULL
+                        GROUP BY mt.room_id
+                        ) uc
                 ON uc.room_id = rt.room_id
-                WHERE
-                rpt.user_id = #{userId}
-                AND rt.last_message_dt IS NOT NULL
-                AND rpt.left_dt IS NULL
-                ORDER BY
-                rt.last_message_dt DESC;
+        WHERE
+            rpt.user_id = #{userId}
+            AND rt.last_message_dt IS NOT NULL
+            AND rpt.left_dt IS NULL
+        ORDER BY
+            rt.last_message_dt DESC;
     </select>
 
     <update id="quitRoom">
@@ -125,7 +125,8 @@
         update
             room_participant_tb
         set
-            title = #{title}
+            title = #{title},
+            profile_user_id = #{profileUserId}
         where
             user_id = #{userId} and room_id = #{roomId};
     </update>
@@ -197,9 +198,27 @@
         update
             room_participant_tb
         set
+            title = #{title},
             left_dt = NULL,
             joined_dt = now()
         where
             room_id = #{roomId} and user_id = #{userId};
     </update>
+
+    <select id="countUnreadChatByUserId" resultType="int">
+        SELECT
+            COUNT(*) AS total_unread_cnt
+        FROM message_tb mt
+            JOIN room_read_tb r
+            ON r.room_id = mt.room_id
+            AND r.user_id = #{userId}
+            JOIN room_participant_tb rpt2
+            ON rpt2.room_id = mt.room_id
+            AND rpt2.user_id = #{userId}
+        WHERE
+            mt.message_id > r.last_read_message_id
+            AND mt.sender_id IS NOT NULL
+            AND mt.create_dt > rpt2.joined_dt
+            AND rpt2.left_dt IS NULL;
+    </select>
 </mapper>

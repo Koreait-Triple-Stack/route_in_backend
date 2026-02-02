@@ -45,8 +45,8 @@ public class RoomRepository {
         return roomMapper.changeRoomTitle(roomParticipant);
     }
 
-    public Optional<RoomParticipant> getRoomParticipantByUserIdAndRoomId(RoomParticipant roomParticipant) {
-        return roomMapper.getRoomParticipantByUserIdAndRoomId(roomParticipant);
+    public Optional<RoomParticipant> getRoomParticipantByUserIdAndRoomId(Integer roomId, Integer userId) {
+        return roomMapper.getRoomParticipantByUserIdAndRoomId(roomId, userId);
     }
 
     public Optional<Room> getRoomByRoomId(Integer roomId) {
@@ -65,7 +65,11 @@ public class RoomRepository {
         return roomMapper.changeRoomRead(roomRead);
     }
 
-    public int cancelQuitRoom(Integer roomId, Integer userId) {
-        return roomMapper.cancelQuitRoom(roomId, userId);
+    public int cancelQuitRoom(RoomParticipant roomParticipant) {
+        return roomMapper.cancelQuitRoom(roomParticipant);
+    }
+
+    public int countUnreadChatByUserId(Integer userId) {
+        return roomMapper.countUnreadChatByUserId(userId);
     }
 }

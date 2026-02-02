@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,6 +16,8 @@ public class QuitRoomReqDto {
     private Integer userId;
     private Integer roomId;
     private String username;
+    private List<Integer> participantIds;
+    private List<String> participantNames;
 
     public RoomParticipant toParticipantEntity() {
         return RoomParticipant.builder()

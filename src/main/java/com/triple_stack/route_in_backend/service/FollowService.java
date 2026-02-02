@@ -6,18 +6,28 @@ import com.triple_stack.route_in_backend.dto.user.follow.AddFollowReqDto;
 import com.triple_stack.route_in_backend.dto.user.follow.ChangeFollowReqDto;
 import com.triple_stack.route_in_backend.dto.user.follow.DeleteFollowReqDto;
 import com.triple_stack.route_in_backend.entity.Follow;
+import com.triple_stack.route_in_backend.entity.Notification;
 import com.triple_stack.route_in_backend.repository.FollowRepository;
+import com.triple_stack.route_in_backend.repository.UserRepository;
 import com.triple_stack.route_in_backend.security.model.PrincipalUser;
+import com.triple_stack.route_in_backend.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class FollowService {
     @Autowired
     private FollowRepository followRepository;
+
+    @Autowired
+    private NotificationUtils notificationUtils;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
     public ApiRespDto<?> addFollow(AddFollowReqDto addFollowReqDto) {
@@ -124,6 +134,15 @@ public class FollowService {
         if (exists) throw new RuntimeException("이미 팔로우가 완료된 요청입니다.");
 
         addFollow(new AddFollowReqDto(dto.getFollowerUserId(), dto.getFollowingUserId()));
+        List<Notification> notifications = new ArrayList<>();
+        String profileImg = userRepository.getUserByUserId(principalUser.getUserId()).get().getProfileImg();
+        notifications.add(Notification.builder()
+                .userId(dto.getFollowingUserId())
+                .title("새 팔로우")
+                .message(principalUser.getUsername() + "님이 팔로우하였습니다.")
+                .path("/user/"+principalUser.getUserId())
+                .profileImg(profileImg).build());
+        notificationUtils.sendAndAddNotification(notifications);
         return new ApiRespDto<>("success", "팔로우 완료", null);
     }
 
@@ -134,7 +153,7 @@ public class FollowService {
         boolean isFollowing = followRepository.isFollowing(followerUserId, followingUserId);
         return new ApiRespDto<>("success", "팔로우 상태 조회 완료", isFollowing);
     }
-    }
+}
 
 
 

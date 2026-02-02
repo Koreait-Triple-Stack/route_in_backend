@@ -18,6 +18,7 @@ public class RoomParticipant {
     private String role;
     private LocalDateTime joinedDt;
     private LocalDateTime leftDt;
+    private Integer profileUserId;
 
     private String profileImg;
     private String username;

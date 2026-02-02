@@ -16,10 +16,11 @@ public interface RoomMapper {
     List<RoomRespDto> getRoomListByUserId(Integer userId);
     int quitRoom(RoomParticipant roomParticipant);
     int changeRoomTitle(RoomParticipant roomParticipant);
-    Optional<RoomParticipant> getRoomParticipantByUserIdAndRoomId(RoomParticipant roomParticipant);
+    Optional<RoomParticipant> getRoomParticipantByUserIdAndRoomId(Integer roomId, Integer userId);
     Optional<Room> getRoomByRoomId(Integer roomId);
     int changeRoomLastMessage(Room room);
     int addRoomRead(RoomRead roomRead);
     int changeRoomRead(RoomRead roomRead);
-    int cancelQuitRoom(Integer roomId, Integer userId);
+    int cancelQuitRoom(RoomParticipant roomParticipant);
+    int countUnreadChatByUserId(Integer userId);
 }
