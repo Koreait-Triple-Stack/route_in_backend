@@ -12,15 +12,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddRoomReqDto {
-    private String title;
+    private List<String> usernames;
     private List<Integer> userIds;
 
-    public RoomParticipant toEntity(Integer roomId, Integer userId, String role) {
+    public RoomParticipant toEntity(Integer roomId, Integer userId, String title, String role, Integer profileUserId) {
         return RoomParticipant.builder()
                 .roomId(roomId)
                 .userId(userId)
                 .title(title)
                 .role(role)
+                .profileUserId(profileUserId)
                 .build();
     }
 

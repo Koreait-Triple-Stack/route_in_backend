@@ -63,4 +63,9 @@ public class ChatController {
     private ResponseEntity<?> getMessageListInfinite(MessageInfiniteParam messageInfiniteParam, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(chatService.getMessageListInfinite(messageInfiniteParam, principalUser));
     }
+
+    @GetMapping("/message/unread/{userId}")
+    private ResponseEntity<?> countUnreadChatByUserId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(chatService.countUnreadChatByUserId(userId));
+    }
 }

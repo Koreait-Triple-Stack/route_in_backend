@@ -13,14 +13,14 @@ import java.util.List;
 public class AddRoomParticipantReqDto {
     private Integer roomId;
     private List<Integer> userIds;
-    private String title;
+    private List<String> usernames;
 
-    public RoomParticipant toParticipantEntity(Integer userId, String profileImg) {
+    public RoomParticipant toParticipantEntity(Integer userId, Integer profileUserId, String title) {
         return RoomParticipant.builder()
                 .roomId(roomId)
                 .userId(userId)
                 .title(title)
-                .profileImg(profileImg)
+                .profileUserId(profileUserId)
                 .role("MEMBER")
                 .build();
     }

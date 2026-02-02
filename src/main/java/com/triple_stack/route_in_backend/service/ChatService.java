@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,11 +46,9 @@ public class ChatService {
             throw new RuntimeException("1명 이상 있어야 합니다.");
         }
 
-        Integer profileUserId = addRoomReqDto.getUserIds().stream().filter(id -> id.equals(principalUser.getUserId())).findFirst().orElse(null);
         String type = addRoomReqDto.getUserIds().size() > 2 ? "GROUP" : "DM";
         Room room = Room.builder()
                 .type(type)
-                .profileUserId(profileUserId)
                 .build();
         Optional<Room> optionalRoom = roomRepository.addRoom(room);
         if (optionalRoom.isEmpty()) {
@@ -58,7 +57,11 @@ public class ChatService {
 
         Integer roomId = optionalRoom.get().getRoomId();
         for (Integer userId : addRoomReqDto.getUserIds()) {
-            int result = roomRepository.addRoomParticipant(addRoomReqDto.toEntity(roomId, userId, "MEMBER"));
+            Integer profileUserId = addRoomReqDto.getUserIds().stream().filter(id -> !id.equals(userId)).findFirst().orElse(null);
+            String username = userRepository.getUserByUserId(userId).get().getUsername();
+            String title = addRoomReqDto.getUsernames().stream()
+                    .filter(u -> !u.equals(username)).collect(Collectors.joining(", "));
+            int result = roomRepository.addRoomParticipant(addRoomReqDto.toEntity(roomId, userId, title, "MEMBER", profileUserId));
             if (result != 1) {
                 throw new RuntimeException("채팅방 생성에 실패했습니다");
             }
@@ -111,8 +114,8 @@ public class ChatService {
 
     @Transactional
     public ApiRespDto<?> quitRoom(QuitRoomReqDto quitRoomReqDto) {
-        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(quitRoomReqDto.toParticipantEntity());
-        if (foundRoom.isEmpty()) {
+        Optional<RoomParticipant> optionalRoomParticipant = roomRepository.getRoomParticipantByUserIdAndRoomId(quitRoomReqDto.getRoomId(), quitRoomReqDto.getUserId());
+        if (optionalRoomParticipant.isEmpty()) {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
         }
 
@@ -124,6 +127,25 @@ public class ChatService {
         Optional<Message> optionalMessage = messageRepository.addMessage(quitRoomReqDto.toMessageEntity());
         if (optionalMessage.isEmpty()) {
             throw new RuntimeException("채팅방 나가기에 실패했습니다");
+        }
+
+        RoomParticipant roomParticipant = RoomParticipant.builder().roomId(quitRoomReqDto.getRoomId()).build();
+        List<Integer> userIds = roomRepository.getRoomByRoomId(quitRoomReqDto.getRoomId()).get()
+                .getParticipants().stream().map(RoomParticipant::getUserId).filter(id -> !id.equals(quitRoomReqDto.getUserId())).toList();
+        List<String> usernames = roomRepository.getRoomByRoomId(quitRoomReqDto.getRoomId()).get()
+                .getParticipants().stream().map(RoomParticipant::getUsername).filter(name -> !name.equals(quitRoomReqDto.getUsername())).toList();
+        for (Integer userId : userIds) {
+            String username = userRepository.getUserByUserId(userId).get().getUsername();
+            String title = usernames.stream().filter(name -> !name.equals(username)).collect(Collectors.joining(", "));
+            if (title.isEmpty()) {
+                title = username;
+            }
+            roomParticipant.setUserId(userId);
+            roomParticipant.setTitle(title);
+            int titleResult = roomRepository.changeRoomTitle(roomParticipant);
+            if (titleResult != 1) {
+                throw new RuntimeException("채팅방 나가기에 실패했습니다");
+            }
         }
 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -144,7 +166,7 @@ public class ChatService {
     }
 
     public ApiRespDto<?> changeRoomTitle(ChangeRoomTitleReqDto changeRoomTitleReqDto) {
-        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(changeRoomTitleReqDto.toEntity());
+        Optional<RoomParticipant> foundRoom = roomRepository.getRoomParticipantByUserIdAndRoomId(changeRoomTitleReqDto.getRoomId(), changeRoomTitleReqDto.getUserId());
         if (foundRoom.isEmpty()) {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
         }
@@ -341,14 +363,24 @@ public class ChatService {
         String profileImg = userRepository.getUserByUserId(principalUser.getUserId()).get().getProfileImg();
         for (Integer userId : addRoomParticipantReqDto.getUserIds()) {
             String username = userRepository.getUserByUserId(userId).get().getUsername();
-            Optional<Message> optionalMessage = messageRepository.addMessage(addRoomParticipantReqDto.toMessageEntity(username));
-            if (optionalMessage.isEmpty()) {
-                throw new RuntimeException("초대에 실패했습니다");
-            }
 
-            Optional<RoomParticipant> participant = roomRepository.getRoomParticipantByUserIdAndRoomId(addRoomParticipantReqDto.toParticipantEntity(userId, profileImg));
+            Optional<RoomParticipant> participant = roomRepository.getRoomParticipantByUserIdAndRoomId(addRoomParticipantReqDto.getRoomId(), userId);
+            String title = addRoomParticipantReqDto.getUsernames().stream().filter(name -> !name.equals(username)).collect(Collectors.joining(", "));
             if (participant.isPresent()) {
-                int result = roomRepository.cancelQuitRoom(participant.get().getRoomId(), participant.get().getUserId());
+                participant.get().setTitle(title);
+                participant.get().setProfileUserId(principalUser.getUserId());
+                if (participant.get().getLeftDt() == null) {
+                    int titleResult = roomRepository.changeRoomTitle(participant.get());
+                    if (titleResult != 1) {
+                        throw new RuntimeException("초대에 실패했습니다");
+                    }
+                    continue;
+                }
+                Optional<Message> optionalMessage = messageRepository.addMessage(addRoomParticipantReqDto.toMessageEntity(username));
+                if (optionalMessage.isEmpty()) {
+                    throw new RuntimeException("초대에 실패했습니다");
+                }
+                int result = roomRepository.cancelQuitRoom(participant.get());
                 if (result != 1) {
                     throw new RuntimeException("초대에 실패했습니다");
                 }
@@ -357,7 +389,11 @@ public class ChatService {
                     throw new RuntimeException("초대에 실패했습니다");
                 }
             } else {
-                int result = roomRepository.addRoomParticipant(addRoomParticipantReqDto.toParticipantEntity(userId, profileImg));
+                Optional<Message> optionalMessage = messageRepository.addMessage(addRoomParticipantReqDto.toMessageEntity(username));
+                if (optionalMessage.isEmpty()) {
+                    throw new RuntimeException("초대에 실패했습니다");
+                }
+                int result = roomRepository.addRoomParticipant(addRoomParticipantReqDto.toParticipantEntity(userId, principalUser.getUserId(), profileImg));
                 if (result != 1) {
                     throw new RuntimeException("초대에 실패했습니다");
                 }
@@ -383,5 +419,9 @@ public class ChatService {
         });
 
         return new ApiRespDto<>("success", "초대 완료", null);
+    }
+
+    public ApiRespDto<?> countUnreadChatByUserId(Integer userId) {
+        return new ApiRespDto<>("success", "안읽은 채팅 갯수 조회", roomRepository.countUnreadChatByUserId(userId));
     }
 }
