@@ -18,7 +18,8 @@ public class PrincipalUser implements UserDetails {
     private String status;
     private String role;
 
-//    private Boolean checked;
+    private Boolean checked;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));

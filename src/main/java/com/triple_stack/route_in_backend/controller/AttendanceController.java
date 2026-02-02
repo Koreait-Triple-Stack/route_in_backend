@@ -16,12 +16,15 @@ public class AttendanceController {
     private AttendanceService attendanceService;
 
     @GetMapping("/month")
-    public ResponseEntity<?> getMonth(@RequestParam String ym, @AuthenticationPrincipal PrincipalUser principalUser) {
+    public ResponseEntity<?> getMonth(@RequestParam String ym,
+                                      @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(attendanceService.getMonthDates(ym, principalUser));
     }
-//        @PatchMapping("/popup/shown")
-//    public ResponseEntity<?> markPopupShown(@AuthenticationPrincipal PrincipalUser principalUser) {
-//        attendanceService.markPopupShownToday(principalUser);
-//        return ResponseEntity.ok(new ApiRespDto<>("success", "팝업 표시 처리", null));
-//    }
+
+
+    @PatchMapping("/popup/shown")
+    public ResponseEntity<?> markPopupShown(@AuthenticationPrincipal PrincipalUser principalUser) {
+        attendanceService.markPopupShownToday(principalUser);
+        return ResponseEntity.ok(new ApiRespDto<>("success", "팝업 표시 처리", null));
+    }
 }

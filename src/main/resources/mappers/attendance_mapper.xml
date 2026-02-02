@@ -4,17 +4,39 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.triple_stack.route_in_backend.mapper.AttendanceMapper">
 
-    <insert id = "insertToday">
-        INSERT IGNORE INTO attendance_tb (user_id, attendance_date)
-        VALUES (#{userId}, CURDATE())
+<!--    출석 행이 없으면 생성    -->
+    <insert id="insertToday">
+        insert ignore into attendance_tb(user_id, attendance_date)
+        values (#{userId}, curdate())
     </insert>
+
+<!--    해당 월 출석한 날짜 목록 조회   -->
     <select id="selectMonthDates" resultType="string">
-        SELECT DATE_FORMAT(attendance_date, '%Y-%m-%d')
-        FROM attendance_tb
-        WHERE user_id = #{userId}
-        AND attendance_date >= CONCAT(#{ym}, '-01')
-        AND attendance_date &lt; DATE_ADD(CONCAT(#{ym}, '-01'), INTERVAL 1 MONTH)
+        select DATE_FORMAT(attendance_date, '%Y-%m-%d')
+        from attendance_tb
+        where user_id = #{userId}
+        and attendance_date >= CONCAT(#{ym}, '-01')
+        and attendance_date &lt; DATE_ADD(CONCAT(#{ym}, '-01'), INTERVAL 1 MONTH)
         ORDER BY attendance_date
     </select>
 
+    <!--    당일 팝업을 봤는지 조회-->
+    <select id="selectPopupShownToday" resultType="int">
+        SELECT IFNULL(popup_shown, 0)
+        FROM attendance_tb
+        WHERE user_id = #{userId}
+        AND attendance_date = CURDATE()
+    </select>
+
+<!--    팝업을 본걸로 변경   -->
+    <update id="updatePopupShownToday">
+        UPDATE attendance_tb
+        SET popup_shown = 1
+        WHERE user_id = #{userId}
+        AND attendance_date = CURDATE()
+        AND IFNULL(popup_shown, 0) = 0
+    </update>
+
+
 </mapper>
+
