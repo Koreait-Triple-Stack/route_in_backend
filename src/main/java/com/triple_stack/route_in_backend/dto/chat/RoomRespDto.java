@@ -21,6 +21,8 @@ public class RoomRespDto {
     private String role;
     private LocalDateTime joinedDt;
     private LocalDateTime leftDt;
+    private Boolean favorite;
+    private Boolean muteNotification;
 
     private Integer unreadCnt;
 

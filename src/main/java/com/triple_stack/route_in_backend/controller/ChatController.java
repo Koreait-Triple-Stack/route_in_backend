@@ -68,4 +68,14 @@ public class ChatController {
     private ResponseEntity<?> countUnreadChatByUserId(@PathVariable Integer userId) {
         return ResponseEntity.ok(chatService.countUnreadChatByUserId(userId));
     }
+
+    @PostMapping("/mute/notification")
+    private ResponseEntity<?> muteNotification(@RequestBody MuteNotificationReqDto muteNotificationReqDto) {
+        return ResponseEntity.ok(chatService.muteNotification(muteNotificationReqDto));
+    }
+
+    @PostMapping("/change/favorite")
+    private ResponseEntity<?> changeRoomFavorite(@RequestBody ChangeRoomFavoriteReqDto changeRoomFavoriteReqDto) {
+        return ResponseEntity.ok(chatService.changeRoomFavorite(changeRoomFavoriteReqDto));
+    }
 }

@@ -23,4 +23,6 @@ public interface RoomMapper {
     int changeRoomRead(RoomRead roomRead);
     int cancelQuitRoom(RoomParticipant roomParticipant);
     int countUnreadChatByUserId(Integer userId);
+    int muteNotification(RoomParticipant roomParticipant);
+    int changeRoomFavorite(RoomParticipant roomParticipant);
 }

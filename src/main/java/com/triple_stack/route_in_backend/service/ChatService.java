@@ -424,4 +424,22 @@ public class ChatService {
     public ApiRespDto<?> countUnreadChatByUserId(Integer userId) {
         return new ApiRespDto<>("success", "안읽은 채팅 갯수 조회", roomRepository.countUnreadChatByUserId(userId));
     }
+
+    public ApiRespDto<?> muteNotification(MuteNotificationReqDto muteNotificationReqDto) {
+        int result = roomRepository.muteNotification(muteNotificationReqDto.toEntity());
+        if (result != 1) {
+            throw new RuntimeException("알림 설정 실패");
+        }
+
+        return new ApiRespDto<>("success", "알림 설정 완료", null);
+    }
+
+    public ApiRespDto<?> changeRoomFavorite(ChangeRoomFavoriteReqDto changeRoomFavoriteReqDto) {
+        int result = roomRepository.changeRoomFavorite(changeRoomFavoriteReqDto.toEntity());
+        if (result != 1) {
+            throw new RuntimeException("즐겨찾기 변경 실패");
+        }
+
+        return new ApiRespDto<>("success", "즐겨찾기 변경 완료", null);
+    }
 }
