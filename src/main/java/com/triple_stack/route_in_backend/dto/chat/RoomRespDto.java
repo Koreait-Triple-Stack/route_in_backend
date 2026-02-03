@@ -15,6 +15,7 @@ public class RoomRespDto {
     private LocalDateTime createDt;
     private String lastMessage;
     private LocalDateTime lastMessageDt;
+    private Integer lastMessageId;
 
     private Integer userId;
     private String title;

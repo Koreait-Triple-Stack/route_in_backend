@@ -41,6 +41,7 @@
         <result property="createDt" column="create_dt"/>
         <result property="lastMessage" column="last_message"/>
         <result property="lastMessageDt" column="last_message_dt"/>
+        <result property="lastMessageId" column="last_message_id"/>
         <result property="userId" column="user_id"/>
         <result property="title" column="title"/>
         <result property="role" column="role"/>
@@ -73,6 +74,7 @@
             rt.create_dt,
             rt.last_message,
             rt.last_message_dt,
+            rt.last_message_id,
 
             rpt.user_id,
             rpt.title,
@@ -162,6 +164,7 @@
             rpt.role,
             rpt.joined_dt,
             rpt.left_dt,
+            rpt.mute_notification,
             ut.profile_img,
             ut.username
         from

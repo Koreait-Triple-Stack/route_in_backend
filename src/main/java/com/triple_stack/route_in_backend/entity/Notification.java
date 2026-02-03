@@ -20,4 +20,6 @@ public class Notification {
     private String profileImg;
     private Boolean isRead;
     private LocalDateTime createDt;
+
+    private Boolean muteNotification;
 }
