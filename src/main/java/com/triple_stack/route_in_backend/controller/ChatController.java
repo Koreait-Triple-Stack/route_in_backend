@@ -78,4 +78,9 @@ public class ChatController {
     private ResponseEntity<?> changeRoomFavorite(@RequestBody ChangeRoomFavoriteReqDto changeRoomFavoriteReqDto) {
         return ResponseEntity.ok(chatService.changeRoomFavorite(changeRoomFavoriteReqDto));
     }
+
+    @PostMapping("/read/room")
+    private ResponseEntity<?> readRoom(@RequestBody ReadRoomReqDto readRoomReqDto) {
+        return ResponseEntity.ok(chatService.readRoom(readRoomReqDto));
+    }
 }

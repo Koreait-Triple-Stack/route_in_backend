@@ -56,4 +56,19 @@ public class NotificationUtils {
             );
         }
     }
+
+    public void sendMuteNotification(Integer roomId, Integer userId) {
+        Map<String, Object> payload = Map.of(
+            "type", "CHAT_MUTE",
+            "userId", userId,
+            "createDt", Instant.now().toString(),
+            "roomId", roomId
+        );
+
+        messagingTemplate.convertAndSendToUser(
+            String.valueOf(userId),
+            "/queue/notification",
+            payload
+        );
+    }
 }
