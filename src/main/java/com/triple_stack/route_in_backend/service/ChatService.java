@@ -448,24 +448,9 @@ public class ChatService {
         return new ApiRespDto<>("success", "즐겨찾기 변경 완료", null);
     }
 
-    @Transactional
     public ApiRespDto<?> readRoom(ReadRoomReqDto readRoomReqDto) {
         int result = roomRepository.changeRoomRead(readRoomReqDto.toEntity());
         if (result != 1) throw new RuntimeException("읽음 처리 실패");
-
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                messagingTemplate.convertAndSend(
-                        "/topic/room/" + readRoomReqDto.getRoomId(),
-                        Map.of(
-                                "type", "read",
-                                "roomId", readRoomReqDto.getRoomId(),
-                                "userId", readRoomReqDto.getUserId()
-                        )
-                );
-            }
-        });
 
         return new ApiRespDto<>("success", "읽음 처리 완료", null);
     }
