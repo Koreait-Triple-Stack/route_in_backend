@@ -71,7 +71,7 @@ Spring Boot 기반 REST API + WebSocket을 통해
 
 ---
 
-## 🧨 트러블슈팅 예시
+## 🧨 트러블슈팅
 
 ### unread 계산 문제
 
