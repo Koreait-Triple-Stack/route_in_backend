@@ -9,11 +9,13 @@ import com.triple_stack.route_in_backend.dto.ai.AddRecommendationDto;
 import com.triple_stack.route_in_backend.dto.ai.SendQuestionDto;
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.ai.RecommendationDto;
+import com.triple_stack.route_in_backend.dto.course.RecommendationCourse;
 import com.triple_stack.route_in_backend.entity.AIQuestion;
 import com.triple_stack.route_in_backend.entity.AIRecommend;
 import com.triple_stack.route_in_backend.repository.AIQuestionRepository;
 import com.triple_stack.route_in_backend.repository.AIRecommendRepository;
-import lombok.RequiredArgsConstructor;
+import com.triple_stack.route_in_backend.repository.BoardRepository;
+import com.triple_stack.route_in_backend.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -35,6 +37,8 @@ public class AIRecommendService {
     @Autowired
     private AIQuestionRepository aiQuestionRepository;
     @Autowired
+    private BoardRepository boardRepository;
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Value("${gemini.api.key}")
@@ -42,6 +46,8 @@ public class AIRecommendService {
 
     @Value("${gemini.api.url}")
     private String apiUrl;
+    @Autowired
+    private CourseRepository courseRepository;
 
     public ApiRespDto<?> getAIChatListByUserId(Integer userId) {
         List<AIQuestion> aiChatList = aiQuestionRepository.getAIChatListByUserId(userId);
@@ -86,8 +92,6 @@ public class AIRecommendService {
             }
             """, aiRecommendRepository.getAIContext(userId));
 
-            // 안전한 JSON Body 생성 (String 조작 대신 Jackson 사용)
-            // {"contents": [{"parts": [{"text": "..."}]}]} 구조 생성
             ObjectNode contentNode = objectMapper.createObjectNode();
             ArrayNode partsArray = objectMapper.createArrayNode();
             ObjectNode partNode = objectMapper.createObjectNode();
@@ -110,7 +114,7 @@ public class AIRecommendService {
             for (String category : categories) {
                 ObjectNode setting = objectMapper.createObjectNode();
                 setting.put("category", category);
-                setting.put("threshold", "BLOCK_NONE"); // 차단 안 함 설정
+                setting.put("threshold", "BLOCK_NONE");
                 safetySettingsArray.add(setting);
             }
             rootNode.set("safetySettings", safetySettingsArray);
@@ -207,7 +211,7 @@ public class AIRecommendService {
             for (String category : categories) {
                 ObjectNode setting = objectMapper.createObjectNode();
                 setting.put("category", category);
-                setting.put("threshold", "BLOCK_NONE"); // 차단 해제
+                setting.put("threshold", "BLOCK_NONE");
                 safetySettingsArray.add(setting);
             }
             rootNode.set("safetySettings", safetySettingsArray);
@@ -240,12 +244,60 @@ public class AIRecommendService {
         }
     }
 
-    // [Helper 메소드] API 응답 JSON에서 텍스트만 뽑아내는 로직
+    public ApiRespDto<?> getRecommendationCourse() {
+        try {
+            String prompt = String.format("""
+            당신은 전문 러닝 코치입니다. 게시글 목록에서 recommendCnt가 많은(추천수가 높은) boardId를 찾아와서 코스에 있는 데이터와 예상시간 추출.
+            
+            [게시글]
+            %s
+            
+            [코스]
+            %s
+            
+            [지침]
+            반드시 아래 JSON 형식으로만 응답하세요. (설명이나 마크다운 ```json 금지)
+            {
+                "distanceM": 거리,
+                "centerLat": 위도,
+                "centerLng": 경도,
+                "region": "지역",
+                "estimatedMinutes": 예상시간
+            }
+            """, boardRepository.getBoardList(), courseRepository.getCourseList());
+            ObjectNode contentNode = objectMapper.createObjectNode();
+            ArrayNode partsArray = objectMapper.createArrayNode();
+            ObjectNode partNode = objectMapper.createObjectNode();
+
+            partNode.put("text", prompt);
+            partsArray.add(partNode);
+            contentNode.putArray("parts").addAll(partsArray);
+
+            ObjectNode rootNode = objectMapper.createObjectNode();
+            rootNode.putArray("contents").add(contentNode);
+
+            String requestBody = objectMapper.writeValueAsString(rootNode);
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "?key=" + apiKey))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return new ApiRespDto<>("success", "추천 코스", parseCourseGeminiResponse(response.body()));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("AI 추천 실패: " + e.getMessage());
+        }
+    }
+
     private String extractContentFromResponse(String jsonResponse) {
         System.out.println("Gemini Chat Response: " + jsonResponse);
         try {
             JsonNode root = objectMapper.readTree(jsonResponse);
-            // Gemini API 응답 구조: candidates[0].content.parts[0].text
             JsonNode candidates = root.path("candidates");
             if (candidates.isArray() && candidates.size() > 0) {
                 JsonNode content = candidates.get(0).path("content");
@@ -263,9 +315,7 @@ public class AIRecommendService {
     private RecommendationDto parseGeminiResponse(String responseBody) throws Exception {
         var rootNode = objectMapper.readTree(responseBody);
 
-        // 안전 장치: 응답이 비어있거나 에러일 경우 처리
         if (!rootNode.has("candidates") || rootNode.path("candidates").isEmpty()) {
-            // Gemini가 안전 필터 등으로 인해 응답을 거부했을 경우 등
             throw new RuntimeException("Gemini API 응답이 올바르지 않습니다.");
         }
 
@@ -273,10 +323,9 @@ public class AIRecommendService {
                 .path("content").path("parts").get(0)
                 .path("text").asText();
 
-        // 마크다운 제거 로직
         if (contentText.startsWith("```json")) {
             contentText = contentText.substring(7);
-        } else if (contentText.startsWith("```")) { // json 글자 없이 ```만 있는 경우 대비
+        } else if (contentText.startsWith("```")) {
             contentText = contentText.substring(3);
         }
 
@@ -285,5 +334,40 @@ public class AIRecommendService {
         }
 
         return objectMapper.readValue(contentText, RecommendationDto.class);
+    }
+
+    private RecommendationCourse parseCourseGeminiResponse(String responseBody) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(responseBody);
+
+        // 1. candidates 존재 여부 확인
+        JsonNode candidates = rootNode.path("candidates");
+        if (candidates.isMissingNode() || candidates.isEmpty()) {
+            // 에러 원인 분석을 위해 전체 응답 출력 (디버깅용)
+            System.out.println("Gemini 응답 에러: " + responseBody);
+            throw new RuntimeException("AI가 코스를 추천할 수 없습니다. (응답이 비어있음)");
+        }
+
+        // 2. 안전한 경로 탐색 (path 사용)
+        String contentText = candidates.get(0)
+                .path("content")
+                .path("parts")
+                .path(0)
+                .path("text")
+                .asText()
+                .trim();
+
+        if (contentText.isEmpty()) {
+            throw new RuntimeException("AI 응답 텍스트가 비어있습니다.");
+        }
+
+        // 3. 마크다운 기호 제거 및 JSON 파싱
+        contentText = contentText.replaceAll("(?s)^```(?:json)?\\s*(.*?)\\s*```$", "$1").trim();
+        JsonNode jsonNode = objectMapper.readTree(contentText);
+
+        if (jsonNode.isArray()) {
+            jsonNode = jsonNode.get(0);
+        }
+
+        return objectMapper.treeToValue(jsonNode, RecommendationCourse.class);
     }
 }

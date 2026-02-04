@@ -26,4 +26,9 @@
      public ResponseEntity<?> getAIResp(@RequestBody SendQuestionDto sendQuestionDto) {
          return ResponseEntity.ok(aiRecommendService.getAIResp(sendQuestionDto));
      }
+
+     @GetMapping("/recommend/course")
+     public ResponseEntity<?> getRecommendationCourse() {
+         return ResponseEntity.ok(aiRecommendService.getRecommendationCourse());
+     }
  }
