@@ -33,6 +33,10 @@ public class CourseRepository {
         return courseMapper.getCourseListByUserId(userId);
     }
 
+    public List<Course> getCourseList() {
+        return courseMapper.getCourseList();
+    }
+
     public Optional<Course> getCourseFavoriteByUserId(Integer userId) {
         return courseMapper.getCourseFavoriteByUserId(userId);
     }

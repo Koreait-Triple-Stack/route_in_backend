@@ -11,6 +11,7 @@ public interface CourseMapper {
     int addCourse(Course course);
     Optional<Course> getCourseByBoardId(Integer boardId);
     List<Course> getCourseListByUserId(Integer userId);
+    List<Course> getCourseList();
     Optional<Course> getCourseFavoriteByUserId(Integer userId);
     int updateCourse(Course course);
     int changeCourseFavorite(Integer userId, Integer courseId);
