@@ -43,6 +43,10 @@ public class BoardRepository {
         return boardMapper.getBoardList();
     }
 
+    public List<Board> getBoardByRecommendCnt() {
+        return boardMapper.getBoardByRecommendCnt();
+    }
+
     public List<BoardRespDto> getBoardInfinite(BoardInfiniteParam param) {
         return boardMapper.getBoardInfinite(param);
     }

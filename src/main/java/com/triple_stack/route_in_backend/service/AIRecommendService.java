@@ -9,13 +9,8 @@ import com.triple_stack.route_in_backend.dto.ai.AddRecommendationDto;
 import com.triple_stack.route_in_backend.dto.ai.SendQuestionDto;
 import com.triple_stack.route_in_backend.dto.ApiRespDto;
 import com.triple_stack.route_in_backend.dto.ai.RecommendationDto;
-import com.triple_stack.route_in_backend.dto.course.RecommendationCourse;
-import com.triple_stack.route_in_backend.entity.AIQuestion;
-import com.triple_stack.route_in_backend.entity.AIRecommend;
-import com.triple_stack.route_in_backend.repository.AIQuestionRepository;
-import com.triple_stack.route_in_backend.repository.AIRecommendRepository;
-import com.triple_stack.route_in_backend.repository.BoardRepository;
-import com.triple_stack.route_in_backend.repository.CourseRepository;
+import com.triple_stack.route_in_backend.entity.*;
+import com.triple_stack.route_in_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -27,6 +22,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +36,8 @@ public class AIRecommendService {
     private AIQuestionRepository aiQuestionRepository;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private RecommendCourseRepository recommendCourseRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -121,7 +121,6 @@ public class AIRecommendService {
 
             String requestBody = objectMapper.writeValueAsString(rootNode);
 
-            // HTTP 요청
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "?key=" + apiKey))
@@ -245,9 +244,21 @@ public class AIRecommendService {
     }
 
     public ApiRespDto<?> getRecommendationCourse() {
+        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
         try {
+            Optional<RecommendCourse> optionalRecommendCourse = recommendCourseRepository.getCourseByDate(localDate);
+
+            if (optionalRecommendCourse.isPresent()) {
+                return new ApiRespDto<>("success", "오늘의 추천 내역을 불러왔습니다.", optionalRecommendCourse.get());
+            }
+
             String prompt = String.format("""
-            당신은 전문 러닝 코치입니다. 게시글 목록에서 recommendCnt가 많은(추천수가 높은) boardId를 찾아와서 코스에 있는 데이터와 예상시간 추출.
+            당신은 전문 러닝 코치입니다. 게시글 목록에서 boardId를 찾아와서 코스에 있는 정보,
+            난이도 그리고 성인을 기준으로 했을 때 거리만큼 뛰었을 때 예상시간 추출.
+            'estimatedMinutes' 계산 시, **반드시 평범한 성인의 러닝 속도(10km/h)를 기준으로 계산하세요.** (걷기 속도 아님)
+            예: 3000m -> 18분, 5000m -> 30분
+            'level' 예: 쉬움, 보통, 어려움
+            'region'은 도시랑 구, 동까지만. 예: 서울시 중구 중림동
             
             [게시글]
             %s
@@ -258,13 +269,15 @@ public class AIRecommendService {
             [지침]
             반드시 아래 JSON 형식으로만 응답하세요. (설명이나 마크다운 ```json 금지)
             {
+                "boardId": 게시글Id,
                 "distanceM": 거리,
                 "centerLat": 위도,
                 "centerLng": 경도,
                 "region": "지역",
+                "level": "난이도",
                 "estimatedMinutes": 예상시간
             }
-            """, boardRepository.getBoardList(), courseRepository.getCourseList());
+            """, boardRepository.getBoardByRecommendCnt(), courseRepository.getCourseList());
             ObjectNode contentNode = objectMapper.createObjectNode();
             ArrayNode partsArray = objectMapper.createArrayNode();
             ObjectNode partNode = objectMapper.createObjectNode();
@@ -286,7 +299,26 @@ public class AIRecommendService {
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return new ApiRespDto<>("success", "추천 코스", parseCourseGeminiResponse(response.body()));
+
+            try {
+                int result = recommendCourseRepository.addCourse(parseCourseGeminiResponse(response.body()));
+                if (result != 1) {
+                    throw new RuntimeException("추천 코스 저장 실패");
+                }
+
+                return new ApiRespDto<>("success", "추천 코스", parseCourseGeminiResponse(response.body()));
+
+            } catch (DuplicateKeyException e) {
+                Optional<RecommendCourse> retry = recommendCourseRepository.getCourseByDate(localDate);
+
+                if (retry.isEmpty()) {
+                    RecommendCourse recommendCourse = parseCourseGeminiResponse(response.body());
+                    recommendCourse.setCreateDt(Date.valueOf(localDate).toLocalDate());
+                    return new ApiRespDto<>("success", "오늘의 추천 코스(생성됨)", recommendCourse);
+                }
+
+                return new ApiRespDto<>("success", "오늘의 추천 내역을 불러왔습니다.", retry.get());
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -336,18 +368,15 @@ public class AIRecommendService {
         return objectMapper.readValue(contentText, RecommendationDto.class);
     }
 
-    private RecommendationCourse parseCourseGeminiResponse(String responseBody) throws Exception {
+    private RecommendCourse parseCourseGeminiResponse(String responseBody) throws Exception {
         JsonNode rootNode = objectMapper.readTree(responseBody);
 
-        // 1. candidates 존재 여부 확인
         JsonNode candidates = rootNode.path("candidates");
         if (candidates.isMissingNode() || candidates.isEmpty()) {
-            // 에러 원인 분석을 위해 전체 응답 출력 (디버깅용)
             System.out.println("Gemini 응답 에러: " + responseBody);
             throw new RuntimeException("AI가 코스를 추천할 수 없습니다. (응답이 비어있음)");
         }
 
-        // 2. 안전한 경로 탐색 (path 사용)
         String contentText = candidates.get(0)
                 .path("content")
                 .path("parts")
@@ -360,7 +389,6 @@ public class AIRecommendService {
             throw new RuntimeException("AI 응답 텍스트가 비어있습니다.");
         }
 
-        // 3. 마크다운 기호 제거 및 JSON 파싱
         contentText = contentText.replaceAll("(?s)^```(?:json)?\\s*(.*?)\\s*```$", "$1").trim();
         JsonNode jsonNode = objectMapper.readTree(contentText);
 
@@ -368,6 +396,6 @@ public class AIRecommendService {
             jsonNode = jsonNode.get(0);
         }
 
-        return objectMapper.treeToValue(jsonNode, RecommendationCourse.class);
+        return objectMapper.treeToValue(jsonNode, RecommendCourse.class);
     }
 }
