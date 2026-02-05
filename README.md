@@ -76,7 +76,7 @@ Spring Boot 기반 REST API + WebSocket을 통해
 
 - 원인: 읽음 기준 컬럼 부재
 - 해결: room_read + last_read_message_id 도입
-- 
+  
 ### 멀티 디바이스에서 “오늘 팝업 봤는지” 동기화가 안 됨
 - 원인: localStorage는 기기 단위 저장이라 다른 기기에는 기록이 x
 - 해결: DB의 attendance_tb.popup_shown으로 저장
