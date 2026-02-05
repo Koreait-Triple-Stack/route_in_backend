@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.triple_stack.route_in_backend.mapper.RecommendCourseMapper">
+    <resultMap id="RecommendCourseResultMap" type="com.triple_stack.route_in_backend.entity.RecommendCourse">
+        <id property="recommendCourseId" column="recommend_course_id" />
+        <result property="boardId" column="board_id" />
+        <result property="distanceM" column="distance_m" />
+        <result property="centerLat" column="center_lat" />
+        <result property="centerLng" column="center_lng" />
+        <result property="region" column="region" />
+        <result property="estimatedMinutes" column="estimated_minutes" />
+        <result property="level" column="level" />
+        <result property="createDt" column="create_dt" />
+    </resultMap>
+
+    <insert id="addCourse">
+        insert into
+            recommend_course_tb
+        values
+            (0, #{boardId}, #{distanceM}, #{centerLat}, #{centerLng}, #{region}, #{estimatedMinutes}, #{level}, now())
+    </insert>
+
+    <select id="getCourseByDate" resultMap="RecommendCourseResultMap">
+        select
+            *
+        from
+            recommend_course_tb
+        where
+            DATE(create_dt) = DATE(#{createDt})
+    </select>
+</mapper>

@@ -17,6 +17,7 @@ public interface BoardMapper {
     int updateBoard(Board board);
     int removeBoard(Integer boardId);
     List<BoardRespDto> getBoardList();
+    List<Board> getBoardByRecommendCnt();
     List<BoardRespDto> getBoardInfinite(BoardInfiniteParam param);
     Optional<BoardDetailRespDto> getBoardByBoardId(Integer boardId);
     List<BoardRespDto> getBoardListByKeyword(String keyword);

@@ -66,7 +66,6 @@
         <result property="lng" column="lng"/>
     </resultMap>
 
-    <!-- 게시글 추가 -->
     <insert id="addBoard"
             parameterType="com.triple_stack.route_in_backend.entity.Board"
             useGeneratedKeys="true"
@@ -84,7 +83,6 @@
             null);
     </insert>
 
-    <!-- 게시글 목록 -->
     <select id="getBoardList" resultMap="BoardRespResultMap">
         select
             bt.board_id,
@@ -107,6 +105,17 @@
         order by
             bt.create_dt desc,
             bt.board_id desc;
+    </select>
+
+    <select id="getBoardByRecommendCnt" resultMap="BoardRespResultMap">
+        select
+            *
+        from
+            board_tb
+        where
+            type = "COURSE"
+        ORDER BY recommend_cnt DESC
+        LIMIT 5;
     </select>
 
     <select id="getBoardInfinite" resultMap="BoardRespResultMap">

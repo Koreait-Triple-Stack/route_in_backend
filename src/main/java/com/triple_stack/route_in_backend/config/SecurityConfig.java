@@ -73,7 +73,9 @@ public class SecurityConfig {
                     "/oauth2/**",
                     "/login/oauth2/**",
                     "/ws/**",
-                    "/test/**"
+                    "/test/**",
+                    "/ai/recommend/course",
+                    "/course/get/board/**"
             ).permitAll();
             auth.anyRequest().authenticated();
         });
