@@ -1,4 +1,4 @@
-package com.triple_stack.route_in_backend.config.webSocket;
+package com.triple_stack.route_in_backend.websocket;
 
 import com.triple_stack.route_in_backend.security.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;

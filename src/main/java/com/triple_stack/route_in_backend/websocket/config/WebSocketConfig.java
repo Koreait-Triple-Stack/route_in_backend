@@ -1,4 +1,4 @@
-package com.triple_stack.route_in_backend.config.webSocket;
+package com.triple_stack.route_in_backend.websocket.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
