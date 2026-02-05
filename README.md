@@ -65,7 +65,6 @@ Spring Boot 기반 REST API + WebSocket을 통해
 - room_read_tb
 - post_tb
 - comment_tb
-- like_tb
 - notification_tb
 - course_tb
 
