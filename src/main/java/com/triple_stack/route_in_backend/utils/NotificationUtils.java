@@ -2,6 +2,7 @@ package com.triple_stack.route_in_backend.utils;
 
 import com.triple_stack.route_in_backend.entity.Notification;
 import com.triple_stack.route_in_backend.repository.NotificationRepository;
+import com.triple_stack.route_in_backend.websocket.presence.PresenceStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -16,6 +17,12 @@ import java.util.Map;
 public class NotificationUtils {
     private final SimpMessagingTemplate messagingTemplate;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private PresenceStore presenceStore;
+
     public void sendAndAddNotification(List<Notification> notifications) {
         for (Notification notification : notifications) {
             Map<String, Object> payload = Map.of(
@@ -28,6 +35,8 @@ public class NotificationUtils {
                     "createDt", Instant.now().toString()
             );
 
+            notificationRepository.addNotification(notification);
+
             messagingTemplate.convertAndSendToUser(
                     String.valueOf(notification.getUserId()),
                     "/queue/notification",
@@ -38,6 +47,10 @@ public class NotificationUtils {
 
     public void sendAndAddNotification(List<Notification> notifications, Integer roomId) {
         for (Notification notification : notifications) {
+            if (presenceStore.isUserActiveInRoom(notification.getUserId(), roomId)) {
+                continue;
+            }
+
             Map<String, Object> payload = Map.of(
                     "type", "CHAT_MESSAGE",
                     "userId", notification.getUserId(),
@@ -48,6 +61,8 @@ public class NotificationUtils {
                     "createDt", Instant.now().toString(),
                     "roomId", roomId
             );
+
+            notificationRepository.addNotification(notification);
 
             messagingTemplate.convertAndSendToUser(
                     String.valueOf(notification.getUserId()),
