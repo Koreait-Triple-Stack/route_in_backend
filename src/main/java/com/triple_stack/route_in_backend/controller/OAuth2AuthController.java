@@ -9,7 +9,7 @@ import com.triple_stack.route_in_backend.dto.user.auth.SignupReqDto;
 import com.triple_stack.route_in_backend.service.OAuth2AuthService;
 
 @RestController
-@RequestMapping("/api/oauth2")
+@RequestMapping("/oauth2")
 public class OAuth2AuthController {
     @Autowired
     private OAuth2AuthService oAuth2AuthService;
