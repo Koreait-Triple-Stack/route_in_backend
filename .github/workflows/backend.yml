@@ -26,7 +26,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
   
       - name: install JDK 17
-        uses: actions/step-java@v5
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "temurin"
