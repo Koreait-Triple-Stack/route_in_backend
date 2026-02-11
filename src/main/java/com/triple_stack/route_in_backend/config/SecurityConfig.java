@@ -75,10 +75,15 @@ public class SecurityConfig {
                     "/ws/**",
                     "/test/**",
                     "/ai/recommend/course",
-                    "/course/get/board/**"
+                    "/course/get/board/**",
+                    "/login",
+                    "/error",
+                    "/favicon.ico"
             ).permitAll();
             auth.anyRequest().authenticated();
         });
+
+
 
         http.oauth2Login(oauth2 ->
                 oauth2.userInfoEndpoint(userInfo ->
