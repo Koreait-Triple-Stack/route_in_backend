@@ -52,6 +52,9 @@ public class NotificationUtils {
                 + " active="
                 + presenceStore.isUserActiveInRoom(notification.getUserId(), roomId));
 
+            System.out.println("[NOTI SEND] toUser=" + notification.getUserId()
+                    + " roomId=" + roomId);
+
             if (presenceStore.isUserActiveInRoom(notification.getUserId(), roomId)) {
                 continue;
             }
@@ -69,8 +72,6 @@ public class NotificationUtils {
 
             notificationRepository.addNotification(notification);
 
-            System.out.println("[NOTI SEND] toUser=" + notification.getUserId()
-                    + " roomId=" + roomId);
             messagingTemplate.convertAndSendToUser(
                     String.valueOf(notification.getUserId()),
                     "/queue/notification",
