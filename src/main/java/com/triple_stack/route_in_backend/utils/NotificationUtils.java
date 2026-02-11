@@ -69,6 +69,8 @@ public class NotificationUtils {
 
             notificationRepository.addNotification(notification);
 
+            System.out.println("[NOTI SEND] toUser=" + notification.getUserId()
+                    + " roomId=" + roomId);
             messagingTemplate.convertAndSendToUser(
                     String.valueOf(notification.getUserId()),
                     "/queue/notification",
