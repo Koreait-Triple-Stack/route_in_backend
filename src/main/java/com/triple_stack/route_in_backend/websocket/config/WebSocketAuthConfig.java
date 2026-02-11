@@ -10,14 +10,12 @@ import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import java.security.Principal;
 import java.util.List;
 
 @Configuration
-@EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketAuthConfig implements WebSocketMessageBrokerConfigurer {
     @Autowired
@@ -38,7 +36,6 @@ public class WebSocketAuthConfig implements WebSocketMessageBrokerConfigurer {
 
                         Integer userId = Integer.parseInt(jwtUtils.getUserIdAsString(token));
 
-                        // ✅ convertAndSendToUser("22", ...) 와 매칭되게 Principal name을 userId 문자열로
                         Principal principal = () -> String.valueOf(userId);
                         accessor.setUser(principal);
                     }
