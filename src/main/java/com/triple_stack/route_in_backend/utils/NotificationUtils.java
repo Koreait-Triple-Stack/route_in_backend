@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +26,7 @@ public class NotificationUtils {
     @Autowired
     private PresenceStore presenceStore;
 
+    @Transactional
     public void sendAndAddNotification(List<Notification> notifications) {
         for (Notification notification : notifications) {
             Map<String, Object> payload = Map.of(
@@ -37,14 +41,20 @@ public class NotificationUtils {
 
             notificationRepository.addNotification(notification);
 
-            messagingTemplate.convertAndSendToUser(
-                    String.valueOf(notification.getUserId()),
-                    "/queue/notification",
-                    payload
-            );
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    messagingTemplate.convertAndSendToUser(
+                            String.valueOf(notification.getUserId()),
+                            "/queue/notification",
+                            payload
+                    );
+                }
+            });
         }
     }
 
+    @Transactional
     public void sendAndAddNotification(List<Notification> notifications, Integer roomId) {
         for (Notification notification : notifications) {
             System.out.println("[NOTI] skip? user="
@@ -72,14 +82,20 @@ public class NotificationUtils {
 
             notificationRepository.addNotification(notification);
 
-            messagingTemplate.convertAndSendToUser(
-                    String.valueOf(notification.getUserId()),
-                    "/queue/notification",
-                    payload
-            );
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    messagingTemplate.convertAndSendToUser(
+                            String.valueOf(notification.getUserId()),
+                            "/queue/notification",
+                            payload
+                    );
+                }
+            });
         }
     }
 
+    @Transactional
     public void sendMuteNotification(Integer roomId, Integer userId) {
         Map<String, Object> payload = Map.of(
             "type", "CHAT_MUTE",
@@ -88,10 +104,15 @@ public class NotificationUtils {
             "roomId", roomId
         );
 
-        messagingTemplate.convertAndSendToUser(
-            String.valueOf(userId),
-            "/queue/notification",
-            payload
-        );
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                messagingTemplate.convertAndSendToUser(
+                        String.valueOf(userId),
+                        "/queue/notification",
+                        payload
+                );
+            }
+        });
     }
 }
