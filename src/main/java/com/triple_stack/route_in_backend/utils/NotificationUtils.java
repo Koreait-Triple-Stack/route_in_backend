@@ -44,9 +44,8 @@ public class NotificationUtils {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    messagingTemplate.convertAndSendToUser(
-                            String.valueOf(notification.getUserId()),
-                            "/queue/notification",
+                    messagingTemplate.convertAndSend(
+                            "/topic/notification" + notification.getUserId(),
                             payload
                     );
                 }
@@ -85,9 +84,8 @@ public class NotificationUtils {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    messagingTemplate.convertAndSendToUser(
-                            String.valueOf(notification.getUserId()),
-                            "/queue/notification",
+                    messagingTemplate.convertAndSend(
+                            "/topic/notification" + notification.getUserId(),
                             payload
                     );
                 }
@@ -107,9 +105,8 @@ public class NotificationUtils {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                messagingTemplate.convertAndSendToUser(
-                        String.valueOf(userId),
-                        "/queue/notification",
+                messagingTemplate.convertAndSend(
+                        "/topic/notification" + userId,
                         payload
                 );
             }
