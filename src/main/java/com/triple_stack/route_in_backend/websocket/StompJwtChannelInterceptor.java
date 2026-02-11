@@ -33,11 +33,7 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
                 if (jwtUtils.validateToken(token)) {
                     String userId = jwtUtils.getUserIdAsString(token);
 
-                    accessor.setUser(new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            List.of()
-                    ));
+                    accessor.setUser(() -> userId);
                 }
             }
         }
