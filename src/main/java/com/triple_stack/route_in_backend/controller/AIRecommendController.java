@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
-@RestController
-@RequestMapping("/ai")
-public class AIRecommendController {
-    @Autowired
-    private AIRecommendService aiRecommendService;
+ @RestController
+ @RequestMapping("/api/ai")
+ public class AIRecommendController {
+     @Autowired
+     private AIRecommendService aiRecommendService;
 
     @GetMapping("/chatList/{userId}")
     public ResponseEntity<?> getAIChatListByUserId(@PathVariable Integer userId) {
