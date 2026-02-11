@@ -24,6 +24,7 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
+
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String authHeader = accessor.getFirstNativeHeader("Authorization");
 
@@ -32,6 +33,10 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
 
                 if (jwtUtils.validateToken(token)) {
                     String userId = jwtUtils.getUserIdAsString(token);
+
+                    System.out.println("[WS CONNECT] auth=" + authHeader);
+                    System.out.println("[WS CONNECT] valid=" + jwtUtils.validateToken(token));
+                    System.out.println("[WS CONNECT] userId=" + userId);
 
                     accessor.setUser(new UsernamePasswordAuthenticationToken(
                             userId,
