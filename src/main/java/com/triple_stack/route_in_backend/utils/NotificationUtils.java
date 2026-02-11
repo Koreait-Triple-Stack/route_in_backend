@@ -47,6 +47,11 @@ public class NotificationUtils {
 
     public void sendAndAddNotification(List<Notification> notifications, Integer roomId) {
         for (Notification notification : notifications) {
+            System.out.println("[NOTI] skip? user="
+                + notification.getUserId()
+                + " active="
+                + presenceStore.isUserActiveInRoom(notification.getUserId(), roomId));
+
             if (presenceStore.isUserActiveInRoom(notification.getUserId(), roomId)) {
                 continue;
             }
