@@ -41,15 +41,10 @@ public class NotificationUtils {
 
             notificationRepository.addNotification(notification);
 
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    messagingTemplate.convertAndSend(
-                            "/topic/notification/" + notification.getUserId(),
-                            payload
-                    );
-                }
-            });
+            messagingTemplate.convertAndSend(
+                    "/topic/notification/" + notification.getUserId(),
+                    payload
+            );
         }
     }
 
@@ -81,15 +76,10 @@ public class NotificationUtils {
 
             notificationRepository.addNotification(notification);
 
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    messagingTemplate.convertAndSend(
-                            "/topic/notification/" + notification.getUserId(),
-                            payload
-                    );
-                }
-            });
+            messagingTemplate.convertAndSend(
+                    "/topic/notification/" + notification.getUserId(),
+                    payload
+            );
         }
     }
 
@@ -102,14 +92,9 @@ public class NotificationUtils {
             "roomId", roomId
         );
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                messagingTemplate.convertAndSend(
-                        "/topic/notification/" + userId,
-                        payload
-                );
-            }
-        });
+        messagingTemplate.convertAndSend(
+                "/topic/notification/" + userId,
+                payload
+        );
     }
 }
