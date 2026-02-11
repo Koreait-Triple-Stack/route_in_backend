@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -23,6 +24,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
@@ -32,17 +36,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Optional<User> foundUser = userRepository.getUserByProviderAndProviderUserId(provider, providerUserId);
 
         if (foundUser.isEmpty()) {
-            response.sendRedirect("http://localhost:5173/oauth2/signup?provider="+provider+"&providerUserId="+providerUserId);
+            response.sendRedirect(baseUrl+"/oauth2/signup?provider="+provider+"&providerUserId="+providerUserId);
             return;
         }
 
         if (!foundUser.get().isActive()) {
-            response.sendRedirect("http://localhost:5173/oauth2/failed");
+            response.sendRedirect(baseUrl+"/oauth2/failed");
             return;
         }
 
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());
 
-        response.sendRedirect("http://localhost:5173/oauth2/signin?accessToken="+accessToken);
+        response.sendRedirect(baseUrl+"/oauth2/signin?accessToken="+accessToken);
     }
 }
