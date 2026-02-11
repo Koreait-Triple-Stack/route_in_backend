@@ -11,7 +11,7 @@ import com.triple_stack.route_in_backend.security.model.PrincipalUser;
 import com.triple_stack.route_in_backend.service.AccountService;
 
 @RestController
-@RequestMapping("/user/account")
+@RequestMapping("/api/user/account")
 public class UserAccountController {
     @Autowired
     private AccountService userAccountService;

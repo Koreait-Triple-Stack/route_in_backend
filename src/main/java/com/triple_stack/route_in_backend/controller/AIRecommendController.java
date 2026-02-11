@@ -9,7 +9,7 @@
  import java.time.LocalDate;
 
  @RestController
- @RequestMapping("/ai")
+ @RequestMapping("/api/ai")
  public class AIRecommendController {
      @Autowired
      private AIRecommendService aiRecommendService;
