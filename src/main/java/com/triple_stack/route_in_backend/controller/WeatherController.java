@@ -12,7 +12,7 @@ public class WeatherController {
     @Autowired
     private WeatherService weatherService;
 
-    @GetMapping("/api/weather")
+    @GetMapping("/weather")
     public ResponseEntity<?> getWeather(@RequestParam double lat, @RequestParam double lon) {
         return ResponseEntity.ok(weatherService.getWeather(lat, lon));
     }
