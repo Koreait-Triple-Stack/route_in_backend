@@ -45,7 +45,7 @@ public class NotificationUtils {
                 @Override
                 public void afterCommit() {
                     messagingTemplate.convertAndSend(
-                            "/topic/notification" + notification.getUserId(),
+                            "/topic/notification/" + notification.getUserId(),
                             payload
                     );
                 }
@@ -85,7 +85,7 @@ public class NotificationUtils {
                 @Override
                 public void afterCommit() {
                     messagingTemplate.convertAndSend(
-                            "/topic/notification" + notification.getUserId(),
+                            "/topic/notification/" + notification.getUserId(),
                             payload
                     );
                 }
@@ -106,7 +106,7 @@ public class NotificationUtils {
             @Override
             public void afterCommit() {
                 messagingTemplate.convertAndSend(
-                        "/topic/notification" + userId,
+                        "/topic/notification/" + userId,
                         payload
                 );
             }
