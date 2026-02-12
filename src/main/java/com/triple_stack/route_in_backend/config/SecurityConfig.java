@@ -1,6 +1,7 @@
 package com.triple_stack.route_in_backend.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -27,20 +28,18 @@ public class SecurityConfig {
     @Autowired
     private OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        // corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
-        // corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
-        // corsConfiguration.addAllowedOriginPattern(CorsConfiguration.ALL);
 
-        // safari
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(java.util.List.of(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173",
-                "https://routein.store",
-                "https://www.routein.store"
+                baseUrl
         ));
         corsConfiguration.setAllowedMethods(java.util.List.of(
                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
