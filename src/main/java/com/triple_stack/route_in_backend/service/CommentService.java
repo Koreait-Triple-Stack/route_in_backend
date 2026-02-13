@@ -73,25 +73,27 @@ public class CommentService {
 
         String notifyPath = "/board/detail/" + addComment.getBoardId();
 
-        Optional<User> user = userRepository.getUserByUserId(currentUserId);
-        System.out.println(user.get().getUsername() + user.get().getProfileImg());
+        User user = userRepository.getUserByUserId(currentUserId).orElseThrow(
+                () -> new RuntimeException("조회 실패")
+        );
+        System.out.println(user.getUsername() + user.getProfileImg());
 
         List<Notification> notifications = new ArrayList<>();
 
         if (!currentUserId.equals(boardWriterId)) {
-            String message = user.get().getUsername() + "님이" + "게시글에 새로운 댓글을 달았습니다.";
+            String message = user.getUsername() + "님이" + "게시글에 새로운 댓글을 달았습니다.";
             notifications.add(Notification.builder()
                             .userId(boardWriterId)
                             .title(board.get().getTitle())
                             .message(message)
                             .path(notifyPath)
-                            .profileImg(userRepository.getUserByUserId(22).get().getProfileImg())
+                            .profileImg(userRepository.getUserByUserId(user.getUserId()).get().getProfileImg())
                     .build());
         }
 
         if (parentCommentWriterId != null && !currentUserId.equals(parentCommentWriterId)) {
             if (!parentCommentWriterId.equals(boardWriterId)) {
-                String message = user.get().getUsername() + "님이 답글을 달았습니다.";
+                String message = user.getUsername() + "님이 답글을 달았습니다.";
                 notifications.add(Notification.builder()
                         .userId(parentCommentWriterId)
                         .title(board.get().getTitle())
@@ -136,25 +138,18 @@ public class CommentService {
         for (CommentRespDto root : resultList) {
             List<CommentRespDto> children = root.getCommentRespDtoList();
 
-            // 대댓글 중 살아있는(false) 녀석이 있는지 확인
-            // 수정: getIsDeleted() == 0  ->  getIsDeleted() == false
             boolean hasLiveChild = children.stream()
                     .anyMatch(child -> child.getIsDeleted() == false);
 
-            // (1) 원댓글 카운트: 본인이 살아있거나(false) or 자식이 살아있어서 껍데기가 보여야 할 때
-            // 수정: getIsDeleted() == 0  ->  getIsDeleted() == false
             if (root.getIsDeleted() == false || hasLiveChild) {
                 totalCount++;
             }
 
-            // (2) 대댓글 카운트: 살아있는 것만 센다
-            // 수정: getIsDeleted() == 0  ->  getIsDeleted() == false
             totalCount += children.stream()
                     .filter(child -> child.getIsDeleted() == false)
                     .count();
         }
 
-        // 3. 반환
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("comments", resultList);
         responseMap.put("totalCount", totalCount);
