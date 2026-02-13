@@ -93,7 +93,7 @@ AI 기반 추천 기능을 통해 맞춤형 코스를 추천받을 수 있는 �
 
 # 🗂 ERD (Database 설계)
 
-![Alt text](./images/DB ERD.png)
+![DB ERD](./images/DB-ERD.png)
 
 ---
 
