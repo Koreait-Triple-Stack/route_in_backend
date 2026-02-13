@@ -39,7 +39,12 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(java.util.List.of(baseUrl, baseUrls));
+        corsConfiguration.setAllowedOrigins(java.util.List.of(
+                baseUrl,
+                baseUrls,
+                "https://routein.store",
+                "https://www.routein.store"
+        ));
         corsConfiguration.setAllowedMethods(java.util.List.of(
                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
