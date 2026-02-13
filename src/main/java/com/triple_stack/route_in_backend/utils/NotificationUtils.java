@@ -29,13 +29,15 @@ public class NotificationUtils {
     @Transactional
     public void sendAndAddNotification(List<Notification> notifications) {
         for (Notification notification : notifications) {
+            String profileImg = notification.getProfileImg();
+            if (profileImg == null) profileImg = "";
             Map<String, Object> payload = Map.of(
                     "type", "NOTI",
                     "userId", notification.getUserId(),
                     "title", notification.getTitle(),
                     "message", notification.getMessage(),
                     "path", notification.getPath(),
-                    "profileImg", notification.getProfileImg(),
+                    "profileImg", profileImg,
                     "createDt", Instant.now().toString()
             );
 
@@ -63,13 +65,15 @@ public class NotificationUtils {
                 continue;
             }
 
+            String profileImg = notification.getProfileImg();
+            if (profileImg == null) profileImg = "";
             Map<String, Object> payload = Map.of(
                     "type", "CHAT_MESSAGE",
                     "userId", notification.getUserId(),
                     "title", notification.getTitle(),
                     "message", notification.getMessage(),
                     "path", notification.getPath(),
-                    "profileImg", notification.getProfileImg(),
+                    "profileImg", profileImg,
                     "createDt", Instant.now().toString(),
                     "roomId", roomId
             );
