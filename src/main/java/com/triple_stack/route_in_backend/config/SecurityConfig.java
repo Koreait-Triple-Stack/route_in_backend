@@ -31,12 +31,15 @@ public class SecurityConfig {
     @Value("${app.base-url}")
     private String baseUrl;
 
+    @Value("${app.base-urls}")
+    private String baseUrls;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(java.util.List.of(baseUrl));
+        corsConfiguration.setAllowedOrigins(java.util.List.of(baseUrl, baseUrls));
         corsConfiguration.setAllowedMethods(java.util.List.of(
                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
