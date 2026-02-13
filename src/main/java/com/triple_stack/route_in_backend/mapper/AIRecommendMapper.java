@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Mapper
 public interface AIRecommendMapper {
-    Optional<AIRecommendReqDto> getAIContext(Integer userId);
+    String getAIContext(Integer userId);
     Optional<AIRecommend> getRecommendationByUserId(Integer userId);
     int addRecommendation(AddRecommendationDto addRecommendationDto);
 }

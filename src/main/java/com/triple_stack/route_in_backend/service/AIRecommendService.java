@@ -56,11 +56,18 @@ public class AIRecommendService {
 
     @Transactional
     public ApiRespDto<?> getTodayRecommendation(Integer userId) {
+        LocalDate localDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
         try {
             Optional<AIRecommend> optionalRecommendationDto = aiRecommendRepository.getRecommendationByUserId(userId);
 
-            if (optionalRecommendationDto.isPresent()) {
+            if (optionalRecommendationDto.isPresent() && optionalRecommendationDto.get().getCreateDt().isEqual(localDate)) {
                 return new ApiRespDto<>("success", "오늘의 추천 내역을 불러왔습니다.", optionalRecommendationDto.get());
+            }
+
+            String aiContext = aiRecommendRepository.getAIContext(userId);
+
+            if (aiContext == null || aiContext.isBlank()) {
+                aiContext = "현재 회원의 상세 프로필 정보가 없습니다. 일반적인 성인을 위한 가장 효과적이고 대중적인 운동 루틴을 추천해주세요.";
             }
 
             String prompt = String.format("""
@@ -80,7 +87,7 @@ public class AIRecommendService {
             - 특정 부위 부상이 있다면 그 부위에 무리가 가지 않는 운동을 추천하세요.
 
             [응답 형식]
-            글자수는 200자 이하.
+            글자수는 400자 이하.
             반드시 아래 JSON 형식으로만 응답하세요. (설명이나 마크다운 ```json 금지)
             {
                 "runningTitle": "추천 제목",
@@ -90,7 +97,7 @@ public class AIRecommendService {
                 "routineReason": "추천 이유",
                 "routineTags": ["#태그1", "#태그2"]
             }
-            """, aiRecommendRepository.getAIContext(userId));
+            """, aiContext);
 
             ObjectNode contentNode = objectMapper.createObjectNode();
             ArrayNode partsArray = objectMapper.createArrayNode();
@@ -258,7 +265,7 @@ public class AIRecommendService {
             'estimatedMinutes' 계산 시, **반드시 평범한 성인의 러닝 속도(10km/h)를 기준으로 계산하세요.** (걷기 속도 아님)
             예: 3000m -> 18분, 5000m -> 30분
             'level' 예: 쉬움, 보통, 어려움
-            'region'은 도시랑 구, 동까지만. 예: 서울시 중구 중림동
+            'region'은 도시랑 구, 동까지만
             
             [게시글]
             %s
@@ -354,17 +361,14 @@ public class AIRecommendService {
         String contentText = rootNode.path("candidates").get(0)
                 .path("content").path("parts").get(0)
                 .path("text").asText();
-
         if (contentText.startsWith("```json")) {
             contentText = contentText.substring(7);
         } else if (contentText.startsWith("```")) {
             contentText = contentText.substring(3);
         }
-
         if (contentText.endsWith("```")) {
             contentText = contentText.substring(0, contentText.length() - 3);
         }
-
         return objectMapper.readValue(contentText, RecommendationDto.class);
     }
 

@@ -89,7 +89,9 @@
         from
             ai_recommend_tb
         where
-            user_id = #{userId}
+            user_id = #{userId} and
+            create_dt = CURDATE()
+        LIMIT 1
     </select>
 
     <insert id="addRecommendation">
