@@ -41,7 +41,6 @@ public class SecurityConfig {
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(java.util.List.of(
                 baseUrl,
-                baseUrls,
                 "https://routein.store",
                 "https://www.routein.store"
         ));
