@@ -31,8 +31,8 @@ public class SecurityConfig {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    @Value("${app.base-urls}")
-    private String baseUrls;
+    // @Value("${app.base-urls}")
+    // private String baseUrls;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
