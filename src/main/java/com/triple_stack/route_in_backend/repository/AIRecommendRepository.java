@@ -14,7 +14,7 @@ public class AIRecommendRepository {
     @Autowired
     private AIRecommendMapper aiRecommendMapper;
 
-    public Optional<AIRecommendReqDto> getAIContext(Integer userId) {
+    public String getAIContext(Integer userId) {
         return aiRecommendMapper.getAIContext(userId);
     }
 
