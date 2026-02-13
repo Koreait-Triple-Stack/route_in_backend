@@ -87,7 +87,7 @@ public class CommentService {
                             .title(board.get().getTitle())
                             .message(message)
                             .path(notifyPath)
-                            .profileImg(userRepository.getUserByUserId(user.getUserId()).get().getProfileImg())
+                            .profileImg(user.getProfileImg())
                     .build());
         }
 
@@ -99,7 +99,7 @@ public class CommentService {
                         .title(board.get().getTitle())
                         .message(message)
                         .path(notifyPath)
-                        .profileImg(userRepository.getUserByUserId(22).get().getProfileImg())
+                        .profileImg(user.getProfileImg())
                         .build());
             }
         }

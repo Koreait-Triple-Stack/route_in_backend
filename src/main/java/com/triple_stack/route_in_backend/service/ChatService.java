@@ -58,7 +58,7 @@ public class ChatService {
         Integer roomId = optionalRoom.get().getRoomId();
         for (Integer userId : addRoomReqDto.getUserIds()) {
             Integer profileUserId = addRoomReqDto.getUserIds().stream().filter(id -> !id.equals(userId)).findFirst().orElse(null);
-            String username = userRepository.getUserByUserId(userId).get().getUsername();
+            String username = userRepository.getUserByUserId(userId).orElseThrow(() -> new RuntimeException("채팅방 나가기 실패")).getUsername();
             String title = addRoomReqDto.getUsernames().stream()
                     .filter(u -> !u.equals(username)).collect(Collectors.joining(", "));
             int result = roomRepository.addRoomParticipant(addRoomReqDto.toEntity(roomId, userId, title, "MEMBER", profileUserId));
@@ -130,12 +130,12 @@ public class ChatService {
         }
 
         RoomParticipant roomParticipant = RoomParticipant.builder().roomId(quitRoomReqDto.getRoomId()).build();
-        List<Integer> userIds = roomRepository.getRoomByRoomId(quitRoomReqDto.getRoomId()).get()
+        List<Integer> userIds = roomRepository.getRoomByRoomId(quitRoomReqDto.getRoomId()).orElseThrow(() -> new RuntimeException("채팅방 나가기 실패"))
                 .getParticipants().stream().map(RoomParticipant::getUserId).filter(id -> !id.equals(quitRoomReqDto.getUserId())).toList();
-        List<String> usernames = roomRepository.getRoomByRoomId(quitRoomReqDto.getRoomId()).get()
+        List<String> usernames = roomRepository.getRoomByRoomId(quitRoomReqDto.getRoomId()).orElseThrow(() -> new RuntimeException("채팅방 나가기 실패"))
                 .getParticipants().stream().map(RoomParticipant::getUsername).filter(name -> !name.equals(quitRoomReqDto.getUsername())).toList();
         for (Integer userId : userIds) {
-            String username = userRepository.getUserByUserId(userId).get().getUsername();
+            String username = userRepository.getUserByUserId(userId).orElseThrow(() -> new RuntimeException("채팅방 나가기 실패")).getUsername();
             String title = usernames.stream().filter(name -> !name.equals(username)).collect(Collectors.joining(", "));
             if (title.isEmpty()) {
                 title = username;
@@ -180,7 +180,9 @@ public class ChatService {
     }
 
     @Transactional
-    public ApiRespDto<?> addMessage(AddMessageReqDto addMessageReqDto) {
+    public ApiRespDto<?> addMessage(AddMessageReqDto addMessageReqDto, PrincipalUser principalUser) {
+        addMessageReqDto.setSenderId(principalUser.getUserId());
+
         Optional<Room> optionalRoom = roomRepository.getRoomByRoomId(addMessageReqDto.getRoomId());
         if (optionalRoom.isEmpty()) {
             throw new RuntimeException("채팅방이 존재하지 않습니다");
@@ -214,7 +216,7 @@ public class ChatService {
                     .title(participant.getTitle())
                     .message(addMessageReqDto.getContent())
                     .path("/chat/room/"+addMessageReqDto.getRoomId())
-                    .profileImg(userRepository.getUserByUserId(addMessageReqDto.getSenderId()).get().getProfileImg())
+                    .profileImg(userRepository.getUserByUserId(addMessageReqDto.getSenderId()).orElseThrow(() -> new RuntimeException("메시지 전송 실패")).getProfileImg())
                     .build());
         }
 
@@ -365,9 +367,9 @@ public class ChatService {
 
     @Transactional
     public ApiRespDto<?> addRoomParticipant(AddRoomParticipantReqDto addRoomParticipantReqDto, PrincipalUser principalUser) {
-        String profileImg = userRepository.getUserByUserId(principalUser.getUserId()).get().getProfileImg();
+        String profileImg = userRepository.getUserByUserId(principalUser.getUserId()).orElseThrow(() -> new RuntimeException("채팅방 생성 실패")).getProfileImg();
         for (Integer userId : addRoomParticipantReqDto.getUserIds()) {
-            String username = userRepository.getUserByUserId(userId).get().getUsername();
+            String username = userRepository.getUserByUserId(userId).orElseThrow(() -> new RuntimeException("채팅방 생성 실패")).getUsername();
 
             Optional<RoomParticipant> participant = roomRepository.getRoomParticipantByUserIdAndRoomId(addRoomParticipantReqDto.getRoomId(), userId);
             String title = addRoomParticipantReqDto.getUsernames().stream().filter(name -> !name.equals(username)).collect(Collectors.joining(", "));

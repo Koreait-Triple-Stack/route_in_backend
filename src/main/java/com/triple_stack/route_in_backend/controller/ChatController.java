@@ -45,8 +45,8 @@ public class ChatController {
     }
 
     @PostMapping("/message/add")
-    private ResponseEntity<?> addMessage(@RequestBody AddMessageReqDto addMessageReqDto) {
-        return ResponseEntity.ok(chatService.addMessage(addMessageReqDto));
+    private ResponseEntity<?> addMessage(@RequestBody AddMessageReqDto addMessageReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(chatService.addMessage(addMessageReqDto, principalUser));
     }
 
     @PostMapping("/message/change")
