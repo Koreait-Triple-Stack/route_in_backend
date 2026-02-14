@@ -81,10 +81,10 @@ public class CommentService {
         List<Notification> notifications = new ArrayList<>();
 
         if (!currentUserId.equals(boardWriterId)) {
-            String message = user.getUsername() + "님이" + "게시글에 새로운 댓글을 달았습니다.";
+            String message = user.getUsername() + "님이 " + board.get().getTitle() + " 게시글에 새로운 댓글을 달았습니다.";
             notifications.add(Notification.builder()
                             .userId(boardWriterId)
-                            .title(board.get().getTitle())
+                            .title("새 댓글")
                             .message(message)
                             .path(notifyPath)
                             .profileImg(user.getProfileImg())
